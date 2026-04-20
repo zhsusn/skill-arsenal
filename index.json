@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "lastUpdated": "2026-04-20",
   "skills": [
     {
@@ -44,6 +44,33 @@
       "description": "将模糊需求转化为清晰的用户故事、验收标准和任务拆分，识别隐藏假设和风险。适用于产品需求评审、敏捷迭代规划和客户需求澄清。",
       "metadata": {
         "tags": "analysis,product,agile",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "prd-system-outline",
+      "path": "skills/core-deliverables/prd-system-outline",
+      "description": "通过递进式多轮对话生成 PRD-000 概要需求说明书，定义系统边界、核心模块、全局 NFR 和里程碑。适用于从零开始规划新产品或系统级需求基线。",
+      "metadata": {
+        "tags": "core-deliverables,requirement-analysis,prd,system-design",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "prd-feature-detail",
+      "path": "skills/core-deliverables/prd-feature-detail",
+      "description": "基于已冻结的 PRD-000 概要基线，通过深度模块访谈生成单模块的 PRD-00X 详细需求说明书。包含用户故事、业务逻辑、验收标准和接口契约。",
+      "metadata": {
+        "tags": "core-deliverables,requirement-analysis,prd,feature-spec",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "prd-trace-matrix",
+      "path": "skills/core-deliverables/prd-trace-matrix",
+      "description": "解析已有的 PRD-000 和 PRD-00X，生成并维护需求追溯矩阵（REQ-TRACE）。支持变更影响分析、悬空需求检测和版本联动预警。",
+      "metadata": {
+        "tags": "core-deliverables,requirement-analysis,prd,traceability",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     }
