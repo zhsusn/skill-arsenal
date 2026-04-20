@@ -1,0 +1,51 @@
+{
+  "version": "0.1.0",
+  "lastUpdated": "2026-04-20",
+  "skills": [
+    {
+      "name": "code-review",
+      "path": "skills/development/code-review",
+      "description": "执行代码审查，检查安全性、性能和可维护性问题。适用于提交前代码审查、重构评估和代码走读场景。",
+      "metadata": {
+        "tags": "development,quality,security",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "git-automation",
+      "path": "skills/development/git-automation",
+      "description": "Git 工作流自动化助手，生成符合 Conventional Commits 规范的提交信息，支持提交前自检清单。适用于需要规范 Git 历史、提升协作效率的场景。",
+      "metadata": {
+        "tags": "development,git,workflow",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "sql-optimization",
+      "path": "skills/data-engineering/sql-optimization",
+      "description": "分析 SQL 查询性能瓶颈，提供索引优化建议、执行计划解读和改写方案。适用于慢查询排查、数据库性能调优和 Schema 设计评审。",
+      "metadata": {
+        "tags": "data-engineering,sql,performance",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "documentation",
+      "path": "skills/writing/documentation",
+      "description": "技术文档编写与结构优化，支持 README、API 文档、架构决策记录（ADR）等类型。适用于项目文档初始化、现有文档重构和技术写作辅助。",
+      "metadata": {
+        "tags": "writing,documentation,communication",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "requirement-analysis",
+      "path": "skills/analysis/requirement-analysis",
+      "description": "将模糊需求转化为清晰的用户故事、验收标准和任务拆分，识别隐藏假设和风险。适用于产品需求评审、敏捷迭代规划和客户需求澄清。",
+      "metadata": {
+        "tags": "analysis,product,agile",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    }
+  ]
+}

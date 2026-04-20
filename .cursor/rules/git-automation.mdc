@@ -1,0 +1,124 @@
+---
+description: Git 工作流自动化助手，生成符合 Conventional Commits 规范的提交信息，支持提交前自检清单。适用于需要规范 Git 历史、提升协作效率的场景。
+globs: 
+alwaysApply: false
+---
+
+# Git Automation
+
+# Git Automation
+
+## 适用场景
+- 准备提交代码，需要生成规范的 commit message
+- 提交前快速自检，确保不遗漏关键步骤
+- 整理分支历史，准备 rebase 或 squash
+- 生成 CHANGELOG 或版本发布说明
+
+## 核心职责
+1. 分析代码变更（diff），生成符合 Conventional Commits 规范的提交信息
+2. 提供提交前自检清单（Pre-commit Checklist）
+3. 辅助编写 Pull Request 描述
+4. 建议合理的分支管理策略
+
+## Conventional Commits 规范
+
+提交信息格式：
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+常用 type：
+- `feat`: 新功能
+- `fix`: 修复 bug
+- `docs`: 文档变更
+- `style`: 代码格式调整（不影响逻辑）
+- `refactor`: 重构（非 feat 也非 fix）
+- `perf`: 性能优化
+- `test`: 测试相关
+- `chore`: 构建/工具链/依赖更新
+
+## 执行步骤
+
+### 生成 Commit Message
+1. 读取用户提供的 diff 或变更摘要
+2. 识别主要变更类型（feat/fix/docs 等）
+3. 判断影响范围（scope）
+4. 生成 50 字符以内的标题行
+5. 如有需要，补充 body 说明变更动机和对比
+
+### 提交前自检
+1. 检查是否有未跟踪的重要文件
+2. 检查测试是否通过
+3. 检查代码是否符合项目 lint 规范
+4. 确认提交粒度是否合适（原子性）
+
+## 输出格式
+
+### Commit Message 模板
+```
+type(scope): 简短描述（50字符内）
+
+- 详细变更点 1
+- 详细变更点 2
+
+Refs: #123
+```
+
+### 自检清单
+```markdown
+## Pre-commit Checklist
+- [ ] 代码已自测通过
+- [ ] 新增/修改功能附有单元测试
+- [ ] 文档（README/CHANGELOG）已同步更新
+- [ ] 无敏感信息（密钥、密码）误提交
+- [ ] 提交粒度合理，单一职责
+```
+
+## 示例
+
+### 示例 1：生成 Commit Message
+
+**输入（变更摘要）**：
+```
+- 新增用户登录 JWT 验证中间件
+- 更新 auth 模块单元测试
+- 在 README 中添加环境变量说明
+```
+
+**输出**：
+```
+feat(auth): add JWT validation middleware
+
+- Implement JWT token verification in auth middleware
+- Add unit tests for token expiry and invalid signature cases
+- Update README with required environment variables
+
+Refs: #45
+```
+
+### 示例 2：提交前自检
+
+**AI 执行**：
+```markdown
+## 提交前检查
+- [x] 变更文件数：3（合理）
+- [x] 测试状态：全部通过（12/12）
+- [ ] **警告**：`config/local.py` 包含 `DEBUG=True`，确认不提交
+- [x] 无密钥硬编码
+
+建议：移除 `config/local.py` 中的调试配置后再提交。
+```
+
+## 注意事项
+- 永远不要假设用户想要提交所有变更，优先询问或列出变更清单
+- 如果 diff 过大，建议拆分为多个原子提交
+- 涉及数据库迁移时，提醒用户检查迁移文件的兼容性
+
+## 变更日志
+
+- 2026-04-20: 初始版本
+
