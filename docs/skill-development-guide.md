@@ -48,8 +48,6 @@ description: 一个关于代码的 skill。
 ---
 name: skill-name
 description: 清晰描述...
-metadata:
-  tags: "tag1,tag2"
 ---
 
 # Skill 标题
@@ -188,10 +186,11 @@ python3 scripts/validate.py --skill skills/<category>/<skill-name>
 
 - [ ] 目录名使用 kebab-case，无连续连字符 `--`
 - [ ] `SKILL.md` 文件名全大写
-- [ ] Frontmatter 包含 `name` 和 `description`
+- [ ] Frontmatter **仅包含 `name` 和 `description`**（Kimi Code 兼容性要求）
 - [ ] `name` 与目录名一致，符合命名约束（1–64 字符，小写+数字+连字符）
 - [ ] `description` ≤1024 字符，明确说明功能和场景
 - [ ] `SKILL.md` 正文不超过 500 行
+- [ ] 同目录下已放置 `meta.json`（含 `tags`、`platforms`、`version`）
 - [ ] 文件引用使用相对路径且保持一级深度
 - [ ] 无敏感信息（API Key、Token、密码）
 - [ ] 已更新 `index.json`

@@ -1,9 +1,6 @@
 ---
 name: code-review
 description: 执行代码审查，检查安全性、性能和可维护性问题。适用于提交前代码审查、重构评估和代码走读场景。
-metadata:
-  tags: "development,quality,security"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # Code Review

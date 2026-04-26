@@ -27,6 +27,7 @@ VALID_CATEGORIES = {
     "development",
     "data-engineering",
     "architecture",
+    "Reverse-Engineering",
     "writing",
     "analysis",
     "tools",
@@ -146,6 +147,11 @@ class Validator:
                     "no REFERENCE.md or FORMS.md found (recommended by spec)",
                 )
 
+        # 6. meta.json 校验（如果存在）
+        meta_file = skill_path / "meta.json"
+        if meta_file.exists():
+            self._validate_meta_json(rel_path / "meta.json", meta_file)
+
         return ok
 
     def _validate_frontmatter(self, path: Path, fm: str, expected_name: str) -> bool:
@@ -195,24 +201,40 @@ class Validator:
                 self.error(str(path), f"compatibility exceeds 500 characters ({len(comp)})")
                 ok = False
 
-        # metadata (optional)
-        if "metadata" in fields:
-            metadata = fields["metadata"]
-            if not isinstance(metadata, dict):
-                self.error(str(path), "metadata must be a key-value mapping")
-                ok = False
-            else:
-                for k, v in metadata.items():
-                    if not isinstance(v, str):
-                        self.error(str(path), f"metadata value for '{k}' must be a string")
-                        ok = False
-
-        # allowed-tools (optional)
-        if "allowed-tools" in fields:
-            if not fields["allowed-tools"]:
-                self.warn(str(path), "allowed-tools is empty")
+        # 检查 Kimi 兼容性：Frontmatter 仅限 name + description
+        allowed_fields = {"name", "description"}
+        for key in fields:
+            if key not in allowed_fields:
+                self.warn(
+                    str(path),
+                    f"extra frontmatter field '{key}' may cause Kimi Code to reject this skill; consider moving it to meta.json",
+                )
 
         return ok
+
+    def _validate_meta_json(self, rel_path: Path, meta_file: Path):
+        """校验 meta.json 格式。"""
+        try:
+            meta = json.loads(meta_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            self.error(str(rel_path), f"invalid JSON: {e}")
+            return
+
+        if not isinstance(meta, dict):
+            self.error(str(rel_path), "meta.json must be a JSON object")
+            return
+
+        if "name" in meta:
+            if not isinstance(meta["name"], str):
+                self.error(str(rel_path), "meta.json 'name' must be a string")
+
+        if "tags" in meta:
+            if not isinstance(meta["tags"], list) or not all(isinstance(t, str) for t in meta["tags"]):
+                self.error(str(rel_path), "meta.json 'tags' must be an array of strings")
+
+        if "platforms" in meta:
+            if not isinstance(meta["platforms"], list) or not all(isinstance(p, str) for p in meta["platforms"]):
+                self.error(str(rel_path), "meta.json 'platforms' must be an array of strings")
 
     def _check_file_references(self, path: Path, body: str):
         """检查文件引用是否保持一级深度。"""

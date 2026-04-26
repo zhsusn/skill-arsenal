@@ -1,11 +1,6 @@
 ---
 name: new-skill-template
 description: 描述该 skill 的核心功能和触发场景。当用户遇到 XXX 问题时，激活此 skill 以提供 YYY 帮助。
-license: MIT
-compatibility: "无特殊环境要求"
-metadata:
-  tags: "template"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # Skill 标题

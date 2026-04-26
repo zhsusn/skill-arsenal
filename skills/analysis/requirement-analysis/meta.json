@@ -1,0 +1,6 @@
+{
+  "name": "requirement-analysis",
+  "version": "1.0.0",
+  "tags": ["analysis", "product", "agile"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

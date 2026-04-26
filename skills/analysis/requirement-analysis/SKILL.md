@@ -1,9 +1,6 @@
 ---
 name: requirement-analysis
 description: 将模糊需求转化为清晰的用户故事、验收标准和任务拆分，识别隐藏假设和风险。适用于产品需求评审、敏捷迭代规划和客户需求澄清。
-metadata:
-  tags: "analysis,product,agile"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # Requirement Analysis

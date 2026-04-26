@@ -1,9 +1,6 @@
 ---
 name: git-automation
 description: Git 工作流自动化助手，生成符合 Conventional Commits 规范的提交信息，支持提交前自检清单。适用于需要规范 Git 历史、提升协作效率的场景。
-metadata:
-  tags: "development,git,workflow"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # Git Automation

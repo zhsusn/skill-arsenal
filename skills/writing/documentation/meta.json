@@ -1,0 +1,6 @@
+{
+  "name": "documentation",
+  "version": "1.0.0",
+  "tags": ["writing", "documentation", "communication"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

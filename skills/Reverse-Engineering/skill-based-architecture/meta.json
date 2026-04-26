@@ -1,0 +1,6 @@
+{
+  "name": "skill-based-architecture",
+  "version": "1.12.0",
+  "tags": ["architecture", "skill-management", "documentation", "meta-skill", "ai-agent", "workflow"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini", "windsurf"]
+}

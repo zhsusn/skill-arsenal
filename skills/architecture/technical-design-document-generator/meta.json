@@ -1,0 +1,6 @@
+{
+  "name": "technical-design-document-generator",
+  "version": "0.2.0",
+  "tags": ["architecture", "design-document", "sdd", "api-design", "system-design"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

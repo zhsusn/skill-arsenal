@@ -1,0 +1,6 @@
+{
+  "name": "prd-system-outline",
+  "version": "1.1.0",
+  "tags": ["core-deliverables", "requirement-analysis", "prd", "system-design"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

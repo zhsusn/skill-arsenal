@@ -1,0 +1,6 @@
+{
+  "name": "ai-architecture-advisor",
+  "version": "1.0.0",
+  "tags": ["architecture", "ai", "design", "agent", "skill"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

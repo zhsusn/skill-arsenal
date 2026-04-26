@@ -1,6 +1,6 @@
 {
   "version": "0.2.0",
-  "lastUpdated": "2026-04-20",
+  "lastUpdated": "2026-04-26",
   "skills": [
     {
       "name": "code-review",
@@ -50,7 +50,7 @@
     {
       "name": "prd-system-outline",
       "path": "skills/core-deliverables/prd-system-outline",
-      "description": "通过递进式多轮对话生成 PRD-000 概要需求说明书，定义系统边界、核心模块、全局 NFR 和里程碑。适用于从零开始规划新产品或系统级需求基线。",
+      "description": "通过递进式多轮对话生成 PRD-000 概要需求说明书，定义系统边界、核心模块、全局 NFR 和里程碑。内置一致性校验与竞品对标机制，确保输出无逻辑矛盾、技术方案不过时。适用于从零开始规划新产品或系统级需求基线。",
       "metadata": {
         "tags": "core-deliverables,requirement-analysis,prd,system-design",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -72,6 +72,33 @@
       "metadata": {
         "tags": "core-deliverables,requirement-analysis,prd,traceability",
         "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "ai-architecture-advisor",
+      "path": "skills/architecture/ai-architecture-advisor",
+      "description": "分析项目需求，推荐最优的 AI 助手架构组合（Skill / Agent / 提示词 / SDK），并提供实施指导与最佳实践。适用于设计 AI 驱动项目、规划多 Agent 协作和优化上下文管理。",
+      "metadata": {
+        "tags": "architecture,ai,design,agent,skill",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "technical-design-document-generator",
+      "path": "skills/architecture/technical-design-document-generator",
+      "description": "基于已审批的 PRD 生成 comprehensive 技术设计文档（SDD），遵循八章节结构，覆盖系统架构、API 设计、数据模型、安全策略与详细设计。",
+      "metadata": {
+        "tags": "architecture,design-document,sdd,api-design,system-design",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "skill-based-architecture",
+      "path": "skills/Reverse-Engineering/skill-based-architecture",
+      "description": "将项目规则、工作流和经验教训提炼为结构化的 skills/<name>/ 目录，建立可路由、自维护、lesson-capturing 的项目级 AI 技能操作系统。适用于项目 AI 文档膨胀、多 AI 工具共享规则、需要减少 token 浪费或沉淀经验教训的场景。",
+      "metadata": {
+        "tags": "architecture,skill-management,documentation,meta-skill,ai-agent,workflow",
+        "platforms": "kimi,claude,cursor,codex,gemini,windsurf"
       }
     }
   ]

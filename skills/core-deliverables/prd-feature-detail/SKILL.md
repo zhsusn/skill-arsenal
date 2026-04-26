@@ -1,9 +1,6 @@
 ---
 name: prd-feature-detail
 description: 基于已冻结的 PRD-000 概要基线，通过深度模块访谈生成单模块的 PRD-00X 详细需求说明书。包含用户故事、业务逻辑、验收标准和接口契约。
-metadata:
-  tags: "core-deliverables,requirement-analysis,prd,feature-spec"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # PRD-00X 详细需求生成器
@@ -63,6 +60,9 @@ metadata:
 3. 按优先级排序功能分支（P0 优先）。
 
 ### Step 3：深度访谈（Relentless Interview）
+
+> 访谈策略参考：`references/module-interview-guide.md`
+
 对每个功能分支（从 P0 开始），执行以下子步骤：
 
 1. **用户故事确认**：

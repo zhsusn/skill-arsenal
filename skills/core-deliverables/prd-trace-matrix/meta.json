@@ -1,0 +1,6 @@
+{
+  "name": "prd-trace-matrix",
+  "version": "1.0.0",
+  "tags": ["core-deliverables", "requirement-analysis", "prd", "traceability"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

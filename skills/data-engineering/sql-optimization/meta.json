@@ -1,0 +1,6 @@
+{
+  "name": "sql-optimization",
+  "version": "1.0.0",
+  "tags": ["data-engineering", "sql", "performance"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

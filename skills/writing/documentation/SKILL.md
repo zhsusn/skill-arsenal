@@ -1,9 +1,6 @@
 ---
 name: documentation
 description: 技术文档编写与结构优化，支持 README、API 文档、架构决策记录（ADR）等类型。适用于项目文档初始化、现有文档重构和技术写作辅助。
-metadata:
-  tags: "writing,documentation,communication"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # Documentation

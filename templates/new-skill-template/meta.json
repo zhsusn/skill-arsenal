@@ -1,0 +1,6 @@
+{
+  "name": "new-skill-template",
+  "version": "1.0.0",
+  "tags": ["template"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

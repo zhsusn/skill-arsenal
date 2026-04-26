@@ -1,9 +1,6 @@
 ---
 name: prd-trace-matrix
 description: 解析已有的 PRD-000 和 PRD-00X，生成并维护需求追溯矩阵（REQ-TRACE）。支持变更影响分析、悬空需求检测和版本联动预警。
-metadata:
-  tags: "core-deliverables,requirement-analysis,prd,traceability"
-  platforms: "kimi,claude,cursor,codex,gemini"
 ---
 
 # PRD 需求追溯矩阵维护器
@@ -65,6 +62,9 @@ metadata:
 按 `references/trace-template.md` 输出完整矩阵。
 
 ### Step 4：变更影响分析（按需）
+
+> 分析规则参考：`references/impact-analysis-guide.md`
+
 当用户提出具体变更时：
 1. 定位变更涉及的概要需求 ID。
 2. 遍历矩阵，找出所有直接关联的详细需求 ID。

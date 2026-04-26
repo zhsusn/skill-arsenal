@@ -1,0 +1,6 @@
+{
+  "name": "code-review",
+  "version": "1.0.0",
+  "tags": ["development", "quality", "security"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

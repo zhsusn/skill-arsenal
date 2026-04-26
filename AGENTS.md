@@ -80,7 +80,8 @@ skill-arsenal/
 
 ```
 skills/<category>/<skill-name>/
-├── SKILL.md              # 必需：Frontmatter 元数据 + 核心指令（<500 行）
+├── SKILL.md              # 必需：核心指令（<500 行），Frontmatter 仅含 name + description
+├── meta.json             # 可选：全量元数据（版本、标签、兼容平台等）
 ├── scripts/              # 可选：可执行脚本（Python / Bash）
 ├── references/           # 可选：深度参考资料（按需加载）
 │   ├── REFERENCE.md      # 详细技术参考（推荐命名）
@@ -88,15 +89,12 @@ skills/<category>/<skill-name>/
 └── assets/               # 可选：模板、示例文件
 ```
 
-**`SKILL.md` 标准格式示例（符合 Agent Skills Spec）：**
+**`SKILL.md` 标准格式示例（Kimi Code 兼容版）：**
 
 ```markdown
 ---
 name: code-review
 description: 执行代码审查，检查安全性、性能和可维护性问题
-metadata:
-  tags: "development,quality,security"
-  platforms: "claude,kimi,cursor"
 ---
 
 # Code Review
@@ -116,16 +114,29 @@ metadata:
 - 正面反馈
 ```
 
+> **Kimi Code 兼容性提示**：Kimi Code 的 skill 加载器采用严格白名单校验，Frontmatter 中**仅允许 `name` 和 `description` 两个字段**，其他字段（如 `metadata`、`license`、`compatibility`）会导致加载报错。本项目采用**双轨制**：`SKILL.md` 保持极简（name + description），扩展元数据统一存放在同目录的 `meta.json` 中。
+
 ### Frontmatter 字段说明
 
-遵循 [agentskills.io](https://agentskills.io/specification) 标准：
+本项目为同时兼容 **Kimi Code**（严格白名单：仅允许 `name` + `description`）和 Claude / Cursor 等平台，采用**双轨制**设计：
+
+#### `SKILL.md` Frontmatter（极简）
 
 - **必填**：`name`（1–64 字符，kebab-case，匹配目录名）、`description`（1–1024 字符）
-- **可选标准字段**：
-  - `license`：许可证名称或文件名
-  - `compatibility`：环境要求（≤500 字符）
-  - `metadata`：自定义键值对映射（字符串→字符串），本项目约定存放 `tags`、`platforms`
-  - `allowed-tools`：实验性字段，空格分隔的预批准工具列表
+- **禁止**：`metadata`、`license`、`compatibility`、`allowed-tools` 等扩展字段（会导致 Kimi Code 报错）
+
+#### `meta.json`（全量元数据）
+
+在同目录下放置 `meta.json`，存放扩展信息，供外部检索工具、版本管理和转换脚本使用：
+
+```json
+{
+  "name": "code-review",
+  "version": "1.0.0",
+  "tags": ["development", "quality", "security"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}
+```
 
 ---
 
@@ -145,9 +156,10 @@ metadata:
 - 引用 skill 内其他文件时，使用**相对路径**。
 - 保持**一级深度**，避免深层嵌套引用链。
 
-### 索引维护
+### 索引与元数据维护
 - 维护根目录的 `index.json`，供外部工具（如 skill-finder）快速检索。
-- 新增或修改 skill 后，应同步更新 `index.json` 并运行 `python3 scripts/validate.py` 校验。
+- 每个 skill 目录下建议放置 `meta.json`，存放 `tags`、`platforms`、`version` 等扩展元数据。
+- 新增或修改 skill 后，应同步更新 `index.json` 和 `meta.json`，并运行 `python3 scripts/validate.py` 校验。
 
 ---
 
@@ -195,4 +207,6 @@ metadata:
 - **优先阅读 `docs/tmp.txt`**。该文件是目前唯一包含项目设计意图的文档（历史参考）。
 - **所有新增代码或脚本** 应遵循上述规划中的目录结构和命名规范。
 - **语言**：项目文档和注释主要使用**中文**。
-- 修改 skill 后，务必同步更新 `index.json` 并运行 `python3 scripts/validate.py`。
+- **Kimi Code 兼容性**：新增或修改 skill 时，`SKILL.md` 的 Frontmatter **仅限 `name` + `description`**，其他元数据请放入 `meta.json`。
+- **关于 `meta.json` 的说明**：`meta.json` 不是冗余文件，而是为兼容 Kimi Code CLI 严格白名单（仅允许 `name` + `description`）而采用的双轨制设计。部分 skill 检查工具（如 skill-creator）可能将其标记为"无关辅助文件"，这是误报——如果将元数据移回 Frontmatter，Kimi Code CLI 会直接拒绝加载该 skill。
+- 修改 skill 后，务必同步更新 `index.json`、`meta.json`，并运行 `python3 scripts/validate.py`。
