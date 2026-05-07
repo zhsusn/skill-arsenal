@@ -96,3 +96,6 @@ pip-delete-this-directory.txt
 *.tar.gz
 *.rar
 *.7z
+
+# Kimi 项目级 skill 配置（本地环境特定）
+.kimi/
