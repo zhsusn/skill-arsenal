@@ -1,6 +1,6 @@
 ---
 name: sql-optimization
-description: 分析 SQL 查询性能瓶颈，提供索引优化建议、执行计划解读和改写方案。适用于慢查询排查、数据库性能调优和 Schema 设计评审。
+description: 当用户提到'SQL 慢'、'查询优化'、'索引'、'执行计划'或数据库性能调优时触发。分析瓶颈并提供优化方案。
 ---
 
 # SQL Optimization

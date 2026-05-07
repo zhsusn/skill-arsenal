@@ -1,0 +1,5 @@
+# 交互式选择（推荐）
+python skill-create-pattern.py api-expert "FastAPI 开发最佳实践"
+
+# 命令行直接指定
+python skill-create-pattern.py doc-pipeline "文档生成流水线" --pattern pipeline --dir ./skills

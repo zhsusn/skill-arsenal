@@ -1,0 +1,7 @@
+{
+  "name": "prd-generation",
+  "version": "2.0.0",
+  "pattern": "generator",
+  "tags": ["core-deliverables", "requirement-analysis", "prd", "openspec", "system-design"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "self-check",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": ["sdlc", "quality-gate", "verification", "openspec", "self-check"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

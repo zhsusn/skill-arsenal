@@ -1,0 +1,233 @@
+schema: {project-name}-sdd
+version: "1.0"
+
+# 项目上下文（初始化时由 Skill 自动推断，用户仅需确认）
+context:
+  project: ""                       # 自动推断：目录名 / git repo / package.json name
+  tech_stack: ""                    # 自动推断：package.json / pyproject.toml / Dockerfile 等
+  core_modules: []                  # 自动推断：src/ / apps/ / services/ 的一级子目录
+  team: ""                          # 自动推断：git contributor 数量（可选）
+  rules: "所有变更必须通过概要评审和详细评审"
+  # 推断元数据（仅用于追溯，不参与业务逻辑）
+  _inferred_at: ""
+  _inference_sources: []
+
+# 阶段定义与门控规则（声明式，项目可定制）
+phases:
+  - id: high-level-requirements
+    name: 概要需求
+    weight: 10
+    gate_to_next:
+      - artifact: specs/01-product-overview.md
+        check: exists
+      - artifact: specs/02-requirements-list.md
+        check: sections_match
+      - artifact: specs/03-functional-structure.md
+        check: exists
+      - artifact: specs/04-business-rules.md
+        check: exists
+      - artifact: specs/05-non-functional.md
+        check: exists
+      - action: user_review
+        label: "概要需求评审通过（产品签字）"
+
+  - id: detailed-requirements
+    name: 详细需求
+    weight: 15
+    gate_to_next:
+      - artifact: "specs/feature-*/spec.md"
+        check: glob_count >= 1
+      - artifact: "specs/feature-*/io-table.md"
+        check: all_exist
+      - action: user_review
+        label: "详细需求评审通过"
+
+  - id: high-level-design
+    name: 概要设计
+    weight: 15
+    gate_to_next:
+      - artifact: design/01-system-architecture.md
+        check: exists
+      - artifact: design/04-interface-contracts.md
+        check: sections_match
+      - action: user_review
+        label: "概要设计架构评审通过"
+
+  - id: detailed-design
+    name: 详细设计
+    weight: 15
+    gate_to_next:
+      - artifact: "specs/feature-*/design.md"
+        check: all_exist
+      - artifact: "specs/feature-*/api-spec.md"
+        check: all_exist
+      - action: user_review
+        label: "详细设计评审通过"
+
+  - id: interface-first-dev
+    name: 接口驱动开发
+    weight: 10
+    gate_to_next:
+      - artifact: interface-contracts/openapi.yaml
+        check: exists
+      - artifact: interface-contracts/mock-data.json
+        check: exists
+      - action: self_check
+        label: "接口契约确认通过"
+
+  - id: task-breakdown
+    name: 任务拆解
+    weight: 5
+    gate_to_next:
+      - artifact: tasks.md
+        check: tasks_all_le_30min
+      - action: self_check
+        label: "任务拆解完成"
+
+  - id: implementation
+    name: 编码实现
+    weight: 15
+    gate_to_next:
+      - artifact: tasks.md
+        check: all_tasks_completed_and_verified
+      - action: self_check
+        label: "所有开发任务完成且自测通过"
+
+  - id: unit-test
+    name: 单元测试
+    weight: 10
+    gate_to_next:
+      - artifact: tests/unit/
+        check: coverage >= 70
+      - action: self_check
+        label: "单元测试覆盖率≥70%"
+
+  - id: integration-test
+    name: 集成测试
+    weight: 5
+    gate_to_next:
+      - artifact: tests/integration/
+        check: main_path_passed
+      - action: self_check
+        label: "端到端主链路测试通过"
+
+  - id: finish
+    name: 收尾归档
+    weight: 0
+    gate_to_next: []
+
+# Red Flags：进度异常拦截规则
+red_flags:
+  - id: skip_phase
+    description: "禁止跳过当前阶段直接进入下一阶段"
+    severity: blocker
+    check: "current_phase.status != completed && next_phase.status == in_progress"
+
+  - id: code_without_spec
+    description: "禁止在没有规格的情况下直接写代码"
+    severity: blocker
+    check: "implementation.status == in_progress && specs/*.md count == 0"
+
+  - id: unverified_completion
+    description: "禁止未自测的代码进入测试阶段"
+    severity: blocker
+    check: "unit-test.status == in_progress && tasks[verified_by != passed].count > 0"
+
+  - id: hl_requirement_change
+    description: "概要需求变更走正式变更流程（需评审会）"
+    severity: warning
+    check: "high-level-requirements.status == completed && specs/01-product-overview.md mtime > completed_at"
+
+# 产出物规格定义（用于 self-check 完整性校验）
+artifact_specs:
+  high-level-requirements:
+    target_reader: "决策层、项目经理、架构师、业务方"
+    core_questions: ["为什么做？", "给谁做？", "范围多大？"]
+    required_sections:
+      - product_overview
+      - business_glossary
+      - functional_inventory
+      - requirements_list
+      - business_flow
+      - prototype_sketch
+      - non_functional
+      - permission_matrix
+    format: "Markdown + Mermaid 图表"
+    generated_by: "prd-generation skill"
+
+  detailed-requirements:
+    target_reader: "开发、测试、UI设计师、前端"
+    core_question: "每个字段什么规则？点击后去哪？异常怎么办？"
+    required_sections:
+      - functional_flow
+      - page_flow
+      - state_machine
+      - io_table
+      - prototype_detail
+      - business_rules
+      - permission_detail
+      - data_dictionary
+    format: "每个模块一个独立目录，Markdown + Mermaid"
+    generated_by: "detailed-requirements skill"
+    parent_dependency: "high-level-requirements"
+    module_structure: "feature-{序号}-{模块名}/"
+
+  high-level-design:
+    target_reader: "技术负责人、架构师、项目经理"
+    core_questions: ["系统拆成几块？", "数据怎么走？", "用什么技术栈？"]
+    required_sections:
+      - system_architecture
+      - tech_stack
+      - data_architecture
+      - interface_contracts
+      - module_responsibilities
+      - state_machine_global
+      - sequence_diagrams
+      - security_design
+      - performance_design
+      - deployment_architecture
+      - test_strategy
+    format: "Markdown + Mermaid 图表"
+    generated_by: "high-level-design skill"
+    parent_dependency: "high-level-requirements + competitive-analysis"
+
+  detailed-design:
+    target_reader: "后端/前端/算法开发、测试、DevOps"
+    core_question: "这个接口入参是什么？状态机有几态？异常怎么回滚？"
+    required_sections:
+      - class_component_design
+      - db_schema_physical
+      - api_definition
+      - algorithm_logic
+      - state_machine_module
+      - exception_handling
+      - performance_detail
+      - test_plan
+    format: "每个模块一个独立目录，Markdown + Mermaid"
+    generated_by: "detailed-design skill"
+    parent_dependency: "high-level-design + detailed-requirements"
+
+  interface-first:
+    target_reader: "前后端开发"
+    core_question: "接口契约是什么？如何并行开发？"
+    required_sections:
+      - api_contract
+      - mock_strategy
+      - parallel_dev_plan
+      - frontend_verify_plan
+    format: "OpenAPI/Swagger + Markdown"
+    generated_by: "interface-first-dev skill"
+    parent_dependency: "detailed-design"
+
+rules:
+  auto_save:
+    enabled: true
+    base_path: "openspec/changes/{变更名}/"
+
+  self_check:
+    enabled: true
+    check_items:
+      - content_consistency
+      - content_completeness
+      - cross_reference_valid
+      - no_internal_conflict

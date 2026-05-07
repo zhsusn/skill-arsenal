@@ -1,105 +1,171 @@
 {
   "version": "0.2.0",
-  "lastUpdated": "2026-04-26",
+  "lastUpdated": "2026-05-05",
   "skills": [
-    {
-      "name": "code-review",
-      "path": "skills/development/code-review",
-      "description": "执行代码审查，检查安全性、性能和可维护性问题。适用于提交前代码审查、重构评估和代码走读场景。",
-      "metadata": {
-        "tags": "development,quality,security",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "git-automation",
-      "path": "skills/development/git-automation",
-      "description": "Git 工作流自动化助手，生成符合 Conventional Commits 规范的提交信息，支持提交前自检清单。适用于需要规范 Git 历史、提升协作效率的场景。",
-      "metadata": {
-        "tags": "development,git,workflow",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
     {
       "name": "sql-optimization",
       "path": "skills/data-engineering/sql-optimization",
-      "description": "分析 SQL 查询性能瓶颈，提供索引优化建议、执行计划解读和改写方案。适用于慢查询排查、数据库性能调优和 Schema 设计评审。",
+      "description": "当用户提到'SQL 慢'、'查询优化'、'索引'、'执行计划'或数据库性能调优时触发。分析瓶颈并提供优化方案。",
       "metadata": {
         "tags": "data-engineering,sql,performance",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
     {
-      "name": "documentation",
-      "path": "skills/writing/documentation",
-      "description": "技术文档编写与结构优化，支持 README、API 文档、架构决策记录（ADR）等类型。适用于项目文档初始化、现有文档重构和技术写作辅助。",
+      "name": "skill-based-architecture",
+      "path": "skills/Reverse-Engineering/skill-based-architecture",
+      "description": "当用户要求\"整理项目规则\"、\"重构为 skill-based architecture\"、\"清理分散文档\"或\"迁移规则到 skills/\"时触发。将项目规则和工作流提炼为结构化的 skills/ 目录。",
       "metadata": {
-        "tags": "writing,documentation,communication",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "requirement-analysis",
-      "path": "skills/analysis/requirement-analysis",
-      "description": "将模糊需求转化为清晰的用户故事、验收标准和任务拆分，识别隐藏假设和风险。适用于产品需求评审、敏捷迭代规划和客户需求澄清。",
-      "metadata": {
-        "tags": "analysis,product,agile",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "prd-system-outline",
-      "path": "skills/core-deliverables/prd-system-outline",
-      "description": "通过递进式多轮对话生成 PRD-000 概要需求说明书，定义系统边界、核心模块、全局 NFR 和里程碑。内置一致性校验与竞品对标机制，确保输出无逻辑矛盾、技术方案不过时。适用于从零开始规划新产品或系统级需求基线。",
-      "metadata": {
-        "tags": "core-deliverables,requirement-analysis,prd,system-design",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "prd-feature-detail",
-      "path": "skills/core-deliverables/prd-feature-detail",
-      "description": "基于已冻结的 PRD-000 概要基线，通过深度模块访谈生成单模块的 PRD-00X 详细需求说明书。包含用户故事、业务逻辑、验收标准和接口契约。",
-      "metadata": {
-        "tags": "core-deliverables,requirement-analysis,prd,feature-spec",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "prd-trace-matrix",
-      "path": "skills/core-deliverables/prd-trace-matrix",
-      "description": "解析已有的 PRD-000 和 PRD-00X，生成并维护需求追溯矩阵（REQ-TRACE）。支持变更影响分析、悬空需求检测和版本联动预警。",
-      "metadata": {
-        "tags": "core-deliverables,requirement-analysis,prd,traceability",
-        "platforms": "kimi,claude,cursor,codex,gemini"
+        "tags": "architecture,skill-management,documentation,meta-skill,ai-agent,workflow",
+        "platforms": "kimi,claude,cursor,codex,gemini,windsurf"
       }
     },
     {
       "name": "ai-architecture-advisor",
-      "path": "skills/architecture/ai-architecture-advisor",
-      "description": "分析项目需求，推荐最优的 AI 助手架构组合（Skill / Agent / 提示词 / SDK），并提供实施指导与最佳实践。适用于设计 AI 驱动项目、规划多 Agent 协作和优化上下文管理。",
+      "path": "skills/sdlc/ai-architecture-advisor",
+      "description": "当用户询问'AI 架构'、'Agent 设计'、'多 Agent 协作'、'Skill 体系'或需要 AI 项目技术选型时触发。推荐最优 AI 助手架构组合。",
       "metadata": {
         "tags": "architecture,ai,design,agent,skill",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
     {
+      "name": "brainstorming",
+      "path": "skills/sdlc/brainstorming",
+      "description": "当用户提到'新功能'、'变更需求'、'想法探索'、'帮我理清思路'、'需求不清晰'或任何模糊的产品/技术需求时触发。",
+      "metadata": {
+        "tags": "sdlc,requirement-analysis,brainstorming,openspec,stage-1",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "code-review",
+      "path": "skills/sdlc/code-review",
+      "description": "当用户提交代码审查请求、提到'review'、'代码走读'、'检查代码质量'或重构评估时触发。执行安全性、性能和可维护性审查。",
+      "metadata": {
+        "tags": "development,quality,security",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "documentation",
+      "path": "skills/sdlc/documentation",
+      "description": "当用户要求编写技术文档、重构 README、生成 API 文档或创建架构决策记录（ADR）时触发。支持文档初始化与结构优化。",
+      "metadata": {
+        "tags": "writing,documentation,communication",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "executing-plans",
+      "path": "skills/sdlc/executing-plans",
+      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints"
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "path": "skills/sdlc/finishing-a-development-branch",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup"
+    },
+    {
+      "name": "high-level-design",
+      "path": "skills/sdlc/high-level-design",
+      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。正向生成系统概要设计文档，回答系统拆成几块、数据怎么走、用什么技术栈。",
+      "metadata": {
+        "tags": "sdlc,design,architecture,hld,openspec,stage-3",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "git-automation",
+      "path": "skills/sdlc/git-automation",
+      "description": "当用户提到'提交代码'、'commit'、'生成提交信息'或需要规范 Git 历史时触发。自动生成 Conventional Commits 规范提交信息。",
+      "metadata": {
+        "tags": "development,git,workflow",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "prd-feature-detail",
+      "path": "skills/sdlc/prd-feature-detail",
+      "description": "当用户基于已冻结的 PRD-000 要求生成模块详细需求、功能规格或接口契约时触发。输出单模块 PRD-00X 详细需求说明书。",
+      "metadata": {
+        "tags": "core-deliverables,requirement-analysis,prd,feature-spec",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "prd-generation",
+      "path": "skills/sdlc/prd-generation",
+      "description": "当用户要求'写PRD'、'概要需求'、'系统规划'或从零开始规划新产品时触发。通过四层递进式对话生成OpenSpec五文件概要需求。",
+      "metadata": {
+        "tags": "core-deliverables,requirement-analysis,prd,openspec,system-design",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "prd-trace-matrix",
+      "path": "skills/sdlc/prd-trace-matrix",
+      "description": "当用户提到'需求追溯'、'变更影响'、'需求覆盖'或需要维护需求与实现之间的追溯关系时触发。生成并维护 REQ-TRACE 矩阵。",
+      "metadata": {
+        "tags": "core-deliverables,requirement-analysis,prd,traceability",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "progress-tracker",
+      "path": "skills/sdlc/progress-tracker",
+      "description": "当用户询问'项目进度'、'阶段状态'、'变更进展'、'里程碑'或需要跟踪软件全生命周期进度时触发。维护单一可信进度源并驱动阶段流转。",
+      "metadata": {
+        "tags": "tools,project-management,progress-tracking,governance,openspec",
+        "platforms": "kimi,claude,cursor,codex,gemini,windsurf"
+      }
+    },
+    {
+      "name": "self-check",
+      "path": "skills/sdlc/self-check",
+      "description": "当用户提到'自查'、'self-check'、'检查产出物'、'阶段完成'、'门控'或需要对当前阶段文档/代码进行质量校验时触发。执行内容一致性、完整性、交叉引用有效性和内部矛盾检查。",
+      "metadata": {
+        "tags": "sdlc,quality-gate,verification,openspec,self-check",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "requesting-code-review",
+      "path": "skills/sdlc/requesting-code-review",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements"
+    },
+    {
+      "name": "requirement-analysis",
+      "path": "skills/sdlc/requirement-analysis",
+      "description": "当用户提到'需求不清晰'、'用户故事'、'验收标准'、'需求评审'或需要澄清产品需求时触发。将模糊需求转化为结构化用户故事。",
+      "metadata": {
+        "tags": "analysis,product,agile",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "systematic-debugging",
+      "path": "skills/sdlc/systematic-debugging",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"
+    },
+    {
       "name": "technical-design-document-generator",
-      "path": "skills/architecture/technical-design-document-generator",
-      "description": "基于已审批的 PRD 生成 comprehensive 技术设计文档（SDD），遵循八章节结构，覆盖系统架构、API 设计、数据模型、安全策略与详细设计。",
+      "path": "skills/sdlc/technical-design-document-generator",
+      "description": "当用户基于已审批 PRD 要求生成技术设计文档、SDD、架构设计或详细设计时触发。遵循八章节结构输出 comprehensive 设计文档。",
       "metadata": {
         "tags": "architecture,design-document,sdd,api-design,system-design",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
     {
-      "name": "skill-based-architecture",
-      "path": "skills/Reverse-Engineering/skill-based-architecture",
-      "description": "将项目规则、工作流和经验教训提炼为结构化的 skills/<name>/ 目录，建立可路由、自维护、lesson-capturing 的项目级 AI 技能操作系统。适用于项目 AI 文档膨胀、多 AI 工具共享规则、需要减少 token 浪费或沉淀经验教训的场景。",
-      "metadata": {
-        "tags": "architecture,skill-management,documentation,meta-skill,ai-agent,workflow",
-        "platforms": "kimi,claude,cursor,codex,gemini,windsurf"
-      }
+      "name": "test-driven-development",
+      "path": "skills/sdlc/test-driven-development",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code"
+    },
+    {
+      "name": "writing-plans",
+      "path": "skills/sdlc/writing-plans",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code"
     }
   ]
 }

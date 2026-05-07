@@ -1,11 +1,6 @@
 ---
 name: skill-based-architecture
-description: >
-  将项目规则、工作流和经验教训提炼为结构化的 skills/<name>/ 目录，
-  建立可路由、自维护、lesson-capturing 的项目级 AI 技能操作系统。
-  当用户要求"整理项目规则"、"重构项目规则为 skill-based architecture"、
-  "清理分散的文档"、"将规则整合到 skills/ 目录"或"迁移规则到 skills/"时激活。
-  适用于项目 AI 文档膨胀、多 AI 工具共享规则、需要减少 token 浪费或沉淀经验教训的场景。
+description: 当用户要求"整理项目规则"、"重构为 skill-based architecture"、"清理分散文档"或"迁移规则到 skills/"时触发。将项目规则和工作流提炼为结构化的 skills/ 目录。
 ---
 
 # Skill-Based Architecture
@@ -185,3 +180,11 @@ skills/<name>/
 ---
 
 **核心原则：最好的架构是满足需求的最简单架构。**
+
+## Gotchas
+- 不要将通用知识硬编码到 Skill 中；Skill 的价值在于补充团队特有的业务逻辑和系统接入方式
+- Frontmatter 严格白名单：仅允许 name + description，禁止 metadata、license 等扩展字段（会导致 Kimi Code 加载失败）
+- SKILL.md 必须 <= 100 行，超出部分应移入 references/ 按需加载
+- 薄壳文件（AGENTS.md、.cursor/rules 等）必须 <= 15 行，仅保留路由表
+- 禁止在 Skill 的 scripts/ 或 SKILL.md 中硬编码 API Key、Token 或其他敏感凭证
+- 不要过度拆分 Skill：保持单一职责，复杂工作流由调用方编排多个 Skill 组合完成

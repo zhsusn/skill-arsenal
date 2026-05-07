@@ -23,14 +23,9 @@ FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
 
 # 合法的分类目录
 VALID_CATEGORIES = {
-    "core-deliverables",
-    "development",
+    "sdlc",
     "data-engineering",
-    "architecture",
     "Reverse-Engineering",
-    "writing",
-    "analysis",
-    "tools",
 }
 
 # kebab-case 校验（同时禁止连续连字符）
@@ -129,6 +124,13 @@ class Validator:
         body = content[match.end():] if match else content
         self._check_file_references(rel_path / "SKILL.md", body)
 
+        # 3.4 Gotchas 检查
+        if not self._has_gotchas(body):
+            self.warn(
+                str(rel_path / "SKILL.md"),
+                "missing Gotchas / 注意事项 / 踩坑点 / Red Flags section (recommended by spec)",
+            )
+
         # 4. 分类目录校验
         category = skill_path.parent.name
         if category not in VALID_CATEGORIES:
@@ -188,6 +190,11 @@ class Validator:
             elif len(desc) > 1024:
                 self.error(str(path), f"description exceeds 1024 characters ({len(desc)})")
                 ok = False
+            elif len(desc) > 300:
+                self.warn(
+                    str(path),
+                    f"description exceeds 300 characters ({len(desc)}); consider rewriting as trigger-scene style (recommended ≤ 200 chars)",
+                )
 
         # license (optional)
         if "license" in fields:
@@ -211,6 +218,20 @@ class Validator:
                 )
 
         return ok
+
+    def _has_gotchas(self, body: str) -> bool:
+        """检查正文是否包含 Gotchas 相关章节。"""
+        patterns = [
+            r"^#{1,3}\s*Gotchas",
+            r"^#{1,3}\s*注意事项",
+            r"^#{1,3}\s*踩坑点",
+            r"^#{1,3}\s*Red\s*Flags",
+            r"^#{1,3}\s*红线",
+        ]
+        for p in patterns:
+            if re.search(p, body, re.MULTILINE | re.IGNORECASE):
+                return True
+        return False
 
     def _validate_meta_json(self, rel_path: Path, meta_file: Path):
         """校验 meta.json 格式。"""
