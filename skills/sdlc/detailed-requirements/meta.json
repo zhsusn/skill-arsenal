@@ -1,0 +1,7 @@
+{
+  "name": "detailed-requirements",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "tags": ["sdlc", "requirements", "specification", "module", "openspec", "stage-2"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

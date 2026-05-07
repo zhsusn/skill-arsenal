@@ -48,6 +48,15 @@
       }
     },
     {
+      "name": "detailed-requirements",
+      "path": "skills/sdlc/detailed-requirements",
+      "description": "当用户提到'详细需求'、'按模块拆解'、'批量 feature 规格'或需要基于已冻结概要需求输出标准化模块级详细需求时触发。将 03-functional-structure.md 按模块拆分为 spec/prototype/io-table/logic 四文件并执行一致性校验。",
+      "metadata": {
+        "tags": "sdlc,requirements,specification,module,openspec,stage-2",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
       "name": "competitive-analysis",
       "path": "skills/sdlc/competitive-analysis",
       "description": "当用户要求'竞品分析'、'对比开源项目'、'技术选型调研'或'竞争对手研究'时触发。支持 mode=positioning（市场定位，服务需求阶段）与 mode=technical（技术深度对比，服务设计阶段）两种模式。",
@@ -90,15 +99,6 @@
       "description": "当用户提到'提交代码'、'commit'、'生成提交信息'或需要规范 Git 历史时触发。自动生成 Conventional Commits 规范提交信息。",
       "metadata": {
         "tags": "development,git,workflow",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "prd-feature-detail",
-      "path": "skills/sdlc/prd-feature-detail",
-      "description": "当用户基于已冻结的 PRD-000 要求生成模块详细需求、功能规格或接口契约时触发。输出单模块 PRD-00X 详细需求说明书。",
-      "metadata": {
-        "tags": "core-deliverables,requirement-analysis,prd,feature-spec",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },

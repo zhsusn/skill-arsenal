@@ -19,7 +19,7 @@
 
 **不适用场景**：
 - 已进入编码阶段后补写 PRD（应走变更流程）
-- 仅需生成单个功能的详细规格（应使用 `prd-feature-detail`）
+- 仅需生成单个功能的详细规格（应使用 `detailed-requirements` 单模块深度模式，见其 `references/SINGLE_MODULE_GUIDE.md`）
 - 纯技术预研，无明确业务目标
 
 ---
@@ -256,7 +256,7 @@ openspec/changes/{变更名}/specs/
 prd-generation (产出 5 文件)
     ├──→ competitive-analysis mode=technical（读取 01-product-overview.md 进行技术深度对比）
     ├──→ high-level-design (读取 04/05 进行概要设计)
-    ├──→ detailed-requirements (读取 03 按模块拆分 PRD-001~PRD-00N)
+    ├──→ detailed-requirements (读取 03 按模块生成 feature-XX-{模块}/)
     └──→ self-check (读取全部 5 文件执行最终校验)
 
 > 注：`competitive-analysis mode=positioning` 已在 brainstorming 之后执行，其产出 `market-positioning.md` 作为本 Skill Layer 1 和 Layer 4 的竞品输入。
@@ -268,8 +268,8 @@ prd-generation (产出 5 文件)
 
 | 编号 | 模块名称 | 对应目录 |
 |------|----------|----------|
-| PRD-001 | 剧本工坊 | `feature-01-script-workshop/` |
-| PRD-002 | 角色工厂 | `feature-02-character-factory/` |
+| feature-01 | 剧本工坊 | `feature-01-script-workshop/` |
+| feature-02 | 角色工厂 | `feature-02-character-factory/` |
 
 则后续 `detailed-requirements` Skill 会：
 1. 为每个模块独立生成详细需求文档

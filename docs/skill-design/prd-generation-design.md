@@ -39,7 +39,7 @@
 | ✅ 需求基线生成 | 概要需求（PRD-000） | 输出五文件，覆盖背景、需求、功能结构、业务规则、NFR |
 | ✅ 模块拆分规划 | `feature-XX-{模块}/` 目录映射 | 为 detailed-requirements 提供拆分输入 |
 | ✅ 竞品资料收集 | 网络搜索 + 本地文档 | 主动调用 `web_search`，读取 `@路径` 本地文件 |
-| ❌ 详细功能规格 | 单模块 PRD-001~PRD-00N | 应由 `prd-feature-detail` Skill 负责 |
+| ❌ 详细功能规格 | 模块级详细需求（`feature-XX-{模块}/` 目录） | 应由 `detailed-requirements` Skill 负责（单模块深度模式见其 `references/SINGLE_MODULE_GUIDE.md`） |
 | ❌ 技术设计文档 | SDD / 架构设计 | 应由 `technical-design-document-generator` 负责 |
 | ❌ 代码生成 | 直接输出代码 | 不在本 Skill 范围内 |
 
@@ -265,8 +265,8 @@ openspec/
         │   ├── 03-functional-structure.md  ← prd-generation 输出
         │   ├── 04-business-rules.md        ← prd-generation 输出
         │   ├── 05-non-functional.md        ← prd-generation 输出
-        │   ├── PRD-001-{模块A}.md          ← detailed-requirements 输出
-        │   ├── PRD-002-{模块B}.md          ← detailed-requirements 输出
+        │   ├── feature-01-{模块A}/           ← detailed-requirements 输出
+        │   ├── feature-02-{模块B}/           ← detailed-requirements 输出
         │   └── ...
         └── progress.md                 ← progress-tracker 维护
 ```
@@ -312,7 +312,7 @@ artifact_specs:
     ↓
     ├──→ [competitive-analysis<br/>mode=technical] 读取 01 第 3 章（竞品分析）
     ├──→ [high-level-design]    读取 04/05（业务规则 + NFR）
-    ├──→ [detailed-requirements] 读取 03 模块清单 → 拆分 PRD-001~PRD-00N
+    ├──→ [detailed-requirements] 读取 03 模块清单 → 按模块生成 feature-XX-{模块}/
     └──→ [self-check]          读取全部 5 文件执行最终校验
               ↓
     [progress-tracker] 贯穿全程，更新 progress.md

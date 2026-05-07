@@ -156,10 +156,19 @@ npx @fission-ai/openspec@latest init
 
 #### 阶段 2.5：生成详细需求
 
+**默认模式**（批量标准化，推荐）：
+
 ```bash
 # 调用 detailed-requirements
 /skill:detailed-requirements 基于概要需求，按模块独立输出详细需求。
 从 P0 模块开始，逐个模块输出。
+```
+
+**单模块深度模式**（模块数 ≤3 或需穷尽式人工协作时）：
+
+```bash
+/skill:detailed-requirements 基于概要需求，对 feature-01-{模块名} 使用单模块深度模式。
+参考：@skills/detailed-requirements/references/SINGLE_MODULE_GUIDE.md
 ```
 
 #### 阶段 3 前置：技术竞品分析
@@ -356,6 +365,8 @@ EOF
 ```
 
 输出：每个模块一个独立目录 `feature-XX-{模块名}/`，包含 `spec.md`、`prototype.md`、`io-table.md`、`logic.md`。
+
+> 若项目规模较小（模块数 ≤3）或某个核心模块需要逐分支人工确认，可切换到**单模块深度模式**，输出单文档 PRD-00X（11 章节），详见 `detailed-requirements/references/SINGLE_MODULE_GUIDE.md`。
 
 #### 步骤 3 前置：技术竞品分析
 
