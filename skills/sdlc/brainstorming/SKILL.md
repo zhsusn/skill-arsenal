@@ -97,6 +97,22 @@ digraph brainstorming {
 
 完整格式规范见 `references/OUTPUT_SPEC.md`。
 
+### Step 5.5: 可选市场定位分析（Recommended）
+
+当用户对市场格局不确定、或需要结构化竞品输入来支撑 PRD 时，在执行 self-check 前触发 `competitive-analysis` 的 `positioning` 模式：
+
+```text
+/skill:competitive-analysis mode=positioning
+分析目标：{基于 requirement-draft.md 中的模块初分}
+问题类型：market_entry | positioning
+参考文档：@openspec/changes/{变更名}/brainstorming/requirement-draft.md
+```
+
+- 输出 `market-positioning.md` 到 `openspec/changes/{变更名}/brainstorming/`
+- 重点消费：竞争集合、JTBD 对比、Blue Ocean 差异化空间、战略建议
+- 若用户明确说"不做竞品分析"或"市场已经很清楚"，可跳过此步骤
+- 此步骤的产出将直接作为 `prd-generation` Layer 1 和 Layer 4 的竞品输入，替代 AI 自行搜索的碎片化信息
+
 ### Step 6: 自检查验 (Self-Check)
 执行以下检查，未通过则返回修正：
 
@@ -117,6 +133,7 @@ digraph brainstorming {
 **衔接 prd-generation 时传递**：
 - `requirement-draft.md` 路径
 - `research-report.md` 路径
+- `market-positioning.md` 路径（若已执行 Step 5.5）
 - 澄清度评分
 - 未解决风险点列表
 

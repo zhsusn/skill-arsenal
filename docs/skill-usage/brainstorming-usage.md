@@ -1,8 +1,8 @@
 # Brainstorming Skill 使用手册
 
-> **Skill 版本**：2.0.0
+> **Skill 版本**：2.2.0
 > **适用阶段**：OpenSpec 阶段 1（需求探索与澄清）
-> **更新日期**：2026-05-05
+> **更新日期**：2026-05-07
 
 ---
 
@@ -150,12 +150,28 @@ Kimi 生成 `requirement-draft.md` 后，请你审查：
 
 **如需修改**：直接提出，Kimi 会修正并重新执行 Self-Check。
 
+### Step 5.5: 可选市场定位分析（Recommended）
+
+当市场格局不确定、或需要结构化竞品输入来支撑 PRD 时，触发 `competitive-analysis` 的 `positioning` 模式：
+
+```text
+【阶段 1.5 市场定位 | Skill：competitive-analysis mode=positioning】
+
+分析目标：{基于 requirement-draft.md 中的模块初分}
+问题类型：market_entry | positioning
+参考文档：@openspec/changes/{变更名}/brainstorming/requirement-draft.md
+```
+
+- 输出 `market-positioning.md` 到 `openspec/changes/{变更名}/brainstorming/`
+- 若用户明确说"不做竞品分析"或"市场已经很清楚"，可跳过此步骤
+- 此步骤产出将直接作为 `prd-generation` 的竞品输入，替代 AI 自行搜索的碎片化信息
+
 ### Step 6: 确认进入下游
 
 审查通过后，明确告知 Kimi：
 > "确认无误，进入 prd-generation"
 
-Kimi 将自动衔接下游 Skill，并携带完整的 Handover Package。
+Kimi 将自动衔接下游 Skill，并携带完整的 Handover Package（含 `market-positioning.md`，如已执行 Step 5.5）。
 
 ---
 
@@ -204,6 +220,19 @@ Brainstorming 完成后，以下文件自动保存到 `openspec/changes/{变更�
 **何时查阅**：
 - `prd-generation` 生成 PRD 时，作为需求基线
 - 后续变更时，对比原始意图是否偏离
+
+### 5.4 market-positioning.md（可选，由 Step 5.5 产出）
+
+**用途**：结构化市场定位报告，为 `prd-generation` 的 Layer 1 和 Layer 4 提供竞品输入。
+
+**内容**：
+- 竞争集合（Primary / Secondary / Non-obvious）
+- JTBD 对比矩阵、Blue Ocean ERRC 分析
+- 战略建议（O→I→R→C→W）、假设登记册
+
+**何时查阅**：
+- `prd-generation` Layer 1 收集竞品背景时，直接引用而非重新搜索
+- `prd-generation` Layer 4 一致性校验时，作为竞品对标基准
 
 ---
 
@@ -325,11 +354,12 @@ Brainstorming 完成后，按以下方式衔接 `prd-generation`：
 参考文档：
 - @openspec/changes/{变更名}/brainstorming/requirement-draft.md
 - @openspec/changes/{变更名}/brainstorming/research-report.md
+- @openspec/changes/{变更名}/brainstorming/market-positioning.md（如有）
 
 请按配置文件中 artifact_specs.high-level-requirements.required_sections 输出。
 ```
 
-> Skill 自动识别：读取 requirement-draft.md 中的模块初分，按 required_sections 逐项生成。
+> Skill 自动识别：读取 requirement-draft.md 中的模块初分，按 required_sections 逐项生成。若存在 `market-positioning.md`，Layer 1 和 Layer 4 将直接引用其中的竞品结论，避免重复搜索。
 
 ---
 

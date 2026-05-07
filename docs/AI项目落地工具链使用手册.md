@@ -53,9 +53,11 @@ Superpowers MCP Server： Superpowers 提供 MCP Server，暴露 brainstorming�
 在工具集成模式下，整个工作流程如下：
 初始化 —— 通过 progress-tracker 初始化项目目录和配置文件
 变更提案 —— 使用 /opsx:propose 创建变更提案
-需求探索 —— 调用 Superpowers 的 brainstorming 进行需求探索
+需求探索 —— 调用 brainstorming 进行需求探索
+市场定位 —— 调用 competitive-analysis mode=positioning 执行市场定位与差异化分析
 概要需求 —— 调用 prd-generation 生成概要需求文档
 详细需求 —— 调用 detailed-requirements 生成模块化详细需求
+技术竞品分析 —— 调用 competitive-analysis mode=technical 执行技术深度对比
 概要设计 —— 调用 high-level-design 生成系统架构设计
 详细设计 —— 调用 detailed-design 生成模块级详细设计
 接口驱动 —— 调用 interface-first-dev 定义前后端接口契约
@@ -78,66 +80,86 @@ bash
 复制
 /opsx:propose "描述你的变更需求"
 产出：openspec/changes/{变更名}/proposal.md
-阶段 2：需求探索
+阶段 1：需求探索
 bash
 复制
 # 调用 Superpowers 的 brainstorming
 /skill:brainstorming 请读取变更提案：@openspec/changes/{变更名}/proposal.md
 在此基础上进行需求探索。资料来源：自动搜索网络 + 读取本地项目文档
-阶段 3：生成概要需求
+阶段 1.5：市场定位分析（可选但推荐）
+bash
+复制
+# 调用 competitive-analysis 的 positioning 模式
+/skill:competitive-analysis mode=positioning 请基于需求探索结果，执行市场定位竞品分析。
+
+分析目标：{基于需求草案中的模块初分}
+问题类型：market_entry | positioning
+参考文档：@openspec/changes/{变更名}/brainstorming/requirement-draft.md
+
+产出：openspec/changes/{变更名}/brainstorming/market-positioning.md
+阶段 2：生成概要需求
 bash
 复制
 # 调用 prd-generation
 /skill:prd-generation 基于 brainstorming 结果，生成概要需求。
 参考文档：@openspec/changes/{变更名}/proposal.md
 产出：specs/ 目录下的 5 个 Markdown 文件：01-product-overview.md、02-requirements-list.md、03-functional-structure.md、04-business-rules.md、05-non-functional.md
-阶段 4：生成详细需求
+阶段 2.5：生成详细需求
 bash
 复制
 # 调用 detailed-requirements
 /skill:detailed-requirements 基于概要需求，按模块独立输出详细需求。
 从 P0 模块开始，逐个模块输出。
-阶段 5：概要设计
+阶段 3 前置：技术竞品分析
 bash
 复制
-# 先执行竞品分析
-/skill:competitive-analysis 请自动搜索相关竞品，进行对比分析。
+# 调用 competitive-analysis 的 technical 模式
+/skill:competitive-analysis mode=technical 请自动搜索相关竞品，执行技术深度对比分析。
 
-# 再执行概要设计
+分析维度：角色数据模型设计、核心功能流程、技术选型、集成方式
+参考文档：@openspec/changes/{变更名}/specs/
+
+产出：openspec/changes/{变更名}/design/competitive-analysis.md
+openspec/changes/{变更名}/design/design-input.md
+阶段 3：概要设计
+bash
+复制
+# 调用 high-level-design 生成概要设计
 /skill:high-level-design 生成概要设计。
 参考文档：@openspec/changes/{变更名}/specs/
 @openspec/changes/{变更名}/design/competitive-analysis.md
-阶段 6：详细设计
+@openspec/changes/{变更名}/design/design-input.md
+阶段 4：详细设计
 bash
 复制
 /skill:detailed-design 按模块输出详细设计。
 参考文档：@openspec/changes/{变更名}/design/
 @openspec/changes/{变更名}/specs/feature-*/
-阶段 7：接口驱动开发
+阶段 5：接口驱动开发
 bash
 复制
 /skill:interface-first-dev 基于详细设计定义前后端接口契约。
 生成：OpenAPI/Swagger + Mock数据 + 并行开发计划
-阶段 8：任务拆解
+阶段 6：任务拆解
 bash
 复制
 /skill:task-breakdown 基于详细设计和接口契约，生成开发任务清单。
 原则：每个任务 ≤ 30 分钟
-阶段 9：编码实现
+阶段 7：编码实现
 bash
 复制
 /skill:executing-plans 按 tasks.md 逐个执行任务。
 约束：符合项目编码规范 + 包含异常处理 + 完成后自测
-阶段 10：单元测试
+阶段 8：单元测试
 bash
 复制
 /skill:unit-test 为已完成的模块生成单元测试。
 要求：覆盖率 ≥ 70%，独立运行
-阶段 11：集成测试
+阶段 9：集成测试
 bash
 复制
 /skill:integration-test 生成集成测试，覆盖端到端主链路场景。
-阶段 12：归档收尾
+阶段 10：归档收尾
 bash
 复制
 # 代码审查
@@ -160,17 +182,19 @@ bash
 步骤	命令	说明	产出物
 0	progress-tracker	初始化目录结构	config.yaml
 1	/opsx:propose	创建变更提案	proposal.md
-2	brainstorming	需求探索	探索记录
-3	prd-generation	生成概要需求	01-05.md
-4	detailed-requirements	生成详细需求	feature-*/
-5	high-level-design	概要设计	design/*.md
-6	detailed-design	详细设计	feature-*/design.md
-7	interface-first-dev	接口驱动	openapi.yaml
-8	task-breakdown	任务拆解	tasks.md
-9	executing-plans	编码实现	代码文件
-10	unit-test	单元测试	tests/unit/
-11	integration-test	集成测试	tests/integration/
-12	archive	归档收尾	archive/
+1	brainstorming	需求探索	探索记录
+1.5	competitive-analysis	市场定位分析（可选）	market-positioning.md
+2	prd-generation	生成概要需求	01-05.md
+2.5	detailed-requirements	生成详细需求	feature-*/
+3 前置	competitive-analysis	技术竞品分析	competitive-analysis.md + design-input.md
+3	high-level-design	概要设计	design/*.md
+4	detailed-design	详细设计	feature-*/design.md
+5	interface-first-dev	接口驱动	openapi.yaml
+6	task-breakdown	任务拆解	tasks.md
+7	executing-plans	编码实现	代码文件
+8	unit-test	单元测试	tests/unit/
+9	integration-test	集成测试	tests/integration/
+10	archive	归档收尾	archive/
 3.3 各阶段详细命令列表
 步骤 0：初始化变更目录
 bash
@@ -199,7 +223,7 @@ bash
 复制
 /opsx:propose "{变更描述}"
 说明：创建 openspec/changes/{变更名}/proposal.md，包含变更背景、目标、范围、关联模块等信息。
-步骤 2：需求探索
+步骤 1：需求探索
 bash
 复制
 /skill:brainstorming 帮我脑暴一下，打算做个{产品描述}，
@@ -207,7 +231,19 @@ bash
 
 /skill:progress-tracker 请更新进度
 说明：进行苏格拉底式提问，理清核心需求。输出为需求探索记录。
-步骤 3：生成概要需求
+步骤 1.5：市场定位分析（可选但推荐）
+bash
+复制
+/skill:competitive-analysis mode=positioning 请基于需求探索结果，执行市场定位竞品分析。
+
+分析目标：{基于需求草案中的模块初分}
+问题类型：market_entry | positioning
+参考文档：@openspec/changes/{变更名}/brainstorming/requirement-draft.md
+
+/skill:progress-tracker 请更新进度
+说明：从 JTBD、Blue Ocean、颠覆向量等维度分析竞争格局与差异化空间。
+输出：openspec/changes/{变更名}/brainstorming/market-positioning.md
+步骤 2：生成概要需求
 bash
 复制
 /skill:prd-generation 基于 brainstorming 结果生成概要需求。
@@ -217,7 +253,7 @@ bash
 
 /skill:self-check 概要需求
 输出：specs/ 目录下的 5 个 Markdown 文件。
-步骤 4：生成详细需求
+步骤 2.5：生成详细需求
 bash
 复制
 /skill:detailed-requirements 基于概要需求，按模块输出详细需求。
@@ -226,19 +262,30 @@ bash
 
 /skill:progress-tracker 请更新进度
 输出：每个模块一个独立目录 feature-XX-{模块名}/，包含 spec.md、prototype.md、io-table.md、logic.md。
-步骤 5：概要设计
+步骤 3 前置：技术竞品分析
 bash
 复制
-/skill:competitive-analysis 请自动搜索相关竞品，进行对比分析。
-分析维度：角色数据模型设计、核心功能流程、技术选型
+/skill:competitive-analysis mode=technical 请自动搜索相关竞品，执行技术深度对比分析。
 
+分析维度：角色数据模型设计、核心功能流程、技术选型、集成方式
+参考文档：@openspec/changes/{变更名}/specs/
+@openspec/changes/{变更名}/brainstorming/market-positioning.md（如有）
+
+/skill:progress-tracker 请更新进度
+说明：按四维模型执行结构化技术对比，输出 competitive-analysis.md 和 design-input.md。
+输出：openspec/changes/{变更名}/design/competitive-analysis.md
+openspec/changes/{变更名}/design/design-input.md
+步骤 3：概要设计
+bash
+复制
 /skill:high-level-design 生成概要设计。
 参考：@openspec/changes/{变更名}/specs/
 @openspec/changes/{变更名}/design/competitive-analysis.md
+@openspec/changes/{变更名}/design/design-input.md
 
 /skill:self-check 概要设计
-输出：design/ 目录下的 8 个 Markdown 文件。
-步骤 6：详细设计
+输出：design/ 目录下的 16 个 Markdown 文件（按 required_sections 配置）。
+步骤 4：详细设计
 bash
 复制
 /skill:detailed-design 按模块输出详细设计。
@@ -247,7 +294,7 @@ bash
 
 /skill:self-check 详细设计
 输出：每个模块目录下增加 design.md、api-spec.md、db-schema.md、state-machine.md、test-plan.md。
-步骤 7：接口驱动开发
+步骤 5：接口驱动开发
 bash
 复制
 /skill:interface-first-dev 基于详细设计定义前后端接口契约。
@@ -256,14 +303,14 @@ bash
 
 /skill:self-check 接口契约
 输出：interface-contracts/ 目录下的 openapi.yaml、mock-data.json、mock-server-config.md、parallel-dev-plan.md。
-步骤 8：任务拆解
+步骤 6：任务拆解
 bash
 复制
 /skill:task-breakdown 基于详细设计和接口契约，生成开发任务清单。
 参考：@openspec/changes/{变更名}/specs/feature-*/design.md
 @openspec/changes/{变更名}/interface-contracts/openapi.yaml
 输出：openspec/changes/{变更名}/tasks.md，按 Phase 组织，每个任务 ≤ 30 分钟。
-步骤 9：编码实现
+步骤 7：编码实现
 bash
 复制
 # 对每个任务执行：
@@ -276,7 +323,7 @@ bash
 # 每个任务完成后：
 /skill:self-check 编码任务
 说明：逐个执行 tasks.md 中的任务，每个任务完成后必须自测通过。
-步骤 10：单元测试
+步骤 8：单元测试
 bash
 复制
 /skill:unit-test 为已完成的模块生成单元测试。
@@ -288,7 +335,7 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 /skill:self-check 单元测试
 要求：覆盖率 ≥ 70%，测试独立运行。
-步骤 11：集成测试
+步骤 9：集成测试
 bash
 复制
 /skill:integration-test 生成集成测试。

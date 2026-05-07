@@ -33,21 +33,26 @@
 
 ```mermaid
 flowchart LR
-    A[prd-generation<br>阶段1<br>产出 specs/01-05.md] --> D[high-level-design<br>阶段3]
-    B[competitive-analysis<br>阶段3-步骤1<br>产出 competitive-analysis.md] --> D
-    C[detailed-requirements<br>阶段2<br>产出 feature-*/spec.md] --> D
-    D --> E[detailed-design<br>阶段4]
+    A[prd-generation<br>产出 specs/01-05.md] --> D[high-level-design]
+    B[competitive-analysis<br>产出 competitive-analysis.md] --> D
+    D --> E[detailed-design]
+    C[detailed-requirements<br>产出 feature-*/spec.md] -.->|可选校验| D
 ```
 
-**必须就绪的文档**：
+**必须就绪的文档**（阻塞性输入）：
 
 | 文档 | 路径 | 用途 |
 |------|------|------|
-| 五文件概要需求 | `openspec/changes/{变更名}/specs/01-05.md` | 产品范围、模块清单、需求边界 |
-| 详细需求 | `openspec/changes/{变更名}/specs/feature-*/spec.md` | 各模块功能细节 |
-| 竞品分析 | `openspec/changes/{变更名}/design/competitive-analysis.md` | 技术选型论证支撑 |
+| 五文件概要需求 | `openspec/changes/{变更名}/specs/01-05.md` | **核心输入**：产品范围、模块清单、需求边界、非功能指标 |
+| 竞品分析 | `openspec/changes/{变更名}/design/competitive-analysis.md` | **技术选型论证支撑** |
 
-> ⚠️ 如果以上文档缺失，Skill 会拒绝生成并要求先补全上游。
+**建议参考的文档**（非阻塞，用于校验）：
+
+| 文档 | 路径 | 用途 |
+|------|------|------|
+| 详细需求 | `openspec/changes/{变更名}/specs/feature-*/spec.md` | 模块功能细节，可用于校验概要设计是否遗漏 P0 功能点及状态机兼容性 |
+
+> ⚠️ 如果**概要需求**或**竞品分析**缺失，Skill 会拒绝生成并要求先补全上游。若仅缺失详细需求，Skill 仍可基于概要需求生成架构，但会在覆盖度校验环节发出 WARNING，提示可能存在遗漏。
 
 ### 2.2 配置检查
 
@@ -87,8 +92,10 @@ high-level-design:
 
 生成 {项目名} 概要设计。
 
-参考文档：
+主要输入：
 @openspec/changes/{变更名}/specs/
+
+建议参考（如已产出）：
 @openspec/changes/{变更名}/specs/feature-*/
 @openspec/changes/{变更名}/design/competitive-analysis.md
 
@@ -250,7 +257,7 @@ INCLUDES_DECISION_RECORDS=true
 | 类型 | 路径 |
 |------|------|
 | 输入（概要需求） | `openspec/changes/{变更名}/specs/01-05.md` |
-| 输入（详细需求） | `openspec/changes/{变更名}/specs/feature-*/spec.md` |
+| 参考（详细需求） | `openspec/changes/{变更名}/specs/feature-*/spec.md` |
 | 输入（竞品分析） | `openspec/changes/{变更名}/design/competitive-analysis.md` |
 | 输出（概要设计） | `openspec/changes/{变更名}/design/01-16.md` |
 | 配置 | `openspec/config.yaml` |

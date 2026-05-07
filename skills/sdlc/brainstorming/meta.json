@@ -1,6 +1,6 @@
 {
   "name": "brainstorming",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "pattern": "inversion",
   "tags": ["sdlc", "requirement-analysis", "brainstorming", "openspec", "stage-1"],
   "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]

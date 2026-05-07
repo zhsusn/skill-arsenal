@@ -1,0 +1,7 @@
+{
+  "name": "competitive-analysis",
+  "version": "2.0.0",
+  "pattern": "reviewer",
+  "tags": ["sdlc", "design", "competitive-intelligence", "openspec", "stage-1.5", "stage-3"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

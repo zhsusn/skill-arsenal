@@ -1,7 +1,7 @@
 # Progress Tracker 使用手册
 
 > **版本**：1.0.0  
-> **适用范围**：Kimi Code + OpenSpec + Superpowers 10 阶段工作流  
+> **适用范围**：Kimi Code + OpenSpec + Superpowers 工作流（从阶段 2 概要需求开始追踪，共 10 个产出物阶段）  
 > **关联 Skill**：`task-breakdown`、`executing-plans`、`self-check`、`finish`
 
 ---
@@ -70,15 +70,17 @@ Skill 将自动执行：
 
 ## 3. 详细使用场景
 
-### 3.1 场景 A：阶段完成更新（以阶段 1 为例）
+### 3.1 场景 A：阶段完成更新（以序号 1 / SDLC 阶段 2 为例）
 
 **用户指令**：
 
 ```text
-【阶段 1 完成 | Skill：progress-tracker】
+【序号 1 完成 | Skill：progress-tracker】
 
-概要需求阶段已完成，产出物已保存到 specs/ 目录，请更新进度。
+概要需求阶段（SDLC 阶段 2）已完成，产出物已保存到 specs/ 目录，请更新进度。
 ```
+
+> **编号说明**：progress-tracker 内部使用"序号"（1-10）对应 SDLC 阶段 2-10。发送指令时使用序号， Skill 会自动映射到对应阶段。
 
 **Skill 执行逻辑**：
 1. 读取 `config.yaml` 中 `phases[0].gate_to_next`
@@ -198,6 +200,8 @@ phases:
 
 ## 5. 10 阶段定义与权重参考
 
+> **注意**：progress-tracker 的序号 1-10 对应 SDLC 阶段 2-10（从概要需求开始追踪）。阶段 1（需求探索）和阶段 1.5（市场定位）由 `brainstorming` 和 `competitive-analysis` 完成，不纳入进度追踪体系。
+
 | 序号 | 阶段 ID | 阶段名称 | 权重 | 进度粒度 |
 |------|---------|----------|------|----------|
 | 1 | high-level-requirements | 概要需求 | 10% | 粗粒度 |
@@ -264,7 +268,7 @@ Skill 会自动将修正内容写入 `config.yaml`。
 |------|------|----------|
 | 阶段更新被阻断 | 门控未通过（产物缺失 / 未评审） | 按阻断原因清单补齐产物或完成评审签字 |
 | 任务已完成但进度未增加 | `verified_by` 为 `pending` | 执行 `self-check` 或通过指令补充 `verified_by` |
-| 进度回滚到阶段 1 | 触发 `hl_requirement_change` Red Flag | 概要需求变更需走正式评审会，评审通过后重新标记阶段 1 完成 |
+| 进度回滚到阶段 2 | 触发 `hl_requirement_change` Red Flag | 概要需求变更需走正式评审会，评审通过后重新标记阶段 2 完成 |
 | 多变更并行时进度混淆 | `change_id` 未正确区分 | 确保每次初始化使用唯一变更名，`progress.md` 中 `meta.change_id` 与目录名一致 |
 | 人工修改了 progress.md 导致解析失败 | 违反了"唯一写入口"约束 | 恢复备份或重新初始化，后续仅通过 Skill 指令更新 |
 | 初始化时技术栈推断错误 | 项目使用了非标准目录结构或构建工具 | 直接向 Skill 回复修正信息，无需重新初始化 |
@@ -316,4 +320,4 @@ sequenceDiagram
 | `skip_phase` | 禁止跳过当前阶段直接进入下一阶段 | blocker | 前一阶段未完成时更新后一阶段 |
 | `code_without_spec` | 禁止在没有规格的情况下直接写代码 | blocker | `specs/` 为空但开发阶段进行中 |
 | `unverified_completion` | 禁止未自测的代码进入测试阶段 | blocker | 存在未通过自测的任务但测试阶段已启动 |
-| `hl_requirement_change` | 概要需求变更走正式变更流程 | warning | 阶段 1 完成后产物文件被修改 |
+| `hl_requirement_change` | 概要需求变更走正式变更流程 | warning | 阶段 2 完成后产物文件被修改 |

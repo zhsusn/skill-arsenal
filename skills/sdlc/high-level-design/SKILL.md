@@ -5,11 +5,11 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 
 # High-Level Design（概要设计）
 
-基于已冻结的产品需求文档（PRD-000）和详细需求，正向生成系统概要设计文档。严格限定为架构层（影响 ≥2 个模块），禁止输出接口字段、类图、DDL、算法参数等详细设计内容。
+基于已冻结的产品需求文档（PRD-000，即 `specs/01-05.md`），正向生成系统概要设计文档。严格限定为架构层（影响 ≥2 个模块），禁止输出接口字段、类图、DDL、算法参数等详细设计内容。
 
 ## 适用场景
 
-- 基于已冻结的 PRD-000 和详细需求进入阶段 3 概要设计
+- 基于已冻结的 PRD-000 进入阶段 3 概要设计
 - 需要确定系统分层/服务划分、技术栈选型、数据架构
 - 需要定义模块间接口契约、全局状态机、核心链路时序
 - 非功能需求（安全/性能/部署/测试）的架构层策略定义
@@ -22,13 +22,15 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 4. **图表自治**：自动生成 Mermaid 架构图、ER 图、时序图、部署拓扑图
 5. **需求追溯**：每个架构决策必须能追溯到上游需求文档
 
-## 前置依赖（必须就绪）
+## 前置依赖
 
-| 上游 Skill | 产出物 | 用途 |
-|---|---|---|
-| `prd-generation` | `specs/01-05.md` | 产品范围、模块清单、需求边界 |
-| `detailed-requirements` | `specs/feature-*/spec.md` | 模块功能细节，用于覆盖度校验 |
-| `competitive-analysis` | `design/competitive-analysis.md` | 技术选型论证支撑 |
+| 上游 Skill | 产出物 | 用途 | 是否必需 |
+|---|---|---|---|
+| `prd-generation` | `specs/01-05.md` | 产品范围、模块清单、需求边界、非功能指标 | **必须** |
+| `competitive-analysis` | `design/competitive-analysis.md` | 技术选型论证支撑 | **必须** |
+| `detailed-requirements` | `specs/feature-*/spec.md` | 模块功能细节，用于覆盖度校验与状态机兼容性核对 | 建议参考 |
+
+> 概要设计的**核心输入**是 `prd-generation` 产出的概要需求。`detailed-requirements` 仅作为可选的校验基准，**不阻塞**概要设计启动。
 
 ## 执行步骤
 
@@ -42,7 +44,7 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 - 解析 `02-requirements-list.md` 锁定 P0/P1/P2 范围
 - 解析 `05-non-functional.md` 提取性能/安全/可靠性指标
 - 解析 `competitive-analysis.md` 提取技术选型结论
-- 解析 `feature-*/spec.md` 汇总功能点（用于覆盖度校验）
+- 若已存在 `feature-*/spec.md`，解析并汇总功能点（用于可选的覆盖度校验）
 
 ### Step 3: 逐项生成（按 required_sections）
 
@@ -102,9 +104,10 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 若检测到，标记"内容下钻"警告，建议移至详细设计。
 
 ### Step 5: 覆盖度校验
-- 架构是否覆盖 `03-functional-structure.md` 中所有 P0 模块
+- 架构是否覆盖 `03-functional-structure.md` 中所有 P0 模块（核心校验）
 - 每个技术选型是否在 `competitive-analysis.md` 中有溯源
 - 每个全局状态是否能在需求清单中找到业务规则追溯
+- 若提供了 `feature-*/spec.md`，校验全局状态机是否与模块状态描述兼容
 
 ### Step 6: 输出与保存
 按命名规范保存到 `openspec/changes/{变更名}/design/`：
@@ -162,7 +165,7 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 - **边界红线不可越**：概要设计只定义影响 ≥2 模块的决策。任何字段级、代码级、单模块内部细节必须拦截。
 - **技术选型必须溯源**：每个技术选型必须关联 `competitive-analysis.md` 结论，无溯源则视为 WARNING。
 - **模块遗漏 = BLOCKER**：未覆盖 `03-functional-structure.md` 中 P0 模块的架构设计不得通过自查。
-- **状态机兼容**：全局状态机必须与 `feature-*/spec.md` 中各模块状态描述兼容，发现冲突时标记 BLOCKER。
+- **状态机兼容**：若提供了详细需求（`feature-*/spec.md`），全局状态机应与其各模块状态描述兼容，发现冲突时标记 BLOCKER。
 - **禁止自动下钻**：生成时若 AI 自发输出详细设计内容，必须自我拦截并提升抽象层级，不得直接保存。
 - **设计锁定原则**：用户确认评审通过后，概要设计冻结。变更需重新走架构评审会，禁止偷偷修改已冻结文档。
 - **ADR 流于形式**：若输出决策记录，必须包含"备选方案及排除原因"，否则视为不完整。

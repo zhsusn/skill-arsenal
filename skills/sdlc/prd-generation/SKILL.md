@@ -48,7 +48,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 
 1. 按 `references/questioning-guide.md`「第一层提问集」逐题访谈。一次只问一个问题。
 2. 在访谈中融入 JTBD 格式："When [场景], I want to [动机], so I can [结果]"。
-3. 若用户未提供竞品信息，主动调用 `web_search` 搜索行业竞品供用户确认。
+3. 优先读取 `brainstorming/` 下的 `market-positioning.md`（若存在），提取竞争集合与差异化结论。若不存在，主动调用 `web_search` 搜索行业竞品供用户确认。
 4. 输出「问题框架摘要」：业务痛点、目标用户画像、核心价值主张、竞品基准。
 5. 调用 `references/completeness-scoring.md` 进行 Layer 1 评分。
 6. 若评分 < 90 分：列出缺失项，阻塞并追问，直到 ≥ 90 分。
@@ -60,7 +60,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 2. 识别系统功能模块，输出 Component Inventory（组件清单），直接映射到后续 `feature-XX-{模块}/` 目录。
 3. 明确 In-Scope / Out-of-Scope（**Out-of-Scope 必须明确列出**）。
 4. 定义核心实体（名称 + 主键 + 关系）。
-5. 初步确定技术方案，并与竞品主流方案进行简单对比。
+5. 初步确定技术方案。若存在 `market-positioning.md`，引用其中的 Blue Ocean 差异化结论和战略建议，避免在需求阶段过度预设技术细节。
 6. 若用户提供产品 URL，调用 `web_search` / `web_open_url` 进行页面功能审计，补充到模块识别。
 7. 调用 `references/completeness-scoring.md` 进行 Layer 2 评分。
 8. 若评分 < 90 分：阻塞并追问。
@@ -81,7 +81,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 1. 激活 `references/consistency-checklist.md`：
    - 执行「内部一致性校验」（Scope 自洽性、实体-模块一致性、NFR-技术一致性、角色-权限一致性、**术语行为一致性**）
    - 执行「竞品对标与技术方案校验」（功能完整性、技术先进性、合规完整性）
-2. 若用户未提供竞品技术细节，主动调用 `web_search` 搜索竞品最新功能和技术方案。
+2. 读取 `brainstorming/market-positioning.md`（若存在），校验其中的战略建议与假设登记册是否已纳入当前 PRD。若存在矛盾，标记为 🔴 严重问题。若用户未提供竞品技术细节且 `market-positioning.md` 不存在，主动调用 `web_search` 搜索竞品最新功能和技术方案。
 3. 问题分级：
    - 🔴 严重：列出问题清单，使用 checklist 中的「用户确认模板」展示，**等待用户明确答复**
    - 🟡 建议：列为「待决策项」
@@ -141,6 +141,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 | 方向 | Skill/文档 | 说明 |
 |------|-----------|------|
 | 上游 | `brainstorming` | 提供初步需求探索结果 |
+| 上游 | `competitive-analysis`（`positioning` 模式） | 提供结构化市场定位报告 `market-positioning.md`（可选但推荐） |
 | 上游 | `requirement-analysis` | 提供结构化需求输入 |
 | 下游 | `competitive-analysis` | 读取 01-product-overview.md 进行深度竞品分析 |
 | 下游 | `high-level-design` | 读取 04/05 进行概要设计 |

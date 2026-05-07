@@ -1,9 +1,9 @@
 # PRD-000 概要需求生成器 — 使用手册
 
-> **Skill 版本**：2.0.0
-> **适用阶段**：OpenSpec 阶段 1（概要需求生成）
-> **关联 Skill**：`brainstorming`、`requirement-analysis`、`competitive-analysis`、`high-level-design`、`detailed-requirements`、`progress-tracker`、`self-check`
-> **更新日期**：2026-05-06
+> **Skill 版本**：2.1.0
+> **适用阶段**：OpenSpec 阶段 2（概要需求生成）
+> **关联 Skill**：`brainstorming`、`competitive-analysis`（positioning 模式）、`requirement-analysis`、`high-level-design`、`detailed-requirements`、`progress-tracker`、`self-check`
+> **更新日期**：2026-05-07
 
 ---
 
@@ -37,6 +37,7 @@
 ### 2.2 可选准备
 
 - **本地资料**：已有业务文档、竞品分析、数据报表的路径（如 `@docs/legacy/xxx.md`）
+- **market-positioning.md**（推荐）：若已执行 `competitive-analysis mode=positioning`，提供路径 `@openspec/changes/{变更名}/brainstorming/market-positioning.md`，Layer 1 和 Layer 4 将直接引用而非重新搜索
 - **产品 URL**：若需对现有产品进行功能审计，提供可访问的 URL
 - **技术约束**：团队既定的技术栈、合规要求、部署环境等信息
 
@@ -114,6 +115,7 @@ Kimi：[触发 prd-generation skill]
 **你会经历什么**：
 - AI 会一次只问一个问题，共 9 个核心问题
 - 问题围绕：业务痛点、目标用户、价值主张、北极星指标、竞品
+- **若存在 `market-positioning.md`**：AI 直接引用其中的竞争集合、JTBD 对比和差异化结论，不再重复搜索
 - 会主动用 **JTBD 格式**帮你提炼需求："When [场景], I want to [动机], so I can [结果]"
 
 **评分标准**：
@@ -169,6 +171,7 @@ Kimi：[触发 prd-generation skill]
 **校验内容**：
 1. **内部一致性**：Scope 是否自洽？实体与模块是否匹配？NFR 与技术选型是否兼容？
 2. **竞品对标**：功能是否遗漏？技术方案是否过时？合规基线是否完整？
+   - **若存在 `market-positioning.md`**：校验其中的战略建议与假设登记册是否已纳入当前 PRD，若存在矛盾标记为 🔴 严重问题
 
 **问题分级**：
 - 🔴 **严重（阻塞）**：必须解决或经你明确确认接受风险，否则不生成 PRD
@@ -215,6 +218,7 @@ openspec/changes/{变更名}/specs/
 |-------------------|-----------|
 | 开始生成概要需求 | "我要做一个 [产品名]，帮我写概要需求" |
 | 指定参考文档 | "参考文档：@openspec/changes/{变更名}/proposal.md" |
+| 指定市场定位报告 | "参考文档：@openspec/changes/{变更名}/brainstorming/market-positioning.md" |
 | 查看产出物 | "打开 openspec/changes/{变更名}/specs/01-product-overview.md" |
 | 继续被阻塞的层 | 直接回答 AI 的追问即可 |
 | 确认基线冻结 | "确认" |
@@ -250,10 +254,12 @@ openspec/changes/{变更名}/specs/
 
 ```
 prd-generation (产出 5 文件)
-    ├──→ competitive-analysis (读取 01-product-overview.md 第 3 章)
+    ├──→ competitive-analysis mode=technical（读取 01-product-overview.md 进行技术深度对比）
     ├──→ high-level-design (读取 04/05 进行概要设计)
     ├──→ detailed-requirements (读取 03 按模块拆分 PRD-001~PRD-00N)
     └──→ self-check (读取全部 5 文件执行最终校验)
+
+> 注：`competitive-analysis mode=positioning` 已在 brainstorming 之后执行，其产出 `market-positioning.md` 作为本 Skill Layer 1 和 Layer 4 的竞品输入。
 ```
 
 ### 7.2 模块拆分示例
@@ -276,6 +282,7 @@ prd-generation (产出 5 文件)
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
+| 2.1.0 | 2026-05-07 | 增加对 `market-positioning.md` 的引用支持。Layer 1 和 Layer 4 优先读取 brainstorming 阶段产出的市场定位报告，避免重复搜索。 |
 | 2.0.0 | 2026-05-06 | 重构为 prd-generation。融合 abeejuice/johnnychauvet/cdeust 开源项目优势。输出改为 OpenSpec 五文件规范，增加 JTBD 框架、Component Inventory、原子声明分解验证。 |
 | 1.1.0 | 2026-04-26 | 增加第四层"一致性校验与竞品对标"机制。 |
 | 1.0.0 | 2026-04-20 | 初始版本（prd-system-outline）。 |
