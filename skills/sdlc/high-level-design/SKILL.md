@@ -21,6 +21,8 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 3. **严格边界**：只输出影响 ≥2 个模块的架构决策，禁止下钻到详细设计
 4. **图表自治**：自动生成 Mermaid 架构图、ER 图、时序图、部署拓扑图
 5. **需求追溯**：每个架构决策必须能追溯到上游需求文档
+6. **运维架构与回滚方案（V2.1 新增）**：输出运维监控架构、告警策略、可观测性方案，并生成 `rollback-plan.md`
+7. **Gate 2 人工冻结提示（V2.1 新增）**：全部章节输出完成后，自动宣读 🚪 Gate 2 阻塞提示，等待人工签字后方可进入详细设计阶段
 
 ## 前置依赖
 
@@ -29,8 +31,9 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 | `prd-generation` | `specs/01-05.md` | 产品范围、模块清单、需求边界、非功能指标 | **必须** |
 | `competitive-analysis` | `design/competitive-analysis.md` | 技术选型论证支撑 | **必须** |
 | `detailed-requirements` | `specs/feature-*/spec.md` | 模块功能细节，用于覆盖度校验与状态机兼容性核对 | 建议参考 |
+| `human` | `human-decisions.md` | Gate 2 签字状态，未通过禁止进入详细设计 | **必须** |
 
-> 概要设计的**核心输入**是 `prd-generation` 产出的概要需求。`detailed-requirements` 仅作为可选的校验基准，**不阻塞**概要设计启动。
+> 概要设计的**核心输入**是 `prd-generation` 产出的概要需求。`detailed-requirements` 仅作为可选的校验基准，**不阻塞**概要设计启动。Gate 2 人工签字是硬性前置条件。
 
 ## 执行步骤
 
@@ -93,6 +96,12 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 #### decision_records（可选，INCLUDES_DECISION_RECORDS=true）
 关键决策正向论证：Context / Factors / Decision / Consequences / Future Flexibility。至少覆盖架构模式选择、技术栈选择、数据存储选型。
 
+#### operations_architecture（V2.1 新增）
+运维监控架构、日志/链路追踪/指标三支柱方案、告警分级策略（P0/P1/P2）、SLO/SLA 定义、可观测性数据流。禁止写具体监控项阈值、Dashboard JSON、告警通知人配置。
+
+#### rollback_plan（V2.1 新增，AI 项目必选）
+回滚触发条件（如错误率 > 1%、核心功能不可用）、回滚步骤（代码回滚 → 配置回滚 → 数据回滚）、数据库回滚脚本清单、灰度/金丝雀策略、回滚验证检查点。禁止写具体脚本内容、连接串、密钥。
+
 #### governance_rules（可选，INCLUDES_GOVERNANCE=true）
 架构一致性维护规则、自动化检查建议、架构评审流程定义。
 
@@ -125,13 +134,42 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 11-exception-handling-global.md
 12-deployment-architecture.md
 13-test-strategy.md
-14-extensibility-design.md      # 可选
-15-decision-records.md          # 可选
-16-governance-rules.md          # 可选
+14-operations-architecture.md    # V2.1 新增
+15-rollback-plan.md             # V2.1 新增（同时生成 ops/rollback-plan.md 副本）
+16-extensibility-design.md      # 可选
+17-decision-records.md          # 可选
+18-governance-rules.md          # 可选
 ```
+
+> **rollback-plan.md 双写规则**：一份保存在变更目录 `design/15-rollback-plan.md`，另一份同步更新项目级 `ops/rollback-plan.md`（若存在）。确保回滚方案与变更绑定，同时项目级 ops 目录保持最新。
 
 ### Step 7: 触发 self-check
 自动调用 `self-check` skill 校验一致性、完整性、交叉引用有效性、边界合规性。
+
+### Step 8: 🚪 Gate 2 设计冻结（V2.1 新增）
+self-check 通过后，自动宣读阻塞提示：
+
+```text
+========================================
+🚪 Gate 2: 设计冻结 —— 等待人工评审
+========================================
+产出物已保存至：openspec/changes/{变更名}/design/
+
+请评审以下内容：
+1. 技术选型是否符合团队现有技术债与能力栈
+2. 数据流与部署架构是否满足 NFR 中的性能/安全指标
+3. 全局状态机是否与详细需求中的模块状态描述兼容
+4. rollback-plan.md 中的回滚步骤是否可操作（特别是数据库回滚）
+5. operations-architecture 中的告警策略是否覆盖核心链路
+
+确认后执行：/skill:human gate=Gate2 action=sign-off
+⚠️ 未获得人工确认前，禁止进入 detailed-design 或编码实现阶段。
+```
+
+等待人工签字后：
+1. 将设计文件头部状态更新为"已冻结"
+2. 调用 `progress-tracker`，标记阶段 3 为"已完成"
+3. 提示用户可并行启动 `monitoring-setup` 生成监控规则初稿
 
 ## 阶段切换门控
 
@@ -146,6 +184,8 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 - [ ] 将算法参数写入 `algorithm-selection` → 应移至 `detailed-design/algorithm.md`
 - [ ] 将单模块状态机写入 `state-machine-global` → 应移至 `detailed-design/state-machine.md`
 - [ ] 将类图/函数签名写入任何章节 → 应移至 `detailed-design/design.md`
+- [ ] 将运维监控阈值写入 `operations-architecture` → 应移至 `monitoring-setup/monitoring-rules.yaml`
+- [ ] 将数据库回滚脚本写入 `rollback-plan` → 应移至 ops 目录下的独立脚本文件，plan 中只写脚本清单和触发条件
 
 ## 下游消费
 
@@ -153,6 +193,8 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 |---|---|---|
 | `detailed-design` | `design/*.md` | 评审通过后按模块逐一下钻 |
 | `task-breakdown` | `design/*.md` + `specs/feature-*/design.md` | 基于架构分层拆解任务 |
+| `monitoring-setup` | `14-operations-architecture.md` | 基于运维架构生成监控规则初稿 |
+| `human` | `design/*.md` + `rollback-plan.md` | Gate 2 人工冻结确认与决策记录 |
 
 ## 深度参考
 
@@ -170,3 +212,6 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 - **设计锁定原则**：用户确认评审通过后，概要设计冻结。变更需重新走架构评审会，禁止偷偷修改已冻结文档。
 - **ADR 流于形式**：若输出决策记录，必须包含"备选方案及排除原因"，否则视为不完整。
 - **图表一致性**：Mermaid 图表必须从文本架构描述自动生成，禁止图表与文字描述矛盾。
+- **rollback-plan 必须可执行**：回滚步骤不能只写"回滚数据库"，必须明确到"执行 rollback-v1.2.sql → 验证核心表数据行数 → 切换流量"。不可操作的回滚方案 = BLOCKER。
+- **运维架构不是运维手册**：`operations-architecture` 只定义监控三支柱的架构方案（用什么采集、存储、展示），不写具体 Dashboard 配置或告警通知人。
+- **Gate 2 必须确认 rollback-plan**：很多技术债的根源是"能上线不能回滚"，人工必须逐条确认回滚步骤的可操作性。

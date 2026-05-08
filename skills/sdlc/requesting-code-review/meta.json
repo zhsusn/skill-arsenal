@@ -1,7 +1,7 @@
 {
-  "name": "self-check",
+  "name": "requesting-code-review",
   "version": "1.1.0",
   "pattern": "reviewer",
-  "tags": ["sdlc", "quality-gate", "verification", "openspec", "self-check"],
+  "tags": ["code-review", "quality-gate", "sdlc", "superpowers", "stage-10"],
   "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
 }

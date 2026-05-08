@@ -1,28 +1,33 @@
 # AI项目落地工具链设计文档
 
-> Kimi Code + OpenSpec + Superpowers 三工具集成方案
+> Kimi Code + OpenSpec + Superpowers + Human Gate 四工具集成方案
 >
-> 版本 V2.0 | 2026年5月
+> 版本 V2.1 | 2026年5月
+>
+> 本次更新基于 `lifesycle.md` 审查意见，将工具链从"开发完成"扩展为"项目交付"，补充 UAT、发布、监控与四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 作为人工决策的统一载体。
 
 ---
 
 ## 目录
 
 - [一、系统概述](#一系统概述)
-  - [1.1 三个工具的定位与关系](#11-三个工具的定位与关系)
+  - [1.1 四个工具的定位与关系](#11-四个工具的定位与关系)
   - [1.2 核心设计原则](#12-核心设计原则)
+  - [1.3 四道人工闸门（V2.1 新增）](#13-四道人工闸门v21-新增)
 - [二、各工具详解](#二各工具详解)
   - [2.1 Kimi Code —— AI编程引擎](#21-kimi-code--ai编程引擎)
   - [2.2 OpenSpec —— 规格驱动开发框架](#22-openspec--规格驱动开发框架)
   - [2.3 Superpowers —— AI编码技能框架](#23-superpowers--ai编码技能框架)
+  - [2.4 Human Gate —— 人工决策审计层（V2.1 新增）](#24-human-gate--人工决策审计层v21-新增)
 - [三、工具边界与职责划分](#三工具边界与职责划分)
   - [3.1 各工具的核心职责](#31-各工具的核心职责)
   - [3.2 不做什么（明确边界）](#32-不做什么明确边界)
-  - [3.3 Skill依赖关系](#33-skill依赖关系)
+  - [3.3 Skill 依赖关系](#33-skill-依赖关系)
 - [四、集成方案](#四集成方案)
-  - [4.1 三工具打通架构](#41-三工具打通架构)
-  - [4.2 MCP协议集成](#42-mcp协议集成)
+  - [4.1 四工具打通架构](#41-四工具打通架构)
+  - [4.2 MCP 协议集成](#42-mcp-协议集成)
   - [4.3 数据流与交互流程](#43-数据流与交互流程)
+  - [4.4 人工阻塞机制实现（V2.1 新增）](#44-人工阻塞机制实现v21-新增)
 - [五、目标与价值](#五目标与价值)
   - [5.1 核心目标](#51-核心目标)
   - [5.2 价值体现](#52-价值体现)
@@ -36,17 +41,24 @@
 
 ## 一、系统概述
 
-### 1.1 三个工具的定位与关系
+### 1.1 四个工具的定位与关系
 
-本方案以"接口驱动、自动保存、Skill自治、最小人工干预"为核心设计原则，将 Kimi Code、OpenSpec 和 Superpowers 三个独立工具有机整合，形成一套完整的 AI 项目落地工具链。三者的关系可以用一个简单的比喻来形容：
+本方案以"接口驱动、自动保存、Skill 自治、最小人工干预、可追溯决策"为核心设计原则，将 Kimi Code、OpenSpec、Superpowers 和 **Human Gate（V2.1 新增）** 四个独立工具有机整合，形成一套从需求探索到线上监控的完整 AI 项目落地工具链。
 
 | 工具 | 核心定位 | 职责比喻 |
 |------|----------|----------|
 | Kimi Code | AI 编程引擎 | 大脑 —— 提供智能决策和代码生成 |
 | OpenSpec | 规格驱动开发框架 | 规范系统 —— 管理变更生命周期 |
 | Superpowers | AI 编码技能框架 | 方法论 —— 提供结构化开发工作流 |
+| **Human Gate（新增）** | **人工决策审计层** | **红绿灯 —— 在关键节点强制人工确认并记录决策** |
 
-从职责分层来看，Kimi Code 作为"大脑"提供智能决策和代码生成能力；OpenSpec 作为"规范系统"管理项目变更的生命周期；Superpowers 作为"方法论"提供结构化的开发工作流。三者相互配合，形成了从需求探索到代码交付的完整闭环。
+从职责分层来看：
+- **Kimi Code** 作为"大脑"提供智能决策和代码生成能力；
+- **OpenSpec** 作为"规范系统"管理项目变更的生命周期；
+- **Superpowers** 作为"方法论"提供结构化的开发工作流；
+- **Human Gate** 作为"红绿灯"在关键决策点强制暂停、等待人工确认、记录审计日志，确保"AI 执行 → 人工确认 → AI 再执行"的闭环。
+
+四者相互配合，形成了从需求探索到线上监控的完整闭环，而非仅止于代码交付。
 
 ### 1.2 核心设计原则
 
@@ -56,7 +68,22 @@
 >
 > **● Skill 自治（Skill Autonomy）：** 每个 Skill 自己决定下一步执行什么，不需要人工逐步提示。
 >
-> **● 最小人工干预（Minimal Intervention）：** 人工只需在关键决策点（如需求确认、评审签字）进行干预，日常执行由 AI 自主完成。
+> **● 最小人工干预（Minimal Intervention）：** 人工只需在关键决策点进行干预，日常执行由 AI 自主完成。
+>
+> **● 可追溯决策（Traceable Decisions）（V2.1 新增）：** 每个人工决策都有记录、有签字、有日期，通过 `human-decisions.md` 形成审计日志，支持历史查询与责任追溯。
+
+### 1.3 四道人工闸门（V2.1 新增）
+
+将人工参与从"建议性"改为**阻塞性**——AI 执行到闸门处暂停，必须获得人工信号才能继续。
+
+| 闸门 | 名称 | 所在阶段 | 核心目的 | 不通过的风险 |
+|------|------|----------|----------|--------------|
+| 🚪 Gate 1 | 需求冻结闸 | 概要需求完成后 | 确认核心功能覆盖业务闭环，防止"一错全错" | AI 过度推断或遗漏隐性需求，后续所有工作偏离真实业务意图 |
+| 🚪 Gate 2.5 | 原型冻结闸 | 详细需求完成后 | 逐页确认按钮级交互状态机，防止前端实现偏差 | 按钮加载态/错误态/页面流转缺失，上线后用户体验不一致 |
+| 🚪 Gate 2 | 设计冻结闸 | 概要设计完成后 | 评审架构 + 确认回滚方案，防止技术选型失误 | 技术债累积、扩展性不足、上线后无回滚预案 |
+| 🚪 Gate 3 | 发布冻结闸 | UAT 完成后 | 在预览环境走通完整业务流程，防止"逻辑正确但业务错误" | 集成测试通过但业务规则错误（如优惠券叠加规则理解错误），上线即故障 |
+
+---
 
 ## 二、各工具详解
 
@@ -136,25 +163,75 @@ Superpowers 的核心工作流遵循四个必须的阶段：
 
 Superpowers 提供了丰富的技能集，本方案中主要使用的技能包括：
 
-| Skill名称 | 来源 | 核心职责 |
-|-----------|------|----------|
-| brainstorming | Superpowers | 需求探索，苏格拉底式提问 |
-| writing-plans | Superpowers | 编写详细实现计划 |
-| executing-plans | Superpowers | 按计划执行代码实现 |
-| tdd | Superpowers | TDD 红绿重构循环 |
-| systematic-debugging | Superpowers | 四阶段根因分析 |
-| requesting-code-review | Superpowers | 代码审查检查清单 |
-| prd-generation | 本方案 | 概要需求生成 |
-| competitive-analysis | 本方案 | 竞品分析 |
-| high-level-design | 本方案 | 概要设计 |
-| detailed-requirements | 本方案 | 详细需求 |
-| detailed-design | 本方案 | 详细设计 |
-| task-breakdown | 本方案 | 任务拆解 |
-| interface-first-dev | 本方案 | 接口驱动开发 |
-| unit-test | 本方案 | 单元测试 |
-| integration-test | 本方案 | 集成测试 |
-| self-check | 本方案 | 产出物自查 |
-| progress-tracker | 本方案 | 进度追踪 |
+| Skill名称 | 来源 | 当前状态 | 核心职责 |
+|-----------|------|----------|----------|
+| brainstorming | Superpowers | ✅ 可用 | 需求探索，苏格拉底式提问 |
+| writing-plans | Superpowers | ✅ 可用 | 编写详细实现计划 |
+| executing-plans | Superpowers | ✅ 可用 | 按计划执行代码实现 |
+| test-driven-development | Superpowers | ✅ 可用 | TDD 红绿重构循环 |
+| systematic-debugging | Superpowers | ✅ 可用 | 四阶段根因分析 |
+| requesting-code-review | Superpowers | 🔧 需修改 | 代码审查检查清单，需输出结构化报告 |
+| finishing-a-development-branch | Superpowers | ✅ 可用 | 变更完成时联动归档 |
+| prd-generation | 本方案 | 🔧 需修改 | 概要需求生成，需增加 Gate1 确认提示 |
+| competitive-analysis | 本方案 | ✅ 可用 | 竞品分析（positioning/technical 双模式） |
+| high-level-design | 本方案 | 🔧 需修改 | 概要设计，需增加 rollback-plan.md |
+| detailed-requirements | 本方案 | 🔧 需修改 | 详细需求，需增加 interaction-spec.md |
+| progress-tracker | 本方案 | 🔧 需修改 | 进度追踪，需增加 ops/ 目录与人工状态 |
+| self-check | 本方案 | 🔧 需修改 | 产出物自查，需增加交互/UAT 检查维度 |
+| **human** | **本方案** | **➕ 需新增** | **人工决策审计与闸门控制** |
+| **detailed-design** | **本方案** | **➕ 需新增** | **按模块输出详细设计** |
+| **interface-first-dev** | **本方案** | **➕ 需新增** | **接口驱动开发** |
+| **task-breakdown** | **本方案** | **➕ 需新增** | **任务拆解** |
+| **unit-test** | **本方案** | **➕ 需新增** | **单元测试生成与执行** |
+| **integration-test** | **本方案** | **➕ 需新增** | **集成测试生成与执行** |
+| **uat-verification** | **本方案** | **➕ 需新增** | **UAT 业务验证** |
+| **release-management** | **本方案** | **➕ 需新增** | **发布管理** |
+| **monitoring-setup** | **本方案** | **➕ 需新增** | **监控初始化（一次性）** |
+| **monitoring-analysis** | **本方案** | **➕ 需新增** | **监控分析（周期性）** |
+
+> 完整 Skill 清单与状态见 `docs/AI项目工具链Skill清单与状态.md`。
+
+### 2.4 Human Gate —— 人工决策审计层（V2.1 新增）
+
+#### 2.4.1 产品定位
+
+Human Gate 不是独立的第三方工具，而是本方案定义的 Skill（`human`），作为人工决策的"审计日志 + 状态闸门"。它像 Git 的 commit + status——记录快照 + 显示当前状态。
+
+#### 2.4.2 核心职责
+
+1. **决策记录**：对每次人工确认生成结构化记录，包含 Gate、时间、结论、遗留问题、决策人
+2. **状态控制**：根据最新决策判断当前变更是否允许进入下一阶段
+3. **历史追溯**：支持查询某个变更的全部决策链，或跨变更的决策统计
+4. **阻塞提示**：当用户试图跳过未通过的 Gate 时，主动拦截并提示
+
+#### 2.4.3 决策类型
+
+| 类型 | 含义 | 后续动作 |
+|------|------|----------|
+| sign-off | 签字通过 | 解锁下一阶段，记录遗留问题（如有） |
+| conditional | 有条件通过 | 解锁下一阶段，但遗留问题必须记入下一阶段 tasks.md |
+| reject | 驳回重做 | 锁定当前阶段，必须修复后才能再次 sign-off |
+| pause | 暂停流程 | 标记为阻塞状态，等待外部资源 |
+| resume | 恢复流程 | 解除暂停，回到 pause 前状态 |
+| hotfix | 紧急修复 | 在已归档变更上记录紧急补丁决策 |
+
+#### 2.4.4 使用方法
+
+```bash
+# Gate 1 通过
+/skill:human gate=Gate1 action=sign-off result=passed issues="P1: 批量导入边界条件待补充"
+
+# Gate 2.5 有条件通过
+/skill:human gate=Gate2.5 action=conditional result=passed issues="P1: loading态细化；P2: 移动端适配"
+
+# Gate 3 驳回
+/skill:human gate=Gate3 action=reject reason="Safari下无法保存"
+
+# 查询状态
+/skill:human action=status
+```
+
+---
 
 ## 三、工具边界与职责划分
 
@@ -165,6 +242,7 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 | Kimi Code | 提供 AI 编程能力 | 自然语言指令 → 代码/文档 |
 | OpenSpec | 管理变更生命周期 | 变更描述 → 规格/任务/归档 |
 | Superpowers | 提供结构化工作流 | 需求 → 计划/代码/测试 |
+| **Human Gate** | **记录人工决策、控制阶段流转** | **人工结论 → 审计日志/阶段解锁** |
 
 ### 3.2 不做什么（明确边界）
 
@@ -175,6 +253,8 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 > • 不强制某种开发方法论（如 TDD）
 >
 > • 不提供规格文档管理能力
+>
+> • **不替代人工做最终业务判断（V2.1 新增）**
 
 #### OpenSpec 不做：
 
@@ -183,6 +263,8 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 > • 不执行具体的开发工作
 >
 > • 不提供需求探索的苏格拉底式对话能力
+>
+> • **不替代人工进行 UAT 点击验证（V2.1 新增）**
 
 #### Superpowers 不做：
 
@@ -191,29 +273,57 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 > • 不提供统一的变更目录结构
 >
 > • 不替代具体的 AI 模型或工具
+>
+> • **不自动执行生产环境发布（V2.1 新增）**
 
-### 3.3 Skill依赖关系
+#### Human Gate 不做：
 
-本方案定义了 18 个 Skill，其中 5 个来自 Superpowers 原生，13 个由本方案定义。它们之间的依赖关系如下：
+> • **不替代人工做判断**
+>
+> • **不自动生成决策内容**
+>
+> • **不修改产出物**
+>
+> • 不执行代码审查或测试（只记录结论）
+
+### 3.3 Skill 依赖关系
+
+本方案定义了 23 个 Skill，其中 7 个来自 Superpowers 原生，16 个由本方案定义（含 10 个新增）。它们之间的依赖关系如下：
 
 | Skill | 前置依赖 | 被什么 Skill 依赖 |
 |-------|----------|-------------------|
 | brainstorming | 无 | prd-generation |
-| prd-generation | brainstorming | competitive-analysis, HLD, DR |
-| competitive-analysis | prd-generation | HLD |
+| prd-generation | brainstorming | competitive-analysis(technical), detailed-requirements |
+| competitive-analysis(positioning) | brainstorming | prd-generation |
+| competitive-analysis(technical) | prd-generation | high-level-design |
 | detailed-requirements | prd-generation | detailed-design |
-| high-level-design | prd + CA + DR | detailed-design |
-| detailed-design | HLD + DR | task-breakdown, IFD |
+| **human (Gate1)** | prd-generation | detailed-requirements |
+| **human (Gate2.5)** | detailed-requirements | high-level-design |
+| high-level-design | prd + CA + DR | detailed-design, **monitoring-setup** |
+| **monitoring-setup** | high-level-design | **monitoring-analysis** |
+| **human (Gate2)** | high-level-design | detailed-design |
+| detailed-design | HLD + DR | interface-first-dev |
 | interface-first-dev | detailed-design | task-breakdown |
 | task-breakdown | DD + IFD | executing-plans |
 | executing-plans | task-breakdown | unit-test, integration-test |
-| finish | integration-test | 无 |
+| unit-test | executing-plans | integration-test |
+| integration-test | unit-test | **uat-verification** |
+| **uat-verification** | integration-test | **human (Gate3)** |
+| **human (Gate3)** | uat-verification | **release-management** |
+| requesting-code-review | executing-plans | **release-management** |
+| **release-management** | uat + CR + rollback | finishing-a-development-branch |
+| finishing-a-development-branch | release-management | 无 |
+| **monitoring-analysis** | release-management | brainstorming（下一迭代） |
+| self-check | 贯穿全程 | 各阶段门控 |
+| progress-tracker | 贯穿全程 | 各阶段状态更新 |
+
+---
 
 ## 四、集成方案
 
-### 4.1 三工具打通架构
+### 4.1 四工具打通架构
 
-三个工具的集成架构遵循"分层解耦、接口驱动"的原则，形成一个完整的工具链：
+四个工具的集成架构遵循"分层解耦、接口驱动"的原则，形成一个完整的工具链：
 
 | 层级 | 工具 | 职责 |
 |------|------|------|
@@ -221,11 +331,12 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 | 控制层 | MCP Protocol | 负责工具之间的通信协调 |
 | 规范层 | OpenSpec | 管理变更生命周期和规格文档 |
 | 方法层 | Superpowers | 提供结构化开发工作流 |
+| **审计层（新增）** | **Human Gate** | **记录人工决策、控制阶段流转权限** |
 | 执行层 | Kimi Code | 生成代码、执行任务 |
 
-### 4.2 MCP协议集成
+### 4.2 MCP 协议集成
 
-MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，已成为 AI 工具集成的行业标准。到 2026 年，MCP 支持五种原语（tools、resources、prompts、sampling、roots）和两种传输方式（STDIO 和 Streamable HTTP）。本方案中，MCP 是实现三工具打通的关键技术基础。
+MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，已成为 AI 工具集成的行业标准。到 2026 年，MCP 支持五种原语（tools、resources、prompts、sampling、roots）和两种传输方式（STDIO 和 Streamable HTTP）。本方案中，MCP 是实现四工具打通的关键技术基础。
 
 #### 4.2.1 集成方式
 
@@ -235,21 +346,82 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 3. **Superpowers 提供 MCP Server——** Superpowers 提供开发工作流相关的 tools（如 brainstorming、writing-plans、executing-plans、tdd 等）。
 
+4. **Human Gate 作为对话层阻塞（V2.1 新增）——** Human Gate 不依赖 MCP 协议，而是通过修改各 Skill 的 `SKILL.md`，在关键步骤后插入"人工确认节点"，利用 Kimi Code 的对话上下文自然阻塞。
+
 ### 4.3 数据流与交互流程
 
-三工具集成后的典型数据流如下：
+四工具集成后的典型数据流如下（V2.1 已补充 UAT、发布、监控与人工闸门）：
 
-1. **启动阶段——** 用户通过 Kimi Code 发起项目，Kimi Code 通过 MCP 调用 OpenSpec 初始化目录结构和配置文件。
+1. **启动阶段——** 用户通过 Kimi Code 发起项目，Kimi Code 通过 MCP 调用 OpenSpec 初始化目录结构和配置文件；`progress-tracker` 扫描项目并生成 `ops/` 目录骨架。
 
-2. **需求阶段——** Kimi Code 调用 Superpowers 的 brainstorming 进行需求探索，然后通过 OpenSpec 创建变更提案和规格文档。
+2. **需求阶段——** Kimi Code 调用 Superpowers 的 `brainstorming` 进行需求探索，然后通过 OpenSpec 创建变更提案和规格文档；`prd-generation` 产出 5 个 spec 文件后，通过 `human` Skill 触发 **Gate 1** 人工冻结。
 
-3. **设计阶段——** Kimi Code 调用 Superpowers 的 writing-plans 生成实现计划，同时通过 OpenSpec 管理设计文档和任务清单。
+3. **详细需求阶段——** `detailed-requirements` 按模块输出详细需求（含 `interaction-spec.md`），通过 `human` Skill 触发 **Gate 2.5** 原型冻结。
 
-4. **开发阶段——** Kimi Code 调用 Superpowers 的 executing-plans 和 tdd 执行代码开发，并通过 OpenSpec 的 apply 命令跟踪任务执行进度。
+4. **设计阶段——** Kimi Code 调用 Superpowers 的 `writing-plans` 生成实现计划，同时通过 OpenSpec 管理设计文档和任务清单；`high-level-design` 产出架构文档和 `rollback-plan.md`，通过 `human` Skill 触发 **Gate 2** 设计冻结；`monitoring-setup` 生成监控规则初稿。
 
-5. **验证阶段——** Kimi Code 调用 OpenSpec 的 verify 命令验证实现是否符合规格，并调用 Superpowers 的 systematic-debugging 处理发现的问题。
+5. **开发阶段——** Kimi Code 调用 Superpowers 的 `executing-plans` 和 `tdd` 执行代码开发，并通过 OpenSpec 的 `apply` 命令跟踪任务执行进度。
 
-6. **归档阶段——** 开发完成后，Kimi Code 调用 OpenSpec 的 archive 命令归档变更，并调用 Superpowers 的 requesting-code-review 进行代码审查。
+6. **测试阶段——** `unit-test` 和 `integration-test` 生成并执行测试；`integration-test` 额外输出 `user-stories-checklist.md` 供 UAT 使用。
+
+7. **UAT 阶段（V2.1 新增）——** `uat-verification` 生成检查清单，人工在预览环境点击走通业务流程，通过 `human` Skill 触发 **Gate 3** 发布冻结。
+
+8. **发布阶段（V2.1 新增）——** `requesting-code-review` 输出结构化审查报告；`release-management` 生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
+
+9. **归档阶段——** 开发完成后，Kimi Code 调用 OpenSpec 的 `archive` 命令归档变更（范围扩大至纳入 uat-report、release-notes、human-decisions）。
+
+10. **监控阶段（V2.1 新增）——** `monitoring-analysis` 周期性运行，输出 `feedback-loop.md` 反哺下一变更的 `brainstorming`，形成闭环。
+
+### 4.4 人工阻塞机制实现（V2.1 新增）
+
+#### 4.4.1 实现方式：Skill 内嵌确认节点
+
+修改每个需要人工把关的 Skill（如 `prd-generation`、`high-level-design`、`detailed-requirements`），在其 `SKILL.md` 的"执行流程"中增加一个伪步骤：
+
+```markdown
+## 执行流程
+
+1. 读取上游文档
+2. 生成产出物并保存到指定路径
+3. **人工确认节点** ← 新增
+   - 输出提示语："概要需求已生成，请阅读 @openspec/changes/{变更名}/specs/ 下的 5 个文件"
+   - 输出检查清单："请确认：①核心功能覆盖业务闭环 ②边界条件已定义 ③非功能性需求已量化"
+   - 等待用户回复"确认"或"修改：{具体意见}"
+4. 只有在收到"确认"后，才允许进入下一阶段
+```
+
+效果：AI 执行完步骤 2 后，会主动停下来输出一段提示，等你回复。你回复"确认"后，AI 继续；你说"修改"，AI 回到步骤 2 重修。
+
+优点：零开发成本，只改 `SKILL.md` 文本。
+
+#### 4.4.2 状态查询
+
+通过 `human` Skill 随时查询当前变更的决策状态：
+
+```bash
+/skill:human action=status
+```
+
+输出示例：
+```text
+========================================
+变更：reelforge-v1.2-角色工厂重构
+========================================
+已通过：Gate1(需求冻结) → Gate2.5(原型冻结) → Gate2(设计冻结)
+当前阶段：detailed-design（进行中）
+下一 Gate：Gate3（发布冻结）
+状态：🟢 正常推进
+
+⚠️ 注意：Gate2.5 为"有条件通过"，存在遗留问题：
+  - P1: 创建角色按钮loading态细化（应在 detailed-design 阶段修复）
+  - P2: 移动端适配（记入下一迭代 tasks.md）
+
+可操作指令：
+- /skill:detailed-design
+- /skill:human action=history
+```
+
+---
 
 ## 五、目标与价值
 
@@ -262,26 +434,34 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 > **● 降低人工成本：** 通过 Kimi Code 的智能代码生成能力和 Skill 自治机制，将开发人员从重复性工作中解放出来，专注于更有价值的创造性工作。
 >
 > **● 加速交付节奏：** 通过接口驱动开发模式，实现前后端并行开发，缩短项目周期。
+>
+> **● 确保交付安全（V2.1 新增）：** 通过四道人工闸门和 UAT 验证，防止"开发完成但无法上线"的风险；通过 `rollback-plan.md` 和发布管理，确保上线后可回滚、可监控。
+>
+> **● 实现迭代闭环（V2.1 新增）：** 通过 `monitoring-analysis` 将线上反馈数据反哺到下一版需求的 `brainstorming`，形成从需求到监控的完整闭环。
 
 ### 5.2 价值体现
 
 这套工具链的价值体现在以下几个方面：
 
-1. **对个人开发者——** 以极低的成本（39元/月）获得接近顶级 AI 编程能力，同时享受结构化的开发流程保驾护航。
+1. **对个人开发者——** 以极低的成本（39元/月）获得接近顶级 AI 编程能力，同时享受结构化的开发流程和"AI 执行 + 人工确认"的双重保险。
 
-2. **对团队——** 统一的工作流和规范格式降低团队成员之间的沟通成本，新成员可以通过归档的规格快速了解项目历史和设计决策。
+2. **对团队——** 统一的工作流和规范格式降低团队成员之间的沟通成本；四道人工闸门和签字文件确保关键决策有据可查；新成员可以通过归档的规格快速了解项目历史和设计决策。
 
-3. **对企业——** 完整的审计追溯能力满足合规要求，规范驱动的流程减少因需求变更导致的资源浪费。
+3. **对企业——** 完整的审计追溯能力满足合规要求（`human-decisions.md` 记录每个关键决策）；规范驱动的流程减少因需求变更导致的资源浪费；线上监控与反馈闭环支持数据驱动的持续迭代。
+
+---
 
 ## 六、后期发展方向
 
 ### 6.1 短期规划（6-12个月）
 
-> • 完善 13 个自定义 Skill 的实现，特别是 competitive-analysis、high-level-design、detailed-design等无直接对应开源项目的核心 Skill
+> • 完善 10 个新增 Skill（`human`、`uat-verification`、`release-management`、`monitoring-setup`、`monitoring-analysis`、`detailed-design`、`interface-first-dev`、`task-breakdown`、`unit-test`、`integration-test`）的实现
 >
-> • 实现 OpenSpec 与 Superpowers 之间的自动联动，如在 OpenSpec 归档时自动触发 Superpowers 的代码审查
+> • 修改 6 个现有 Skill（`prd-generation`、`detailed-requirements`、`high-level-design`、`progress-tracker`、`self-check`、`requesting-code-review`），补充交互规格、回滚方案、人工状态等能力
 >
-> • 增强 self-check Skill 的能力，支持更多维度的产出物质量检查
+> • 实现 OpenSpec 归档时自动纳入 `uat-report`、`release-notes`、`human-decisions.md`
+>
+> • 增强 `self-check` Skill 的能力，支持交互规格完整性检查和 UAT 报告质量检查
 
 ### 6.2 中期规划（1-2年）
 
@@ -289,7 +469,9 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 >
 > • 构建团队协作功能，支持多人同时在同一项目中使用不同的 Skill
 >
-> • 集成项目管理工具（如 Linear、Jira等），实现需求到代码的全链路追溯
+> • 集成项目管理工具（如 Linear、Jira等），实现需求到代码到监控的全链路追溯
+>
+> • 建立 Skill 市场，允许社区贡献自定义 Skill
 
 ### 6.3 长期愿景（3-5年）
 
@@ -297,20 +479,22 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 >
 > • 建立开放的 Skill 市场，允许社区贡献和交易自定义 Skill
 >
-> • 实现"零人工干预"的全自动化开发，从需求到部署全程由 AI 自主完成
+> • 实现"零人工干预"的全自动化开发，从需求到部署全程由 AI 自主完成（保留人工闸门作为安全底线）
 
 ### 6.4 挑战与应对
 
 当前面临的主要挑战包括：
 
-> • 工具版本更新带来的兼容性问题，需要建立版本管理和回退机制
+> • **工具版本更新带来的兼容性问题：** 需要建立版本管理和回退机制，各 Skill 的 `meta.json` 应明确版本约束
 >
-> • 团队采用的学习曲线，需要提供完善的培训资料和模板项目
+> • **团队采用的学习曲线：** 需要提供完善的培训资料和模板项目；四道人工闸门初期可能感觉"繁琐"，但随着项目复杂度上升，其风险拦截价值会指数级增长
 >
-> • 安全与合规考量，特别是在企业环境中对代码生成和自动化流程的审计要求
+> • **安全与合规考量：** 特别是在企业环境中对代码生成和自动化流程的审计要求；`human-decisions.md` 和 `sign-off/` 目录提供了基础审计能力，未来可扩展为不可篡改的区块链存证（可选）
+>
+> • **人工闸门的执行力：** 如果用户不遵守阻塞规则，AI 无法真正阻止。需要通过 `progress-tracker` 的 Red Flag 规则和进度异常拦截来强化约束力
 
 ---
 
 **感谢阅读**
 
-AI项目落地工具链 | V2.0
+AI项目落地工具链 | V2.1
