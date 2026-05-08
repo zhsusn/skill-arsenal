@@ -1,0 +1,7 @@
+{
+  "name": "human",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": ["human-gate", "audit", "decision-record", "sdlc", "openspec", "governance"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

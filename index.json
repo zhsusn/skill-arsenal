@@ -1,6 +1,6 @@
 {
   "version": "0.2.0",
-  "lastUpdated": "2026-05-05",
+  "lastUpdated": "2026-05-08",
   "skills": [
     {
       "name": "sql-optimization",
@@ -50,7 +50,7 @@
     {
       "name": "detailed-requirements",
       "path": "skills/sdlc/detailed-requirements",
-      "description": "当用户提到'详细需求'、'按模块拆解'、'批量 feature 规格'或需要基于已冻结概要需求输出标准化模块级详细需求时触发。将 03-functional-structure.md 按模块拆分为 spec/prototype/io-table/logic 四文件并执行一致性校验。",
+      "description": "当用户提到'详细需求'、'按模块拆解'、'批量 feature 规格'或需要基于已冻结概要需求输出标准化模块级详细需求时触发。将 03-functional-structure.md 按模块拆分为 spec/prototype/io-table/logic/interaction-spec 五文件并执行一致性校验。",
       "metadata": {
         "tags": "sdlc,requirements,specification,module,openspec,stage-2",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -87,7 +87,7 @@
     {
       "name": "high-level-design",
       "path": "skills/sdlc/high-level-design",
-      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。正向生成系统概要设计文档，回答系统拆成几块、数据怎么走、用什么技术栈。",
+      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。正向生成系统概要设计文档（含运维架构与回滚方案），回答系统拆成几块、数据怎么走、用什么技术栈。",
       "metadata": {
         "tags": "sdlc,design,architecture,hld,openspec,stage-3",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -105,7 +105,7 @@
     {
       "name": "prd-generation",
       "path": "skills/sdlc/prd-generation",
-      "description": "当用户要求'写PRD'、'概要需求'、'系统规划'或从零开始规划新产品时触发。通过四层递进式对话生成OpenSpec五文件概要需求。",
+      "description": "当用户要求'写PRD'、'概要需求'、'系统规划'或从零开始规划新产品时触发。通过四层递进式对话生成OpenSpec五文件概要需求，输出后自动触发 Gate 1 人工冻结提示。",
       "metadata": {
         "tags": "core-deliverables,requirement-analysis,prd,openspec,system-design",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -123,7 +123,7 @@
     {
       "name": "progress-tracker",
       "path": "skills/sdlc/progress-tracker",
-      "description": "当用户询问'项目进度'、'阶段状态'、'变更进展'、'里程碑'或需要跟踪软件全生命周期进度时触发。维护单一可信进度源并驱动阶段流转。",
+      "description": "当用户询问'项目进度'、'阶段状态'、'变更进展'、'里程碑'或需要跟踪软件全生命周期进度时触发。维护单一可信进度源（SSOT），支持 12 阶段双轨制进度计算与人工闸门状态管理。",
       "metadata": {
         "tags": "tools,project-management,progress-tracking,governance,openspec",
         "platforms": "kimi,claude,cursor,codex,gemini,windsurf"
@@ -132,7 +132,7 @@
     {
       "name": "self-check",
       "path": "skills/sdlc/self-check",
-      "description": "当用户提到'自查'、'self-check'、'检查产出物'、'阶段完成'、'门控'或需要对当前阶段文档/代码进行质量校验时触发。执行内容一致性、完整性、交叉引用有效性和内部矛盾检查。",
+      "description": "当用户提到'自查'、'self-check'、'检查产出物'、'阶段完成'、'门控'或需要对当前阶段文档/代码/UAT报告进行质量校验时触发。执行内容一致性、完整性、交叉引用有效性、内部矛盾、交互规格覆盖度和UAT质量检查。",
       "metadata": {
         "tags": "sdlc,quality-gate,verification,openspec,self-check",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -141,7 +141,11 @@
     {
       "name": "requesting-code-review",
       "path": "skills/sdlc/requesting-code-review",
-      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements"
+      "description": "当用户提到'代码审查'、'code review'、'审查代码'、'检查实现质量'或在完成任务、实现主要功能、合并前验证工作是否符合需求时触发。分派代码审查子代理捕获级联前的问题，并输出结构化 code-review-report.md。",
+      "metadata": {
+        "tags": "code-review,quality-gate,sdlc,superpowers,stage-10",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     },
     {
       "name": "requirement-analysis",
@@ -175,6 +179,15 @@
       "name": "writing-plans",
       "path": "skills/sdlc/writing-plans",
       "description": "Use when you have a spec or requirements for a multi-step task, before touching code"
+    },
+    {
+      "name": "human",
+      "path": "skills/sdlc/human",
+      "description": "当用户执行'签字'、'确认'、'通过'、'驳回'、'冻结'、'评审结论'或需要记录人工决策、查询人工闸门状态时触发。作为四道人工闸门（Gate 1/2.5/2/3）的统一载体，支持语义化命名和自动推断，记录审计日志并控制阶段流转。",
+      "metadata": {
+        "tags": "human-gate,audit,decision-record,sdlc,openspec,governance",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     }
   ]
 }
