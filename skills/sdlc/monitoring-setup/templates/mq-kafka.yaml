@@ -1,0 +1,47 @@
+# Kafka 消息队列监控模板
+meta:
+  tech_stack: "mq_kafka"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-kafka"
+    static_configs:
+      - targets: ["{{host}}:{{port}}"]
+
+alerting_rules:
+  - alert: "{{service_name}}_KafkaConsumerLagHigh"
+    expr: 'kafka_consumer_group_lag{service="{{service_name}}"} > {{mq_consumer_lag_threshold}}'
+    for: "5m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "Kafka {{service_name}} 消费组积压超过 {{mq_consumer_lag_threshold}}"
+
+  - alert: "{{service_name}}_KafkaBrokerOffline"
+    expr: 'kafka_brokers{service="{{service_name}}"} < {{expected_brokers}}'
+    for: "1m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "Kafka {{service_name}} 可用 Broker 数低于预期 {{expected_brokers}}"
+
+  - alert: "{{service_name}}_KafkaUnderReplicatedPartitions"
+    expr: 'kafka_topic_partition_under_replicated_partition{service="{{service_name}}"} > 0'
+    for: "2m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "Kafka {{service_name}} 存在未充分复制的分区"
+
+business_metrics:
+  - name: "{{service_name}}_message_processing_duration"
+    type: histogram
+    labels: ["topic", "consumer_group"]
+    buckets: [10, 50, 100, 250, 500, 1000, 2000]
+
+  - name: "{{service_name}}_messages_produced_total"
+    type: counter
+    labels: ["topic", "partition"]

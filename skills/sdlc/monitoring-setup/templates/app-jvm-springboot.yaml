@@ -1,0 +1,67 @@
+# Java / Spring Boot 应用监控模板（基于 Micrometer + Prometheus）
+meta:
+  tech_stack: "jvm_springboot"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-actuator"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["{{host}}:{{port}}"]
+    relabel_configs: []
+
+alerting_rules:
+  - alert: "{{service_name}}_HighCpuUsage"
+    expr: 'system_cpu_usage{service="{{service_name}}"} > {{cpu_threshold}}'
+    for: "2m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "服务 {{service_name}} CPU 使用率超过 {{cpu_threshold}}%"
+
+  - alert: "{{service_name}}_HighMemoryUsage"
+    expr: 'jvm_memory_used_bytes{service="{{service_name}}",area="heap"} / jvm_memory_max_bytes{service="{{service_name}}",area="heap"} > {{memory_threshold}} / 100'
+    for: "2m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "服务 {{service_name}} 堆内存使用率超过 {{memory_threshold}}%"
+
+  - alert: "{{service_name}}_HighErrorRate"
+    expr: 'rate(http_server_requests_seconds_count{service="{{service_name}}",status=~"5.."}[5m]) > {{error_rate_threshold}} / 100'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "服务 {{service_name}} 错误率超过 {{error_rate_threshold}}%"
+
+  - alert: "{{service_name}}_HighP99Latency"
+    expr: 'histogram_quantile(0.99, rate(http_server_requests_seconds_bucket{service="{{service_name}}"}[5m])) > {{p99_latency_threshold}} / 1000'
+    for: "3m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "服务 {{service_name}} P99 延迟超过 {{p99_latency_threshold}}ms"
+
+  - alert: "{{service_name}}_GcPauseTooLong"
+    expr: 'rate(jvm_gc_pause_seconds_sum{service="{{service_name}}"}[5m]) / rate(jvm_gc_pause_seconds_count{service="{{service_name}}"}[5m]) > 0.5'
+    for: "5m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "服务 {{service_name}} GC 平均停顿时间超过 500ms"
+
+business_metrics:
+  - name: "{{service_name}}_core_api_latency"
+    type: histogram
+    labels: ["api_path", "method"]
+    buckets: [50, 100, 200, 500, 1000, 2000]
+
+  - name: "{{service_name}}_business_operation_total"
+    type: counter
+    labels: ["operation", "status"]

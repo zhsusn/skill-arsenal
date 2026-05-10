@@ -1,0 +1,60 @@
+# Kubernetes 基础设施监控模板
+meta:
+  tech_stack: "infra_k8s"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-kubelet"
+    static_configs:
+      - targets: ["{{host}}:10250"]
+  - job_name: "{{service_name}}-cadvisor"
+    static_configs:
+      - targets: ["{{host}}:4194"]
+
+alerting_rules:
+  - alert: "{{service_name}}_PodCrashLooping"
+    expr: 'rate(kube_pod_container_status_restarts_total{service="{{service_name}}"}[10m]) > 0'
+    for: "5m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "Pod {{service_name}} 频繁重启，可能处于 CrashLoopBackOff"
+
+  - alert: "{{service_name}}_PodNotReady"
+    expr: 'kube_pod_status_ready{service="{{service_name}}",condition="true"} == 0'
+    for: "5m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "Pod {{service_name}} 未就绪超过 5 分钟"
+
+  - alert: "{{service_name}}_NodeDiskPressure"
+    expr: 'kube_node_status_condition{condition="DiskPressure",status="true"} == 1'
+    for: "2m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "K8s 节点磁盘压力告警"
+
+  - alert: "{{service_name}}_NodeMemoryPressure"
+    expr: 'kube_node_status_condition{condition="MemoryPressure",status="true"} == 1'
+    for: "2m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "K8s 节点内存压力告警"
+
+  - alert: "{{service_name}}_HpaMaxedOut"
+    expr: 'kube_horizontalpodautoscaler_status_current_replicas{service="{{service_name}}"} >= kube_horizontalpodautoscaler_spec_max_replicas{service="{{service_name}}"}'
+    for: "10m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "HPA {{service_name}} 已达到最大副本数，扩容受限"
+
+business_metrics: []

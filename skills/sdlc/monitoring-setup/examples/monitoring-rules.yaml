@@ -1,0 +1,108 @@
+# 示例：电商订单服务监控规则（Spring Boot + MySQL + Redis + Kafka + K8s）
+project: ecommerce-order
+version: "1.0"
+generated_by: "monitoring-setup"
+generated_at: "2026-05-10T10:00:00Z"
+environment: staging
+
+global_labels:
+  env: "staging"
+  project: "ecommerce-order"
+  team: "backend"
+
+scrape_configs:
+  - job_name: "order-service-actuator"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["order-service:8080"]
+
+  - job_name: "mysql-primary-exporter"
+    static_configs:
+      - targets: ["mysql-primary:9104"]
+
+  - job_name: "redis-cache-exporter"
+    static_configs:
+      - targets: ["redis-cache:9121"]
+
+  - job_name: "kafka-exporter"
+    static_configs:
+      - targets: ["kafka-0:9308"]
+
+  - job_name: "k8s-kubelet"
+    static_configs:
+      - targets: ["node-1:10250"]
+
+alerting_rules:
+  # 应用层：order-service
+  - alert: "order-service_HighErrorRate"
+    expr: 'rate(http_server_requests_seconds_count{service="order-service",status=~"5.."}[5m]) > 0.01'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "backend"
+    annotations:
+      summary: "服务 order-service 错误率超过 1%"
+
+  - alert: "order-service_HighP99Latency"
+    expr: 'histogram_quantile(0.99, rate(http_server_requests_seconds_bucket{service="order-service"}[5m])) > 0.5'
+    for: "3m"
+    labels:
+      severity: warning
+      team: "backend"
+    annotations:
+      summary: "服务 order-service P99 延迟超过 500ms"
+
+  # 数据库层：MySQL
+  - alert: "mysql-primary_MysqlConnectionsHigh"
+    expr: 'mysql_global_status_threads_connected{service="mysql-primary"} / mysql_global_variables_max_connections{service="mysql-primary"} > 0.8'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "backend"
+    annotations:
+      summary: "MySQL mysql-primary 连接数使用率超过 80%"
+
+  # 缓存层：Redis
+  - alert: "redis-cache_RedisHitRateLow"
+    expr: 'rate(redis_keyspace_hits_total{service="redis-cache"}[5m]) / (rate(redis_keyspace_hits_total{service="redis-cache"}[5m]) + rate(redis_keyspace_misses_total{service="redis-cache"}[5m])) < 0.9'
+    for: "5m"
+    labels:
+      severity: warning
+      team: "backend"
+    annotations:
+      summary: "Redis redis-cache 命中率低于 90%"
+
+  # 消息队列：Kafka
+  - alert: "kafka-exporter_KafkaConsumerLagHigh"
+    expr: 'kafka_consumer_group_lag{service="kafka-exporter"} > 1000'
+    for: "5m"
+    labels:
+      severity: critical
+      team: "backend"
+    annotations:
+      summary: "Kafka kafka-exporter 消费组积压超过 1000"
+
+  # 基础设施：K8s
+  - alert: "k8s-cluster_PodCrashLooping"
+    expr: 'rate(kube_pod_container_status_restarts_total{service="k8s-cluster"}[10m]) > 0'
+    for: "5m"
+    labels:
+      severity: critical
+      team: "backend"
+    annotations:
+      summary: "Pod k8s-cluster 频繁重启，可能处于 CrashLoopBackOff"
+
+business_metrics:
+  - name: "order-service_core_api_latency"
+    type: histogram
+    labels: ["api_path", "method"]
+    buckets: [50, 100, 200, 500, 1000, 2000]
+
+  - name: "order-service_business_operation_total"
+    type: counter
+    labels: ["operation", "status"]
+
+  - name: "mysql-primary_query_duration"
+    type: histogram
+    labels: ["schema", "query_type"]
+    buckets: [1, 5, 10, 25, 50, 100, 250, 500]

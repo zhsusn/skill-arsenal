@@ -1,0 +1,43 @@
+# MySQL 数据库监控模板
+meta:
+  tech_stack: "db_mysql"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-mysql"
+    static_configs:
+      - targets: ["{{host}}:{{port}}"]
+
+alerting_rules:
+  - alert: "{{service_name}}_MysqlConnectionsHigh"
+    expr: 'mysql_global_status_threads_connected{service="{{service_name}}"} / mysql_global_variables_max_connections{service="{{service_name}}"} > {{db_connections_threshold}} / 100'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "MySQL {{service_name}} 连接数使用率超过 {{db_connections_threshold}}%"
+
+  - alert: "{{service_name}}_MysqlSlowQueries"
+    expr: 'rate(mysql_global_status_slow_queries{service="{{service_name}}"}[5m]) > 1'
+    for: "5m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "MySQL {{service_name}} 慢查询增长过快"
+
+  - alert: "{{service_name}}_MysqlReplicationLag"
+    expr: 'mysql_slave_lag_seconds{service="{{service_name}}"} > 10'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "MySQL {{service_name}} 主从复制延迟超过 10s"
+
+business_metrics:
+  - name: "{{service_name}}_query_duration"
+    type: histogram
+    labels: ["schema", "query_type"]
+    buckets: [1, 5, 10, 25, 50, 100, 250, 500]

@@ -1,0 +1,11 @@
+# 监控规则基础骨架
+# 所有技术栈模板共享此结构
+meta:
+  tech_stack: "base"
+  version: "1.0"
+
+scrape_configs: []
+
+alerting_rules: []
+
+business_metrics: []

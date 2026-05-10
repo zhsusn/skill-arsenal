@@ -1,0 +1,43 @@
+# PostgreSQL 数据库监控模板
+meta:
+  tech_stack: "db_postgresql"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-postgres"
+    static_configs:
+      - targets: ["{{host}}:{{port}}"]
+
+alerting_rules:
+  - alert: "{{service_name}}_PgConnectionsHigh"
+    expr: 'pg_stat_activity_count{service="{{service_name}}"} / pg_settings_max_connections{service="{{service_name}}"} > {{db_connections_threshold}} / 100'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "PostgreSQL {{service_name}} 连接数使用率超过 {{db_connections_threshold}}%"
+
+  - alert: "{{service_name}}_PgReplicationLag"
+    expr: 'pg_replication_lag_seconds{service="{{service_name}}"} > 10'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "PostgreSQL {{service_name}} 复制延迟超过 10s"
+
+  - alert: "{{service_name}}_PgDeadlocks"
+    expr: 'rate(pg_stat_database_deadlocks{service="{{service_name}}"}[5m]) > 1'
+    for: "5m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "PostgreSQL {{service_name}} 死锁频率过高"
+
+business_metrics:
+  - name: "{{service_name}}_query_duration"
+    type: histogram
+    labels: ["database", "query_type"]
+    buckets: [1, 5, 10, 25, 50, 100, 250, 500]

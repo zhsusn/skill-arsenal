@@ -1,0 +1,16 @@
+{
+  "name": "monitoring-setup",
+  "version": "1.0.0",
+  "description": "基于概要设计中的运维架构，自动生成项目级监控规则初稿 monitoring-rules.yaml",
+  "author": "skill-arsenal",
+  "license": "MIT",
+  "source": "custom",
+  "pattern": "generator",
+  "domain": "observability",
+  "tags": ["sdlc", "observability", "monitoring", "prometheus", "ops", "openspec", "stage-3"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"],
+  "dependencies": ["high-level-design"],
+  "consumed_by": ["monitoring-analysis", "release-management"],
+  "run_once_per_change": true,
+  "language": "zh-CN"
+}

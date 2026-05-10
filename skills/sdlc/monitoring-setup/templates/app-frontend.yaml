@@ -1,0 +1,40 @@
+# 前端应用监控模板（Vue3/React/SPA 通用，基于 RUM 思路）
+meta:
+  tech_stack: "frontend"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-rum"
+    metrics_path: "/metrics"
+    static_configs:
+      - targets: ["{{host}}:{{port}}"]
+
+alerting_rules:
+  - alert: "{{service_name}}_HighPageLoadTime"
+    expr: 'histogram_quantile(0.95, rate(frontend_page_load_seconds_bucket{service="{{service_name}}"}[5m])) > 3'
+    for: "3m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "前端 {{service_name}} P95 页面加载时间超过 3s"
+
+  - alert: "{{service_name}}_HighJsErrorRate"
+    expr: 'rate(frontend_js_errors_total{service="{{service_name}}"}[5m]) > 0.1'
+    for: "5m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "前端 {{service_name}} JS 错误率超过阈值"
+
+business_metrics:
+  - name: "{{service_name}}_page_load_time"
+    type: histogram
+    labels: ["page", "device_type"]
+    buckets: [0.1, 0.25, 0.5, 1, 2, 3, 5]
+
+  - name: "{{service_name}}_api_call_latency"
+    type: histogram
+    labels: ["api_endpoint", "method"]
+    buckets: [50, 100, 200, 500, 1000, 2000]

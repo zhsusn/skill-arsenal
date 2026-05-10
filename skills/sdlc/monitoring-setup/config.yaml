@@ -1,0 +1,58 @@
+# monitoring-setup 默认配置
+project:
+  output_path: "ops/monitoring-rules.yaml"
+  default_scrape_interval: "15s"
+  default_evaluation_interval: "1m"
+
+# 技术栈关键词 → 模板文件映射
+tech_stack_mapping:
+  jvm_springboot:
+    keywords: ["Spring Boot", "SpringBoot", "Java", "JVM", "Micrometer"]
+    template: "app-jvm-springboot.yaml"
+  nodejs:
+    keywords: ["Node.js", "NodeJS", "NestJS", "Express", "Koa", "Fastify"]
+    template: "app-node.yaml"
+  python:
+    keywords: ["Python", "FastAPI", "Flask", "Django", "Tornado"]
+    template: "app-python.yaml"
+  golang:
+    keywords: ["Go", "Gin", "Echo", "Fiber", "GORM"]
+    template: "app-go.yaml"
+  frontend:
+    keywords: ["Vue3", "Vue 3", "React", "前端", "SPA", "Next.js"]
+    template: "app-frontend.yaml"
+  db_mysql:
+    keywords: ["MySQL", "MariaDB", "InnoDB"]
+    template: "db-mysql.yaml"
+  db_postgresql:
+    keywords: ["PostgreSQL", "Postgres", "PG"]
+    template: "db-postgresql.yaml"
+  cache_redis:
+    keywords: ["Redis", "缓存", "Cache"]
+    template: "cache-redis.yaml"
+  mq_kafka:
+    keywords: ["Kafka", "消息队列", "MQ", "事件流"]
+    template: "mq-kafka.yaml"
+  gw_nginx:
+    keywords: ["Nginx", "网关", "Gateway", "Load Balancer"]
+    template: "gw-nginx.yaml"
+  infra_k8s:
+    keywords: ["Kubernetes", "K8s", "Pod", "Deployment"]
+    template: "infra-k8s.yaml"
+
+# 默认告警阈值（当设计文档未明确时 fallback）
+default_thresholds:
+  api_p99_latency_ms: 500
+  api_error_rate_percent: 1.0
+  cpu_usage_percent: 80
+  memory_usage_percent: 85
+  disk_usage_percent: 85
+  db_connections_usage_percent: 80
+  cache_hit_rate_percent: 90
+  mq_consumer_lag: 1000
+
+# 全局标签规范
+global_labels:
+  env: "{{environment}}"
+  project: "{{project_name}}"
+  team: "{{team_name}}"

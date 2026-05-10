@@ -1,0 +1,43 @@
+# Redis 缓存监控模板
+meta:
+  tech_stack: "cache_redis"
+  version: "1.0"
+
+scrape_configs:
+  - job_name: "{{service_name}}-redis"
+    static_configs:
+      - targets: ["{{host}}:{{port}}"]
+
+alerting_rules:
+  - alert: "{{service_name}}_RedisMemoryHigh"
+    expr: 'redis_memory_used_bytes{service="{{service_name}}"} / redis_memory_max_bytes{service="{{service_name}}"} > {{memory_threshold}} / 100'
+    for: "2m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "Redis {{service_name}} 内存使用率超过 {{memory_threshold}}%"
+
+  - alert: "{{service_name}}_RedisHitRateLow"
+    expr: 'rate(redis_keyspace_hits_total{service="{{service_name}}"}[5m]) / (rate(redis_keyspace_hits_total{service="{{service_name}}"}[5m]) + rate(redis_keyspace_misses_total{service="{{service_name}}"}[5m])) < {{cache_hit_rate_threshold}} / 100'
+    for: "5m"
+    labels:
+      severity: warning
+      team: "{{team_name}}"
+    annotations:
+      summary: "Redis {{service_name}} 命中率低于 {{cache_hit_rate_threshold}}%"
+
+  - alert: "{{service_name}}_RedisConnectionsHigh"
+    expr: 'redis_connected_clients{service="{{service_name}}"} > {{db_connections_threshold}}'
+    for: "2m"
+    labels:
+      severity: critical
+      team: "{{team_name}}"
+    annotations:
+      summary: "Redis {{service_name}} 连接数超过 {{db_connections_threshold}}"
+
+business_metrics:
+  - name: "{{service_name}}_cache_operation_duration"
+    type: histogram
+    labels: ["command", "key_pattern"]
+    buckets: [1, 5, 10, 25, 50, 100]
