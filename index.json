@@ -197,6 +197,15 @@
         "tags": "human-gate,audit,decision-record,sdlc,openspec,governance",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
+    },
+    {
+      "name": "interface-first-dev",
+      "path": "skills/sdlc/interface-first-dev",
+      "description": "当用户提到'接口驱动'、'定义接口'、'生成API契约'、'OpenAPI'、'前后端并行'、'接口契约'、'mock接口'或需要基于详细设计文档生成标准化前后端接口契约时触发。贯彻'先契约、后编码'原则，输出可冻结的接口基准。",
+      "metadata": {
+        "tags": "sdlc,api-design,openapi,mock,contract-first,parallel-development,openspec,stage-3.5",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     }
   ]
 }

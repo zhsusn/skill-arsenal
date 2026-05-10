@@ -1,0 +1,7 @@
+{
+  "name": "interface-first-dev",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": ["sdlc", "api-design", "openapi", "mock", "contract-first", "parallel-development", "openspec", "stage-3.5"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}
