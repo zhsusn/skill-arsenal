@@ -65,31 +65,31 @@ mkdir -p ops/
 
 安装以下 Skill，本方案共需要 **23 个 Skill**（V2.1 从 18 个扩充至 23 个）：
 
-| Skill名称 | 来源 | 当前状态 | 安装路径 |
-|-----------|------|----------|----------|
-| brainstorming | Superpowers | ✅ 可用 | .kimi/skills/superpowers/ |
-| writing-plans | Superpowers | ✅ 可用 | .kimi/skills/superpowers/ |
-| executing-plans | Superpowers | ✅ 可用 | .kimi/skills/superpowers/ |
-| test-driven-development | Superpowers | ✅ 可用 | .kimi/skills/superpowers/ |
-| systematic-debugging | Superpowers | ✅ 可用 | .kimi/skills/superpowers/ |
-| requesting-code-review | Superpowers | 🔧 需修改 | .kimi/skills/superpowers/ |
-| finishing-a-development-branch | Superpowers | ✅ 可用 | .kimi/skills/superpowers/ |
-| prd-generation | 本方案 | 🔧 需修改 | .kimi/skills/prd-generation/ |
-| progress-tracker | 本方案 | 🔧 需修改 | .kimi/skills/progress-tracker/ |
-| self-check | 本方案 | 🔧 需修改 | .kimi/skills/self-check/ |
-| competitive-analysis | 本方案 | ✅ 可用 | .kimi/skills/competitive-analysis/ |
-| high-level-design | 本方案 | 🔧 需修改 | .kimi/skills/high-level-design/ |
-| detailed-requirements | 本方案 | 🔧 需修改 | .kimi/skills/detailed-requirements/ |
-| detailed-design | 本方案 | ➕ 需新增 | .kimi/skills/detailed-design/ |
-| interface-first-dev | 本方案 | ➕ 需新增 | .kimi/skills/interface-first-dev/ |
-| task-breakdown | 本方案 | ➕ 需新增 | .kimi/skills/task-breakdown/ |
-| unit-test | 本方案 | ➕ 需新增 | .kimi/skills/unit-test/ |
-| integration-test | 本方案 | ➕ 需新增 | .kimi/skills/integration-test/ |
-| uat-verification | 本方案 | ➕ 需新增 | .kimi/skills/uat-verification/ |
-| release-management | 本方案 | ➕ 需新增 | .kimi/skills/release-management/ |
-| monitoring-setup | 本方案 | ➕ 需新增 | .kimi/skills/monitoring-setup/ |
-| monitoring-analysis | 本方案 | ➕ 需新增 | .kimi/skills/monitoring-analysis/ |
-| human | 本方案 | ➕ 需新增 | .kimi/skills/human/ |
+| Skill名称                        | 来源          | 当前状态   | 安装路径                                |
+| ------------------------------ | ----------- | ------ | ----------------------------------- |
+| brainstorming                  | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
+| writing-plans                  | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
+| executing-plans                | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
+| test-driven-development        | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
+| systematic-debugging           | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
+| requesting-code-review         | Superpowers | 🔧 需修改 | .kimi/skills/superpowers/           |
+| finishing-a-development-branch | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
+| prd-generation                 | 本方案         | 🔧 需修改 | .kimi/skills/prd-generation/        |
+| progress-tracker               | 本方案         | 🔧 需修改 | .kimi/skills/progress-tracker/      |
+| self-check                     | 本方案         | 🔧 需修改 | .kimi/skills/self-check/            |
+| competitive-analysis           | 本方案         | ✅ 可用   | .kimi/skills/competitive-analysis/  |
+| high-level-design              | 本方案         | 🔧 需修改 | .kimi/skills/high-level-design/     |
+| detailed-requirements          | 本方案         | 🔧 需修改 | .kimi/skills/detailed-requirements/ |
+| detailed-design                | 本方案         | ➕ 需新增  | .kimi/skills/detailed-design/       |
+| interface-first-dev            | 本方案         | ➕ 需新增  | .kimi/skills/interface-first-dev/   |
+| task-breakdown                 | 本方案         | ➕ 需新增  | .kimi/skills/task-breakdown/        |
+| unit-test                      | 本方案         | ➕ 需新增  | .kimi/skills/unit-test/             |
+| integration-test               | 本方案         | ➕ 需新增  | .kimi/skills/integration-test/      |
+| uat-verification               | 本方案         | ➕ 需新增  | .kimi/skills/uat-verification/      |
+| release-management             | 本方案         | ➕ 需新增  | .kimi/skills/release-management/    |
+| monitoring-setup               | 本方案         | ➕ 需新增  | .kimi/skills/monitoring-setup/      |
+| monitoring-analysis            | 本方案         | ➕ 需新增  | .kimi/skills/monitoring-analysis/   |
+| human                          | 本方案         | ➕ 需新增  | .kimi/skills/human/                 |
 
 > 详细 Skill 状态与衔接关系见 `docs/AI项目工具链Skill清单与状态.md`。
 
