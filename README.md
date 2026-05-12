@@ -13,7 +13,7 @@
 在 AI 编码助手日益普及的今天，提示词的质量直接决定了产出的上限。`skill-arsenal` 不仅仅是一个 Skill 收藏库，更是一套**可扩展的框架**：
 
 - **标准化**：每个 Skill 遵循统一的 `SKILL.md` + `meta.json` 双轨制规范，配合 `validate.py` 静态校验，确保任何新增 Skill 都能被各平台正确识别与加载。
-- **全生命周期覆盖**：从需求脑暴（`brainstorming`）→ 概要需求（`prd-generation`）→ 详细需求（`prd-feature-detail`）→ 概要设计（`high-level-design`）→ 详细设计（`technical-design-document-generator`）→ 编码（`code-review`、`test-driven-development`）→ 自查（`self-check`）→ 收尾（`finish`），每个阶段都有标准化的 AI 协作接口。
+- **全生命周期覆盖**：从需求脑暴（`brainstorming`）→ 概要需求（`prd-generation`）→ 详细需求（`detailed-requirements`）→ 概要设计（`high-level-design`）→ 接口契约（`interface-first-dev`）→ 详细设计（`detailed-design`）→ 任务拆解（`task-breakdown`）→ 编码（`executing-plans`、`test-driven-development`）→ 单元测试（`unit-test`）→ 集成测试（`integration-test`）→ UAT（`uat-verification`）→ 代码审查（`requesting-code-review`）→ 发布（`release-management`）→ 归档（`finish`）→ 监控（`monitoring-analysis`），12 个阶段 + 4 道人工闸门形成完整闭环。
 - **质量门控**：`self-check` 与 `progress-tracker` 贯穿全程，确保"不自查不流转"，让 AI 产出物具备可评审、可追溯、可冻结的工程质量。
 - **可复用与可扩展**：通过 `config.yaml` 配置驱动输出模板，通过 `skill-create-pattern.py` 脚手架快速生成新 Skill，通过 `convert.py` 一键分发到 Kimi / Cursor / Aider / VS Code 等多平台。
 
@@ -25,7 +25,7 @@
 
 | 维度 | 现状 |
 |------|------|
-| **Skills** | **21 个**（覆盖 SDLC 全生命周期、数据工程、逆向工程） |
+| **Skills** | **28 个**（覆盖 SDLC 全生命周期、数据工程、逆向工程、工程基础） |
 | **Slash Commands** | **2 个**（`/commit`、`/review`） |
 | **核心工具脚本** | **4 个**（`install.sh`、`validate.py`、`convert.py`、`skill-create-pattern.py`） |
 | **生成产物** | `.cursor/rules/*.mdc`（自动转换） |
@@ -77,29 +77,38 @@ skill-arsenal/
 │   ├── skill-create-pattern.py     # 带模式选择的 Skill 脚手架生成器
 │   └── skill-create-pattern.txt    # 脚手架使用示例
 ├── skills/                         # 核心技能库（按领域分类）
-│   ├── sdlc/                       # 软件全生命周期（SDLC）
+│   ├── sdlc/                       # 软件全生命周期（SDLC）— 25 个 skill
 │   │   ├── brainstorming/
-│   │   ├── code-review/
-│   │   ├── documentation/
+│   │   ├── competitive-analysis/
+│   │   ├── detailed-design/
+│   │   ├── detailed-requirements/
 │   │   ├── executing-plans/
 │   │   ├── finish/
 │   │   ├── git-automation/
 │   │   ├── high-level-design/
-│   │   ├── prd-feature-detail/
+│   │   ├── human/
+│   │   ├── integration-test/
+│   │   ├── interface-first-dev/
+│   │   ├── monitoring-analysis/
+│   │   ├── monitoring-setup/
 │   │   ├── prd-generation/
-│   │   ├── prd-trace-matrix/
 │   │   ├── progress-tracker/
+│   │   ├── release-management/
 │   │   ├── requesting-code-review/
 │   │   ├── requirement-analysis/
 │   │   ├── self-check/
 │   │   ├── systematic-debugging/
-│   │   ├── technical-design-document-generator/
+│   │   ├── task-breakdown/
 │   │   ├── test-driven-development/
+│   │   ├── uat-verification/
+│   │   ├── unit-test/
 │   │   └── writing-plans/
 │   ├── data-engineering/           # 数据工程
 │   │   └── sql-optimization/
-│   └── Reverse-Engineering/        # 逆向工程与元技能治理
-│       └── skill-based-architecture/
+│   ├── Reverse-Engineering/        # 逆向工程与元技能治理
+│   │   └── skill-based-architecture/
+│   └── engineering-foundations/    # 工程基础能力
+│       └── documentation/
 ├── commands/                       # 斜杠命令（快速触发）
 │   ├── commit.md
 │   └── review.md
@@ -112,15 +121,67 @@ skill-arsenal/
     ├── skill-development-guide.md      # Skill 编写完整手册
     ├── platform-compatibility.md       # 各平台路径对照表与格式差异
     ├── naming-conventions.md           # 命名规范与 Frontmatter 字段约束
-    ├── high-level-design-spec.md       # high-level-design 设计规格书
-    └── high-level-design-usage.md      # high-level-design 使用手册
+    ├── sdlc-skill-audit-report.md      # SDLC Skill 审计报告
+    ├── AI项目工具链Skill清单与状态.md      # V2.4 Skill 清单与状态
+    ├── AI项目落地工具链_完全手动操作手册.md   # 完全手动操作手册
+    ├── AI项目落地工具链使用手册.md          # 使用手册
+    ├── skill-design/                   # Skill 设计文档（29 个）
+    │   ├── ai-project-toolchain-design-doc.md
+    │   ├── brainstorming-design.md
+    │   ├── competitive-analysis-design.md
+    │   ├── detailed-design-design.md
+    │   ├── detailed-requirements-design-doc.md
+    │   ├── executing-plans-design.md
+    │   ├── finish-design.md
+    │   ├── high-level-design-design-doc.md
+    │   ├── high-level-design-spec.md
+    │   ├── human-skill-design-doc.md
+    │   ├── integration-test-design.md
+    │   ├── interface-first-dev-design.md
+    │   ├── monitoring-analysis-design.md
+    │   ├── monitoring-setup-design.md
+    │   ├── prd-generation-design-doc.md
+    │   ├── progress-tracker-design.md
+    │   ├── release-management-design.md
+    │   ├── requesting-code-review-design-doc.md
+    │   ├── self-check-design.md
+    │   ├── systematic-debugging-design.md
+    │   ├── task-breakdown-design.md
+    │   ├── test-driven-development-design.md
+    │   ├── uat-verification-design.md
+    │   └── unit-test-design.md
+    └── skill-usage/                    # Skill 使用手册（25 个）
+        ├── brainstorming-usage.md
+        ├── competitive-analysis-usage.md
+        ├── detailed-design-usage.md
+        ├── detailed-requirements-usage.md
+        ├── executing-plans-usage.md
+        ├── finish-usage.md
+        ├── high-level-design-usage.md
+        ├── human-skill-usage.md
+        ├── integration-test-usage.md
+        ├── interface-first-dev-usage.md
+        ├── monitoring-analysis-usage.md
+        ├── monitoring-setup-usage.md
+        ├── prd-generation-usage.md
+        ├── progress-tracker-usage.md
+        ├── release-management-usage.md
+        ├── requesting-code-review-usage.md
+        ├── self-check-usage.md
+        ├── systematic-debugging-usage.md
+        ├── task-breakdown-usage.md
+        ├── test-driven-development-usage.md
+        ├── uat-verification-usage.md
+        ├── unit-test-usage.md
+        └── writing-plans-usage.md
 ```
 
 ### 分类原则
 
-- **`sdlc/`**：收敛软件全生命周期内所有与软件交付过程直接相关的 skill（需求、架构、设计、开发、测试、部署、运维）。同一 skill 不得跨分类重复存放。
+- **`sdlc/`**：收敛软件全生命周期内所有与软件交付过程直接相关的 skill（需求、架构、设计、开发、测试、部署、运维、监控）。同一 skill 不得跨分类重复存放。
 - **`data-engineering/`**：数据工程专用分类（SQL 优化、数据管道、数据建模等）。
 - **`Reverse-Engineering/`**：元技能与项目规则治理类 skill（如将项目规则重构为 skill-based architecture），不参与具体软件交付过程。
+- **`engineering-foundations/`**：跨领域的工程基础能力（技术文档编写、API 文档、ADR 等），可贯穿多个阶段复用。
 
 ---
 
@@ -140,7 +201,7 @@ cd skill-arsenal
 ./scripts/install.sh --tool kimi --all
 
 # 安装单个 skill 到当前项目
-./scripts/install.sh --tool claude --skill skills/sdlc/code-review --target .
+./scripts/install.sh --tool claude --skill skills/sdlc/requesting-code-review --target .
 
 # 查看支持的参数
 ./scripts/install.sh --help
@@ -204,29 +265,37 @@ python3 scripts/skill-create-pattern.py my-skill "My Skill Description" --patter
 
 ## 现有 Skill 速览
 
-### SDLC 全生命周期（`skills/sdlc/`）
+### SDLC 全生命周期（`skills/sdlc/`）— 25 个
+
+按阶段顺序排列：
 
 | Skill | 触发场景 | 阶段 |
 |-------|---------|------|
-| `brainstorming` | 新功能探索、思路梳理、需求模糊时 | 阶段 0 |
+| `brainstorming` | 新功能探索、思路梳理、需求模糊时 | **阶段 0** |
 | `requirement-analysis` | 需求澄清、用户故事拆分 | 阶段 1 辅助 |
 | `prd-generation` | 从零写 PRD-000 概要需求 | **阶段 1** |
-| `prd-feature-detail` | 基于冻结 PRD 生成单模块详细需求 | **阶段 2** |
-| `prd-trace-matrix` | 需求追溯、变更影响分析 | 贯穿 |
+| `competitive-analysis` | 竞品分析、技术选型调研 | 阶段 1.5 / 3 |
+| `detailed-requirements` | 基于冻结 PRD 生成单模块详细需求 | **阶段 2** |
 | `high-level-design` | 系统架构设计、技术选型 | **阶段 3** |
-| `technical-design-document-generator` | 基于 PRD 生成 SDD 详细设计 | **阶段 4** |
-| `code-review` | 代码审查、重构评估 | 开发阶段 |
-| `test-driven-development` | 编码前写测试 | 开发阶段 |
-| `executing-plans` | 按已有计划执行多步骤任务 | 开发阶段 |
-| `writing-plans` | 有需求后先写实施计划 | 开发阶段 |
-| `requesting-code-review` | 完成任务后请求评审 | 开发阶段 |
-| `finish` | 归档收尾、分支合并、OpenSpec 归档、CHANGELOG 生成 | 交付阶段 |
+| `monitoring-setup` | 生成监控规则与告警配置 | **阶段 3** |
+| `interface-first-dev` | 定义 API 契约、前后端并行 | **阶段 3.5** |
+| `detailed-design` | 模块级详细设计、DDL、状态机 | **阶段 4** |
+| `task-breakdown` | 将设计文档拆分为可执行任务清单 | **阶段 4** |
+| `writing-plans` | 编码前生成详细实现计划 | **阶段 4** |
+| `executing-plans` | 按 tasks.md 批量执行编码 | **阶段 5** |
+| `test-driven-development` | RED-GREEN-REFACTOR 循环 | **阶段 5** |
 | `systematic-debugging` | 遇到 Bug 时系统排查 | 开发阶段 |
 | `git-automation` | 生成规范提交信息 | 开发阶段 |
-| `documentation` | 编写技术文档、ADR、README | 贯穿 |
 | `self-check` | 阶段完成后门控自查 | 贯穿 |
+| `human` | 四道人工闸门（Gate 1/2.5/2/3）签字 | 贯穿 |
 | `progress-tracker` | 跟踪项目进度、驱动阶段流转 | 贯穿 |
-| `ai-architecture-advisor` | AI 项目架构选型、Agent 设计 | 架构咨询 |
+| `unit-test` | 模块级边界测试、覆盖率门控（≥70%） | **阶段 8** |
+| `integration-test` | 端到端主链路验证 | **阶段 9** |
+| `uat-verification` | 预览环境人工业务流程验证 | **阶段 9.5** |
+| `requesting-code-review` | Gate 3 通过后代码质量审查 | **阶段 10** |
+| `release-management` | 生成发布清单、人工最终决策 | **阶段 10.5** |
+| `finish` | 归档收尾、分支合并、CHANGELOG | **阶段 11** |
+| `monitoring-analysis` | 周期性线上健康评估、反馈闭环 | **阶段 12** |
 
 ### 数据工程（`skills/data-engineering/`）
 
@@ -239,6 +308,12 @@ python3 scripts/skill-create-pattern.py my-skill "My Skill Description" --patter
 | Skill | 触发场景 |
 |-------|---------|
 | `skill-based-architecture` | 整理项目规则、重构为 skill 体系 |
+
+### 工程基础（`skills/engineering-foundations/`）
+
+| Skill | 触发场景 |
+|-------|---------|
+| `documentation` | 编写技术文档、ADR、README |
 
 ### 斜杠命令（`commands/`）
 
@@ -264,6 +339,8 @@ python3 scripts/skill-create-pattern.py my-skill "My Skill Description" --patter
 
 ## 文档索引
 
+### 项目规范
+
 | 文档 | 面向读者 | 内容 |
 |------|---------|------|
 | [`AGENTS.md`](AGENTS.md) | AI 编程助手 | 项目结构、开发规范、Kimi Code 兼容性要求、工具脚本详解 |
@@ -272,8 +349,80 @@ python3 scripts/skill-create-pattern.py my-skill "My Skill Description" --patter
 | [`docs/skill-development-guide.md`](docs/skill-development-guide.md) | Skill 作者 | 如何编写高质量 skill：设计模式、Gotchas 要求、触发场景写法、渐进式披露 |
 | [`docs/platform-compatibility.md`](docs/platform-compatibility.md) | 使用者 | 各平台路径对照表与格式差异说明 |
 | [`docs/naming-conventions.md`](docs/naming-conventions.md) | Skill 作者 | 命名规范与 Frontmatter 字段约束 |
-| [`docs/high-level-design-spec.md`](docs/high-level-design-spec.md) | 维护者 | high-level-design Skill 的设计规格书与开源复用分析 |
-| [`docs/high-level-design-usage.md`](docs/high-level-design-usage.md) | 终端用户 | high-level-design Skill 的使用手册与 FAQ |
+
+### 操作手册（中文）
+
+| 文档 | 面向读者 | 内容 |
+|------|---------|------|
+| `docs/AI项目落地工具链_完全手动操作手册.md` | 终端用户 | V2.4 完整操作手册：从需求到归档的 12 阶段手动执行指南 |
+| `docs/AI项目落地工具链使用手册.md` | 终端用户 | 简化版使用手册，快速上手 |
+| `docs/AI项目工具链Skill清单与状态.md` | 维护者 | 28 个 Skill 的完整清单、阶段映射与实施优先级 |
+
+### 设计文档（`docs/skill-design/`）— 29 个
+
+面向 AI 助手开发者，说明各 Skill 的架构设计、核心机制与扩展方式。
+
+| Skill | 设计文档 |
+|-------|---------|
+| `ai-project-toolchain` | [`ai-project-toolchain-design-doc.md`](docs/skill-design/ai-project-toolchain-design-doc.md) |
+| `brainstorming` | [`brainstorming-design.md`](docs/skill-design/brainstorming-design.md) |
+| `competitive-analysis` | [`competitive-analysis-design.md`](docs/skill-design/competitive-analysis-design.md) |
+| `detailed-design` | [`detailed-design-design.md`](docs/skill-design/detailed-design-design.md) |
+| `detailed-requirements` | [`detailed-requirements-design-doc.md`](docs/skill-design/detailed-requirements-design-doc.md) |
+| `executing-plans` | [`executing-plans-design.md`](docs/skill-design/executing-plans-design.md) |
+| `finish` | [`finish-design.md`](docs/skill-design/finish-design.md) |
+| `high-level-design` | [`high-level-design-design-doc.md`](docs/skill-design/high-level-design-design-doc.md) / [`high-level-design-spec.md`](docs/skill-design/high-level-design-spec.md) |
+| `human` | [`human-skill-design-doc.md`](docs/skill-design/human-skill-design-doc.md) |
+| `integration-test` | [`integration-test-design.md`](docs/skill-design/integration-test-design.md) |
+| `interface-first-dev` | [`interface-first-dev-design.md`](docs/skill-design/interface-first-dev-design.md) |
+| `monitoring-analysis` | [`monitoring-analysis-design.md`](docs/skill-design/monitoring-analysis-design.md) |
+| `monitoring-setup` | [`monitoring-setup-design.md`](docs/skill-design/monitoring-setup-design.md) |
+| `prd-generation` | [`prd-generation-design-doc.md`](docs/skill-design/prd-generation-design-doc.md) |
+| `progress-tracker` | [`progress-tracker-design.md`](docs/skill-design/progress-tracker-design.md) |
+| `release-management` | [`release-management-design.md`](docs/skill-design/release-management-design.md) |
+| `requesting-code-review` | [`requesting-code-review-design-doc.md`](docs/skill-design/requesting-code-review-design-doc.md) |
+| `self-check` | [`self-check-design.md`](docs/skill-design/self-check-design.md) |
+| `systematic-debugging` | [`systematic-debugging-design.md`](docs/skill-design/systematic-debugging-design.md) |
+| `task-breakdown` | [`task-breakdown-design.md`](docs/skill-design/task-breakdown-design.md) |
+| `test-driven-development` | [`test-driven-development-design.md`](docs/skill-design/test-driven-development-design.md) |
+| `uat-verification` | [`uat-verification-design.md`](docs/skill-design/uat-verification-design.md) |
+| `unit-test` | [`unit-test-design.md`](docs/skill-design/unit-test-design.md) |
+
+### 使用手册（`docs/skill-usage/`）— 25 个
+
+面向终端用户，包含"这是什么 / 适用场景 / 核心功能 / 使用方式 / 输出产物 / FAQ / 快速参考卡"。
+
+| Skill | 使用手册 |
+|-------|---------|
+| `brainstorming` | [`brainstorming-usage.md`](docs/skill-usage/brainstorming-usage.md) |
+| `competitive-analysis` | [`competitive-analysis-usage.md`](docs/skill-usage/competitive-analysis-usage.md) |
+| `detailed-design` | [`detailed-design-usage.md`](docs/skill-usage/detailed-design-usage.md) |
+| `detailed-requirements` | [`detailed-requirements-usage.md`](docs/skill-usage/detailed-requirements-usage.md) |
+| `executing-plans` | [`executing-plans-usage.md`](docs/skill-usage/executing-plans-usage.md) |
+| `finish` | [`finish-usage.md`](docs/skill-usage/finish-usage.md) |
+| `high-level-design` | [`high-level-design-usage.md`](docs/skill-usage/high-level-design-usage.md) |
+| `human` | [`human-skill-usage.md`](docs/skill-usage/human-skill-usage.md) |
+| `integration-test` | [`integration-test-usage.md`](docs/skill-usage/integration-test-usage.md) |
+| `interface-first-dev` | [`interface-first-dev-usage.md`](docs/skill-usage/interface-first-dev-usage.md) |
+| `monitoring-analysis` | [`monitoring-analysis-usage.md`](docs/skill-usage/monitoring-analysis-usage.md) |
+| `monitoring-setup` | [`monitoring-setup-usage.md`](docs/skill-usage/monitoring-setup-usage.md) |
+| `prd-generation` | [`prd-generation-usage.md`](docs/skill-usage/prd-generation-usage.md) |
+| `progress-tracker` | [`progress-tracker-usage.md`](docs/skill-usage/progress-tracker-usage.md) |
+| `release-management` | [`release-management-usage.md`](docs/skill-usage/release-management-usage.md) |
+| `requesting-code-review` | [`requesting-code-review-usage.md`](docs/skill-usage/requesting-code-review-usage.md) |
+| `self-check` | [`self-check-usage.md`](docs/skill-usage/self-check-usage.md) / [`self-check-manual.md`](docs/skill-usage/self-check-manual.md) |
+| `systematic-debugging` | [`systematic-debugging-usage.md`](docs/skill-usage/systematic-debugging-usage.md) |
+| `task-breakdown` | [`task-breakdown-usage.md`](docs/skill-usage/task-breakdown-usage.md) |
+| `test-driven-development` | [`test-driven-development-usage.md`](docs/skill-usage/test-driven-development-usage.md) |
+| `uat-verification` | [`uat-verification-usage.md`](docs/skill-usage/uat-verification-usage.md) |
+| `unit-test` | [`unit-test-usage.md`](docs/skill-usage/unit-test-usage.md) |
+| `writing-plans` | [`writing-plans-usage.md`](docs/skill-usage/writing-plans-usage.md) |
+
+### 审计与治理
+
+| 文档 | 面向读者 | 内容 |
+|------|---------|------|
+| [`docs/sdlc-skill-audit-report.md`](docs/sdlc-skill-audit-report.md) | 维护者 | SDLC Skill 全链路审计报告：覆盖度分析、衔接断裂识别、修复记录 |
 
 ---
 
