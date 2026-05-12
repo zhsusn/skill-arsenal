@@ -1,6 +1,6 @@
 {
   "version": "0.2.0",
-  "lastUpdated": "2026-05-08",
+  "lastUpdated": "2026-05-12",
   "skills": [
     {
       "name": "sql-optimization",
@@ -77,7 +77,11 @@
     {
       "name": "executing-plans",
       "path": "skills/sdlc/executing-plans",
-      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints"
+      "description": "当用户拥有已编写的 tasks.md 或 plan.md，需要按任务逐个执行编码实现时触发。按 Batch 消费任务清单，含执行前审查、强制自测、接口校验、自动勾选与批次检查点。",
+      "metadata": {
+        "tags": "sdlc,execution,implementation,openspec,stage-5",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     },
     {
       "name": "finishing-a-development-branch",
@@ -176,9 +180,22 @@
       "description": "Use when implementing any feature or bugfix, before writing implementation code"
     },
     {
+      "name": "task-breakdown",
+      "path": "skills/sdlc/task-breakdown",
+      "description": "当用户提到'任务拆解'、'拆成具体任务'、'tasks.md'、'开发任务清单'或在 detailed-design / interface-first-dev 完成后需要生成可执行开发任务时触发。将设计文档按 ≤30 分钟/任务粒度拆解为 Phase 组织的 tasks.md。",
+      "metadata": {
+        "tags": "sdlc,planning,task-management,openspec,stage-4",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
       "name": "writing-plans",
       "path": "skills/sdlc/writing-plans",
-      "description": "Use when you have a spec or requirements for a multi-step task, before touching code"
+      "description": "当用户有 spec、需求或设计文档，需要在编码前生成详细实现计划时触发。将设计文档转化为设计文档级别的实现计划（plan.md），包含模块实现顺序、技术路线、验收标准，并输出 plan → task 转换建议。",
+      "metadata": {
+        "tags": "sdlc,planning,implementation,openspec,stage-4",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     },
     {
       "name": "monitoring-setup",

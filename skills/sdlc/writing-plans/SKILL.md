@@ -1,159 +1,199 @@
 ---
 name: writing-plans
-description: Use when you have a spec or requirements for a multi-step task, before touching code
+description: 当用户有 spec、需求或设计文档，需要在编码前生成详细实现计划时触发。将设计文档转化为设计文档级别的实现计划（plan.md），包含模块实现顺序、技术路线、验收标准，并输出 plan → task 转换建议。
 ---
 
 # Writing Plans
 
-## Overview
-
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
-
-Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
+编写详细实现计划——将设计文档转化为开发路线图。上游是设计文档（detailed-design / interface-first-dev），下游是 task-breakdown（细粒度任务拆解）。
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-**Context:** If working in an isolated worktree, it should have been created via the `superpowers:using-git-worktrees` skill at execution time.
+## 适用场景
 
-**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
-- (User preferences for plan location override this default)
+- brainstorming 确认后，需要将需求转化为实现计划
+- detailed-design 完成后，需要基于设计文档生成编码路线图
+- 用户明确要求 "写计划"、"生成 plan.md"、"制定实现方案"
+- interface-first-dev 确认后，需要规划前后端实现顺序
 
-## Scope Check
+## 前置检查
 
-If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
+### Scope Check
 
-## File Structure
+若 spec 覆盖多个独立子系统，建议拆分为独立 plan——每个子系统一个 plan，每个 plan 应能独立产出可工作、可测试的软件。
 
-Before defining tasks, map out which files will be created or modified and what each one is responsible for. This is where decomposition decisions get locked in.
+### 输入文档清单
 
-- Design units with clear boundaries and well-defined interfaces. Each file should have one clear responsibility.
-- You reason best about code you can hold in context at once, and your edits are more reliable when files are focused. Prefer smaller, focused files over large ones that do too much.
-- Files that change together should live together. Split by responsibility, not by technical layer.
-- In existing codebases, follow established patterns. If the codebase uses large files, don't unilaterally restructure - but if a file you're modifying has grown unwieldy, including a split in the plan is reasonable.
+开始编写前确认以下文档可读取：
+- `design/*.md` 或 `feature-*/design.md`（详细设计）
+- `feature-*/api-spec.md` 或 `interface-contracts/openapi.yaml`（接口契约）
+- `competitive-analysis.md`（如存在，用于技术选型参考）
+- `openspec/config.yaml`（获取 writing_plans.required_sections 等配置）
 
-This structure informs the task decomposition. Each task should produce self-contained changes that make sense independently.
+## 输出格式
 
-## Bite-Sized Task Granularity
+保存到 `openspec/changes/{变更名}/plan.md`。
 
-**Each step is one action (2-5 minutes):**
-- "Write the failing test" - step
-- "Run it to make sure it fails" - step
-- "Implement the minimal code to make the test pass" - step
-- "Run the tests and make sure they pass" - step
-- "Commit" - step
-
-## Plan Document Header
-
-**Every plan MUST start with this header:**
+### 文档头部（强制）
 
 ```markdown
-# [Feature Name] Implementation Plan
+# {Feature Name} Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** 下一步 REQUIRED SUB-SKILL: `/skill:task-breakdown` 将此计划转换为可执行任务。
+> **生成时间:** {timestamp}
+> **变更名:** {change_name}
 
-**Goal:** [One sentence describing what this builds]
+## Goal
+一句话描述本计划构建的内容。
 
-**Architecture:** [2-3 sentences about approach]
+## Architecture
+2-3 句话描述实现路径与技术选型依据。
 
-**Tech Stack:** [Key technologies/libraries]
+## Tech Stack
+- 前端: {框架} {版本}
+- 后端: {框架} {版本}
+- 数据库: {类型}
+- 关键库: {列表}
 
 ---
 ```
 
-## Task Structure
+### Module Breakdown
 
-````markdown
-### Task N: [Component Name]
+为每个模块输出以下结构：
 
-**Files:**
-- Create: `exact/path/to/file.py`
-- Modify: `exact/path/to/existing.py:123-145`
-- Test: `tests/exact/path/to/test.py`
+```markdown
+## Module N: {模块名}
 
-- [ ] **Step 1: Write the failing test**
+### 实现顺序
+1. 数据模型定义（DDL + ORM 模型）
+2. API 接口实现（含参数校验）
+3. 业务逻辑层（状态机实现）
+4. 前端页面集成
 
-```python
-def test_specific_behavior():
-    result = function(input)
-    assert result == expected
+### 关键决策
+- **决策1:** 使用 {方案A} 而非 {方案B}，原因: {rationale}
+- **决策2:** 缓存策略选择 {策略}，原因: {rationale}
+
+### 依赖关系
+```mermaid
+graph LR
+    A[DB Schema] --> B[API Endpoint]
+    B --> C[Frontend Component]
+    B --> D[Unit Tests]
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+### 验收标准
+- [ ] 数据模型与 db-schema.md 完全一致
+- [ ] API 响应格式与 openapi.yaml 一致
+- [ ] 单元测试覆盖率 ≥ 70%
+- [ ] 状态机覆盖所有分支（参见 state-machine.md）
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: FAIL with "function not defined"
-
-- [ ] **Step 3: Write minimal implementation**
-
-```python
-def function(input):
-    return expected
+### 风险与缓解
+| 风险 | 影响 | 缓解 |
+|------|------|------|
+| {风险描述} | 高/中/低 | {措施} |
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+### 任务依赖总图
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: PASS
+在文档末尾输出全局 Mermaid 依赖图：
 
-- [ ] **Step 5: Commit**
+```markdown
+## 任务依赖总图
 
-```bash
-git add tests/path/test.py src/path/file.py
-git commit -m "feat: add specific feature"
+```mermaid
+graph TD
+    M1[Module 1: 基础设施] --> M2[Module 2: 核心功能]
+    M1 --> M3[Module 3: 集成测试]
+    M2 --> M4[Module 4: 前端UI]
 ```
-````
+```
 
-## No Placeholders
+### Plan → Task 转换建议
 
-Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
-- "TBD", "TODO", "implement later", "fill in details"
+在文档末尾输出转换指导，供 task-breakdown 使用：
+
+```markdown
+## Plan → Task 转换建议
+
+- 预估任务数: {N} 个（建议 {delegated | sub_orchestrators | work_items} 模式）
+- 建议 Phase 数: {M} 个
+- 关键路径: {模块X} → {模块Y}（不可并行）
+- 可并行轨道: 前端轨道 + 后端轨道（需接口契约先行）
+- 特别注意: {如需要 Spike 验证的依赖、外部服务接入等}
+```
+
+## 核心约束
+
+### No Placeholders（零容忍）
+
+计划中禁止出现以下 plan failure 模式：
+- "TBD"、"TODO"、"implement later"、"fill in details"
 - "Add appropriate error handling" / "add validation" / "handle edge cases"
-- "Write tests for the above" (without actual test code)
-- "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
-- Steps that describe what to do without showing how (code blocks required for code steps)
-- References to types, functions, or methods not defined in any task
+- "Write tests for the above"（无实际测试代码）
+- "Similar to Task N"（工程师可能乱序阅读，必须重复展开）
+- 只描述做什么但不展示怎么做（代码步骤必须附代码块）
+- 引用未在计划中定义的类型、函数或方法
 
-## Remember
-- Exact file paths always
-- Complete code in every step — if a step changes code, show the code
-- Exact commands with expected output
-- DRY, YAGNI, TDD, frequent commits
+### 精确性要求
 
-## Self-Review
+- **精确文件路径**：`src/services/user_service.py:45-60`，禁止"某文件"、"相关模块"
+- **完整代码**：若某步涉及代码变更，必须展示完整代码块
+- **精确命令**：含预期输出，如 `pytest tests/unit/test_user.py -v` → Expected: 3 passed
+- **DRY、YAGNI、TDD**：不重复、不多做、测试先行
 
-After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
+## Self-Review（四检）
 
-**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
+计划完成后执行以下自检，任一失败立即修复：
 
-**2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
+**1. Spec Coverage（需求覆盖）**
+遍历 design.md / spec 的每个章节/需求，确认能指向对应 Module 的实现顺序。列出缺口。
 
-**3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+**2. Placeholder Scan（占位符扫描）**
+全文搜索 "TBD"、"TODO"、"appropriate"、"later"、"similar to" 等 red flag。发现即修复。
 
-If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
+**3. Type Consistency（类型一致性）**
+核对跨 Module 的函数名、方法签名、类型定义。Task 3 的 `clearLayers()` 与 Task 7 的 `clearFullLayers()` 是 bug。
 
-## Execution Handoff
+**4. Design Alignment（设计一致性）**
+核对 plan 与上游 design.md / api-spec.md 无矛盾：技术栈一致、模块边界一致、接口定义一致。
 
-After saving the plan, offer execution choice:
+## 执行交接
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
+plan.md 保存后，提示用户下一步：
 
-**1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
+> "Plan complete and saved to `openspec/changes/{变更名}/plan.md`. 
+>
+> **下一步 REQUIRED:** 运行 `/skill:task-breakdown` 将此计划转换为 ≤30 分钟/任务的执行清单（tasks.md）。
+>
+> 转换建议已写入 plan.md 末尾的「Plan → Task 转换建议」章节。"
 
-**2. Inline Execution** - Execute tasks in this session using executing-plans, batch execution with checkpoints
+## Anti-Rationalization Framework
 
-**Which approach?"**
+| 模式 | 信号短语 | 反制 |
+|------|----------|------|
+| Scope Minimization | "这个 plan 很简单，不用写太细" | 简单也必须有验收标准；无验收标准 = 未完成 plan |
+| Time Pressure | "先写个大纲，细节执行时再补" | 执行时不补细节是常态；No Placeholders 是硬性约束 |
+| Phase Collapse | "plan 和 task-breakdown 一起做了" | 两者是不同质量门控；plan 是设计级，breakdown 是调度级 |
+| Self-Review Substitution | "我自己看过了，没问题" | 四检清单必须逐条机械确认 |
 
-**If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
-- Fresh subagent per task + two-stage review
+## 与上下游衔接
 
-**If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
-- Batch execution with checkpoints for review
+| 衔接点 | 动作 |
+|--------|------|
+| 上游: detailed-design | 读取 design/*.md、feature-*/design.md 作为核心输入 |
+| 上游: interface-first-dev | 读取 openapi.yaml 验证接口契约完整性，作为 Module 边界 |
+| 下游: task-breakdown | plan.md 作为 task-breakdown 的核心输入；末尾"转换建议"直接指导拆解 |
+| 横向: self-check | Self-Review 阶段调用 self-check 进行设计一致性校验 |
 
 ## Gotchas
-- 每个步骤粒度必须控制在 2-5 分钟可完成；若发现某步骤超过 5 分钟，必须进一步拆分
-- 严禁出现 "TBD"、"TODO"、"implement later" 等占位符；计划中的每个步骤必须包含实际可执行的代码或命令
-- 必须提供 exact file paths；不允许使用 "某文件"、"相关模块" 等模糊路径
-- 若 spec 需求无对应任务，属于计划缺失，必须补充任务而非跳过
-- 类型一致性：后续任务中引用的函数名、方法签名必须与前面任务完全一致
+
+- **plan 是设计文档级，不是代码级**：plan.md 描述模块实现顺序和技术路线，不展开 2-5 分钟的 micro-step；micro-step 由 task-breakdown 或 executing-plans 按需细化
+- **严禁出现占位符**：No Placeholders 是硬性纪律，任何形式的模糊描述都是 plan failure
+- **必须提供 plan → task 转换建议**：plan.md 末尾必须包含转换建议章节，否则 task-breakdown 缺乏输入指导
+- **类型一致性跨 Module 检查**：模块间共享的模型、接口定义必须完全一致
+- **接口契约是硬边界**：plan 中的 API 定义必须与 openapi.yaml / api-spec.md 逐字段一致，不得擅自变更
+- **多子系统时拆 plan**：若设计覆盖多个独立子系统，必须拆分为多个 plan.md，每个子系统独立交付
+- **plan 保存后原则上不直接修改**：若设计变更，应重新执行 writing-plans 而非手动 patch
+- **与 OpenSpec 集成**：plan.md 保存路径遵循 `openspec/changes/{变更名}/plan.md`，与 changes 目录联动

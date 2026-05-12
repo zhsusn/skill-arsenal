@@ -1,0 +1,7 @@
+{
+  "name": "task-breakdown",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "tags": ["sdlc", "planning", "task-management", "openspec", "stage-4"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

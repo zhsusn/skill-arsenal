@@ -4,6 +4,11 @@
 > 版本 V2.1 | 2026年5月
 >
 > 本次更新基于 `lifesycle.md` 审查意见，补充 UAT、发布、监控环节，明确四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 统一记录人工决策。
+>
+> **V2.2 更新（2026年5月）**：重构计划与执行阶段，引入 `writing-plans` → `task-breakdown` → `executing-plans` 三级递进工作流。
+> - `writing-plans` 从 Superpowers 原生 micro-step 升级为**模块级实现计划**（plan.md），增加 Self-Review 四检与 Plan → Task 转换建议
+> - `task-breakdown` **新增**，按 ≤30 分钟/任务粒度将 plan.md 拆解为 Phase 组织的 tasks.md，支持垂直切片与执行模式建议
+> - `executing-plans` 增强 **Batch 执行**（3 任务/批次）、**Gate Non-Collapse Rule**（自测/接口校验/单测独立门控）、**自动勾选 tasks.md**、**Inline Audit** 与 **Simplicity First / Scope Discipline / Rollback-Friendly** 执行纪律
 
 ---
 
@@ -18,10 +23,7 @@
   - [3.1 三工具打通前提条件](#31-三工具打通前提条件)
   - [3.2 完整工作流程](#32-完整工作流程)
   - [3.3 各阶段操作指令](#33-各阶段操作指令)
-- [四、完全手动方式（无MCP Server）](#四完全手动方式无mcp-server)
-  - [4.1 手动方式说明](#41-手动方式说明)
-  - [4.2 完整命令执行流程](#42-完整命令执行流程)
-  - [4.3 各阶段详细命令列表](#43-各阶段详细命令列表)
+- [四、完全手动方式（无 MCP Server）](#四完全手动方式无-mcp-server)
 - [五、人工参与规范（新增）](#五人工参与规范新增)
   - [5.1 人工角色的五层定义](#51-人工角色的五层定义)
   - [5.2 人工指令集](#52-人工指令集)
@@ -62,34 +64,6 @@ mkdir -p ops/
 ```
 
 ### 1.3 Skill 安装清单
-
-安装以下 Skill，本方案共需要 **23 个 Skill**（V2.1 从 18 个扩充至 23 个）：
-
-| Skill名称                        | 来源          | 当前状态   | 安装路径                                |
-| ------------------------------ | ----------- | ------ | ----------------------------------- |
-| brainstorming                  | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
-| writing-plans                  | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
-| executing-plans                | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
-| test-driven-development        | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
-| systematic-debugging           | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
-| requesting-code-review         | Superpowers | 🔧 需修改 | .kimi/skills/superpowers/           |
-| finishing-a-development-branch | Superpowers | ✅ 可用   | .kimi/skills/superpowers/           |
-| prd-generation                 | 本方案         | 🔧 需修改 | .kimi/skills/prd-generation/        |
-| progress-tracker               | 本方案         | 🔧 需修改 | .kimi/skills/progress-tracker/      |
-| self-check                     | 本方案         | 🔧 需修改 | .kimi/skills/self-check/            |
-| competitive-analysis           | 本方案         | ✅ 可用   | .kimi/skills/competitive-analysis/  |
-| high-level-design              | 本方案         | 🔧 需修改 | .kimi/skills/high-level-design/     |
-| detailed-requirements          | 本方案         | 🔧 需修改 | .kimi/skills/detailed-requirements/ |
-| detailed-design                | 本方案         | ➕ 需新增  | .kimi/skills/detailed-design/       |
-| interface-first-dev            | 本方案         | ➕ 需新增  | .kimi/skills/interface-first-dev/   |
-| task-breakdown                 | 本方案         | ➕ 需新增  | .kimi/skills/task-breakdown/        |
-| unit-test                      | 本方案         | ➕ 需新增  | .kimi/skills/unit-test/             |
-| integration-test               | 本方案         | ➕ 需新增  | .kimi/skills/integration-test/      |
-| uat-verification               | 本方案         | ➕ 需新增  | .kimi/skills/uat-verification/      |
-| release-management             | 本方案         | ➕ 需新增  | .kimi/skills/release-management/    |
-| monitoring-setup               | 本方案         | ➕ 需新增  | .kimi/skills/monitoring-setup/      |
-| monitoring-analysis            | 本方案         | ➕ 需新增  | .kimi/skills/monitoring-analysis/   |
-| human                          | 本方案         | ➕ 需新增  | .kimi/skills/human/                 |
 
 > 详细 Skill 状态与衔接关系见 `docs/AI项目工具链Skill清单与状态.md`。
 
@@ -140,16 +114,17 @@ mkdir -p ops/
 12. **🚪 Gate 2：设计冻结 ——** 人工评审架构，调用 `human gate=Gate2 action=sign-off`
 13. **详细设计 ——** 调用 `detailed-design` 按模块输出详细设计
 14. **接口驱动 ——** 调用 `interface-first-dev` 定义前后端接口契约
-15. **任务拆解 ——** 调用 `task-breakdown` 将工作拆解为≤30分钟/任务
-16. **编码实现 ——** 调用 `executing-plans` + `tdd` 执行开发任务
-17. **单元测试 ——** 调用 `unit-test` 生成并执行单元测试（覆盖率≥70%）
-18. **集成测试 ——** 调用 `integration-test` 生成并执行集成测试（含 `user-stories-checklist.md`）
-19. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
-20. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过，调用 `human gate=Gate3 action=sign-off`
-21. **代码审查 ——** 调用 `requesting-code-review` 输出结构化审查报告
-22. **上线发布 ——** 调用 `release-management` 生成发布清单，人工最终确认后上线
-23. **归档收尾 ——** 调用 OpenSpec 的 `archive` + Superpowers 的 `finishing-a-development-branch`
-24. **线上监控 ——** 周期性调用 `monitoring-analysis`，输出 `feedback-loop.md` 反哺下一变更
+15. **编写实现计划 ——** 调用 `writing-plans` 生成模块级实现计划（plan.md）
+16. **任务拆解 ——** 调用 `task-breakdown` 基于 plan.md 和接口契约，将工作拆解为≤30分钟/任务的开发清单（tasks.md）
+17. **编码实现 ——** 调用 `executing-plans` 按 tasks.md 逐 Batch 执行开发任务（含强制自测、接口校验、自动勾选），内部调用 `test-driven-development` 遵循 RED-GREEN-REFACTOR 循环
+18. **单元测试 ——** 调用 `unit-test` 生成并执行单元测试（覆盖率≥70%）
+19. **集成测试 ——** 调用 `integration-test` 生成并执行集成测试（含 `user-stories-checklist.md`）
+20. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
+21. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过，调用 `human gate=Gate3 action=sign-off`
+22. **代码审查 ——** 调用 `requesting-code-review` 输出结构化审查报告
+23. **上线发布 ——** 调用 `release-management` 生成发布清单，人工最终确认后上线
+24. **归档收尾 ——** 调用 OpenSpec 的 `archive` + Superpowers 的 `finishing-a-development-branch`
+25. **线上监控 ——** 周期性调用 `monitoring-analysis`，输出 `feedback-loop.md` 反哺下一变更
 
 ### 3.3 各阶段操作指令
 
@@ -369,11 +344,49 @@ npx @fission-ai/openspec@latest init
 
 ---
 
+#### 阶段 5.5：编写实现计划（新增）
+
+```bash
+/skill:writing-plans 基于详细设计和接口契约，生成模块级实现计划。
+参考：@openspec/changes/{变更名}/specs/feature-*/design.md
+@openspec/changes/{变更名}/interface-contracts/openapi.yaml
+
+/skill:self-check 实现计划
+```
+
+产出：`openspec/changes/{变更名}/plan.md`
+
+**plan.md 核心内容：**
+- Goal + Architecture + Tech Stack
+- Module Breakdown（每个模块的实现顺序、关键决策、依赖关系、验收标准）
+- 全局任务依赖总图（Mermaid DAG）
+- **Plan → Task 转换建议**（指导 task-breakdown 的 Phase 划分与任务数估算）
+
+**末尾 AI 提示语：**
+```text
+========================================
+Plan 已生成，下一步 REQUIRED: task-breakdown
+========================================
+Plan 已保存至：@openspec/changes/{变更名}/plan.md
+
+请确认 plan.md 中的以下内容：
+1. 模块划分是否与详细设计一致
+2. 技术选型是否可执行
+3. 验收标准是否可验证
+
+确认无误后，执行：/skill:task-breakdown 将 Plan 转换为可执行任务清单。
+```
+
+---
+
 #### 阶段 6：任务拆解
 
 ```bash
-/skill:task-breakdown 基于详细设计和接口契约，生成开发任务清单。
-原则：每个任务 ≤ 30 分钟
+/skill:task-breakdown 基于 plan.md 和接口契约，生成开发任务清单。
+原则：每个任务 ≤ 30 分钟，垂直切片优先，标签明确
+
+参考：@openspec/changes/{变更名}/plan.md
+@openspec/changes/{变更名}/interface-contracts/openapi.yaml
 ```
 
 产出：`openspec/changes/{变更名}/tasks.md`，按 Phase 组织
@@ -383,12 +396,19 @@ npx @fission-ai/openspec@latest init
 #### 阶段 7：编码实现
 
 ```bash
-/skill:executing-plans 按 tasks.md 逐个执行任务。
-约束：符合项目编码规范 + 包含异常处理 + 完成后自测
+/skill:executing-plans 按 tasks.md 逐 Batch 执行开发任务。
+约束：Batch 大小=3、强制自测、接口校验、Rollback-Friendly Commit
 
-# 每个任务完成后：
-/skill:self-check 编码任务
+参考：@openspec/changes/{变更名}/tasks.md
+@openspec/changes/{变更名}/specs/feature-*/design.md
+@openspec/changes/{变更名}/interface-contracts/openapi.yaml
 ```
+
+**执行纪律（新增）：**
+- **Simplicity First**：先写最简单可行方案
+- **Scope Discipline**：严禁顺手重构，发现相邻问题记入 `NOTICED BUT NOT TOUCHING`
+- **Rollback-Friendly**：优先新增文件，禁止同一 commit 既删又替
+- **Gate Non-Collapse**：自测、接口校验、单测三个门控必须独立执行，禁止合并
 
 ---
 
@@ -535,287 +555,48 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ---
 
-## 四、完全手动方式（无MCP Server）
+## 四、完全手动方式（无 MCP Server）
 
-### 4.1 手动方式说明
+当 MCP Server 不可用时（网络不通、服务未部署或权限不足），可通过手动方式按顺序执行命令完成全生命周期操作。
 
-当 MCP Server 不可用时（网络不通、服务未部署或权限不足），可以通过手动方式按顺序执行命令。手动方式的核心原则是：
+**适用场景**：
+- 前期环境搭建阶段，MCP Server 尚未部署
+- 网络受限环境（内网、离线场景）
+- 偏好纯命令行手动控制的团队
 
+**核心原则**：
 - 每个命令按固定顺序执行，不能跳过或并行
 - 每个命令的输出作为下一个命令的输入
-- **每个 Gate 完成后需要人工确认签字后才能进入下一阶段（V2.1 强化）**
+- **每个 Gate 完成后需要人工确认签字后才能进入下一阶段**
 - 自查环节必不可少，确保产出物质量
 
-### 4.2 完整命令执行流程
+**完整命令速查表**：
 
 | 步骤 | 命令 | 说明 | 产出物 | 人工闸门 |
 |------|------|------|--------|----------|
 | 0 | progress-tracker | 初始化目录结构 | config.yaml + ops/ | — |
-| 1 | /opsx:propose | 创建变更提案 | proposal.md | — |
-| 1 | brainstorming | 需求探索 | 探索记录 | — |
+| 1 | /opsx:propose + brainstorming | 创建提案 + 需求探索 | proposal.md + 探索记录 | — |
 | 1.5 | competitive-analysis | 市场定位分析（可选） | market-positioning.md | — |
 | 2 | prd-generation | 生成概要需求 | 01-05.md | 🚪 Gate 1 |
 | 2.5 | detailed-requirements | 生成详细需求 | feature-*/ | 🚪 Gate 2.5 |
-| 3 前置 | competitive-analysis | 技术竞品分析 | competitive-analysis.md + design-input.md | — |
+| 3 前置 | competitive-analysis | 技术竞品分析 | CA.md + design-input.md | — |
 | 3 | high-level-design | 概要设计 | design/*.md + rollback-plan.md | 🚪 Gate 2 |
 | 3.5 | monitoring-setup | 监控初始化（一次性） | monitoring-rules.yaml | — |
 | 4 | detailed-design | 详细设计 | feature-*/design.md | — |
 | 5 | interface-first-dev | 接口驱动 | openapi.yaml | — |
+| 5.5 | writing-plans | 编写实现计划 | plan.md | — |
 | 6 | task-breakdown | 任务拆解 | tasks.md | — |
 | 7 | executing-plans | 编码实现 | 代码文件 | — |
 | 8 | unit-test | 单元测试 | tests/unit/ | — |
-| 9 | integration-test | 集成测试 | tests/integration/ + user-stories-checklist.md | — |
+| 9 | integration-test | 集成测试 | tests/integration/ + checklist.md | — |
 | 9.5 | uat-verification | UAT 验证 | uat-report.md | 🚪 Gate 3 |
 | 10 | requesting-code-review | 代码审查 | code-review-report.md | — |
 | 10.5 | release-management | 上线发布 | release-notes.md | 人工最终决策 |
 | 11 | archive + finish | 归档收尾 | archive/ | — |
-| 12 | monitoring-analysis | 线上监控（周期性） | monitoring-dashboard.md | — |
+| 12 | monitoring-analysis | 线上监控（周期性） | dashboard.md | — |
 
-### 4.3 各阶段详细命令列表
-
-#### 步骤 0：初始化变更目录（V2.1 增加 ops/ 目录）
-
-```bash
-# 1. 创建目录结构
-mkdir -p openspec/{specs,changes,archive}
-mkdir -p openspec/changes/{变更名}/{specs,design,uat,sign-off}
-mkdir -p .kimi/skills/
-mkdir -p docs/ai-output
-mkdir -p tests/{unit,integration}
-mkdir -p ops/                      # V2.1 新增
-
-# 2. 创建配置文件 openspec/config.yaml
-cat > openspec/config.yaml << 'EOF'
-schema: {项目名}-sdd
-version: "1.0"
-context: |
-  项目：{项目名称}
-  技术栈：{前端框架} + {后端框架} + {数据库}
-  规范：所有变更必须通过概要评审和详细评审
-EOF
-
-# 3. 创建运维基础设施骨架（V2.1 新增）
-cat > ops/staging-config.yaml << 'EOF'
-# 预发布环境配置模板
-environment: staging
-database: {连接串}
-api_keys: {第三方API Key}
-EOF
-
-cat > ops/rollback-plan.md << 'EOF'
-# 回滚方案模板
-## 回滚触发条件
-## 回滚步骤
-## 数据库回滚脚本清单
-## 灰度策略
-EOF
-
-# 4. 初始化进度跟踪
-/skill:progress-tracker 初始化{项目名}项目目录
-```
-
-#### 步骤 1：创建变更提案
-
-```bash
-/opsx:propose "{变更描述}"
-```
-
-说明：创建 `openspec/changes/{变更名}/proposal.md`。
-
-#### 步骤 1：需求探索
-
-```bash
-/skill:brainstorming 帮我脑暴一下，打算做个{产品描述}，
-本地资料：@docs/ref/*.md
-
-/skill:progress-tracker 请更新进度
-```
-
-#### 步骤 2：生成概要需求 + 🚪 Gate 1
-
-```bash
-/skill:prd-generation 基于 brainstorming 结果生成概要需求。
-参考文档：@openspec/changes/*/proposal.md @docs/*/*
-
-/skill:progress-tracker 请更新进度
-/skill:self-check 概要需求
-```
-
-**人工操作（阻塞）：**
-```bash
-# 阅读 5 个 spec 文件后
-/skill:human gate=Gate1 action=sign-off result=passed issues="遗留问题（如有）"
-```
-
-#### 步骤 2.5：生成详细需求 + 🚪 Gate 2.5
-
-```bash
-/skill:detailed-requirements 基于概要需求，按模块输出详细需求。
-参考文档：@openspec/changes/{变更名}/specs/01-*.md
-@openspec/changes/{变更名}/specs/03-*.md
-
-/skill:progress-tracker 请更新进度
-```
-
-产出：每个模块包含 `spec.md`、`prototype.md`、`io-table.md`、`logic.md`、`interaction-spec.md`。
-
-**人工操作（阻塞）：**
-```bash
-# 逐页确认 interaction-spec.md 中每个按钮的交互状态机
-/skill:human gate=Gate2.5 action=sign-off result=passed issues=""
-```
-
-#### 步骤 3 前置：技术竞品分析
-
-```bash
-/skill:competitive-analysis mode=technical 请自动搜索相关竞品，执行技术深度对比分析。
-
-分析维度：角色数据模型设计、核心功能流程、技术选型、集成方式
-参考文档：@openspec/changes/{变更名}/specs/
-
-/skill:progress-tracker 请更新进度
-```
-
-#### 步骤 3：概要设计 + 🚪 Gate 2
-
-```bash
-/skill:high-level-design 生成概要设计。
-参考：@openspec/changes/{变更名}/specs/
-@openspec/changes/{变更名}/design/competitive-analysis.md
-@openspec/changes/{变更名}/design/design-input.md
-
-/skill:self-check 概要设计
-```
-
-产出：`design/` 目录下的 16 个 Markdown 文件 + `rollback-plan.md`。
-
-**人工操作（阻塞）：**
-```bash
-# 评审架构 + 确认 rollback-plan.md
-/skill:human gate=Gate2 action=sign-off result=passed issues=""
-```
-
-#### 步骤 4：详细设计
-
-```bash
-/skill:detailed-design 按模块输出详细设计。
-参考：@openspec/changes/{变更名}/design/
-@openspec/changes/{变更名}/specs/feature-*/
-
-/skill:self-check 详细设计
-```
-
-产出：每个模块目录下增加 `design.md`、`api-spec.md`、`db-schema.md`、`state-machine.md`、`test-plan.md`。
-
-#### 步骤 5：接口驱动开发
-
-```bash
-/skill:interface-first-dev 基于详细设计定义前后端接口契约。
-参考：@openspec/changes/{变更名}/specs/feature-*/api-spec.md
-@openspec/changes/{变更名}/specs/feature-*/db-schema.md
-
-/skill:self-check 接口契约
-```
-
-#### 步骤 6：任务拆解
-
-```bash
-/skill:task-breakdown 基于详细设计和接口契约，生成开发任务清单。
-参考：@openspec/changes/{变更名}/specs/feature-*/design.md
-@openspec/changes/{变更名}/interface-contracts/openapi.yaml
-```
-
-产出：`openspec/changes/{变更名}/tasks.md`。
-
-#### 步骤 7：编码实现
-
-```bash
-# 对每个任务执行：
-/skill:executing-plans 执行任务 {任务ID}。
-参考：@openspec/changes/{变更名}/tasks.md
-@openspec/changes/{变更名}/specs/feature-*/design.md
-
-# 每个任务完成后：
-/skill:self-check 编码任务
-```
-
-#### 步骤 8：单元测试
-
-```bash
-/skill:unit-test 为已完成的模块生成单元测试。
-参考：@openspec/changes/{变更名}/specs/feature-*/test-plan.md
-
-pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
-
-/skill:self-check 单元测试
-```
-
-#### 步骤 9：集成测试
-
-```bash
-/skill:integration-test 生成集成测试。
-参考：@openspec/changes/{变更名}/specs/feature-*/spec.md
-@openspec/changes/{变更名}/interface-contracts/openapi.yaml
-
-/skill:self-check 集成测试
-```
-
-产出：`tests/integration/` + `user-stories-checklist.md`。
-
-#### 步骤 9.5：UAT 验证 + 🚪 Gate 3
-
-```bash
-/skill:uat-verification 基于用户故事生成 UAT 检查清单。
-参考：@openspec/changes/{变更名}/specs/feature-*/user-stories.md
-```
-
-**人工操作（阻塞，必须）：**
-1. 在预览环境按 `user-stories-checklist.md` 逐项操作
-2. 记录问题
-3. 确认通过后执行：
-
-```bash
-/skill:human gate=Gate3 action=sign-off result=passed issues=""
-```
-
-产出：`uat-report.md`。
-
-#### 步骤 10：代码审查
-
-```bash
-/skill:requesting-code-review 对已完成的代码进行审查。
-```
-
-产出：`code-review-report.md`。
-
-#### 步骤 10.5：上线发布
-
-```bash
-/skill:release-management 准备发布。
-```
-
-**人工操作（阻塞，最终决策）：**
-- 确认发布窗口
-- 检查回滚方案
-- 人工执行最终发布命令（AI 不自动执行生产发布）
-
-产出：`release-notes.md` + `release-checklist.md`。
-
-#### 步骤 11：归档收尾
-
-```bash
-/skill:requesting-code-review
-/opsx:archive
-/skill:self-check 最终自查
-```
-
-#### 步骤 12：线上监控（周期性）
-
-```bash
-/skill:monitoring-analysis 生成本周健康报告。
-```
-
-产出：`monitoring-dashboard.md` + `feedback-loop.md` → 输入下一变更 `brainstorming`。
+> 📄 **详细命令、参数和人工操作步骤见独立文档**：
+> [`docs/AI项目落地工具链_完全手动操作手册.md`](./AI项目落地工具链_完全手动操作手册.md)
 
 ---
 
@@ -899,31 +680,11 @@ A：不可以。四道人工闸门是阻塞性的，未通过 `human` Skill 签�
 
 ### 6.2 手动方式常见问题
 
-**Q1：可以跳过某些阶段吗？**
+手动方式（无 MCP Server）的详细 FAQ（含命令示例、排查步骤、切换指引）见独立文档：
 
-A：不建议。每个阶段的产出物都是下一个阶段的输入，跳过会导致产出物质量下降。特殊情况下可以简化某个阶段，但不建议完全跳过。
-
-**Q2：自查失败怎么办？**
-
-A：根据自查报告修复问题，修复后重新执行自查。如果是内容不一致问题，需要回到上游阶段修复。
-
-**Q3：多个变更可以并行进行吗？**
-
-A：不建议。手动方式下应该一次只处理一个变更，避免上下文混淆。
-
-**Q4：UAT 发现严重问题怎么办？**
-
-A：立即驳回。执行 `/skill:human gate=Gate3 action=reject reason="{问题描述}"`，AI 会自动生成 `rework-tasks.md`，修复后重新申请 Gate3 sign-off。
+> 📄 [`docs/AI项目落地工具链_完全手动操作手册.md`](./AI项目落地工具链_完全手动操作手册.md)
 
 ### 6.3 通用问题
-
-**Q1：如何切换两种方式？**
-
-A：在工具集成方式下，如果 MCP Server 不可用，系统会自动提示切换到手动方式。也可以通过命令 `/mode:manual` 手动切换。
-
-**Q2：两种方式的产出物兼容吗？**
-
-A：兼容。两种方式产生的文档格式和目录结构完全一致，可以在任何时候切换。
 
 **Q3：需要多少人工干预？**
 

@@ -5,6 +5,11 @@
 > 版本 V2.1 | 2026年5月
 >
 > 本次更新基于 `lifesycle.md` 审查意见，将工具链从"开发完成"扩展为"项目交付"，补充 UAT、发布、监控与四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 作为人工决策的统一载体。
+>
+> **V2.2 更新（2026年5月）**：重构计划与执行阶段，引入 `writing-plans` → `task-breakdown` → `executing-plans` 三级递进工作流。
+> - `writing-plans` 从 Superpowers 原生 micro-step 升级为**模块级实现计划**（plan.md），增加 Self-Review 四检与 Plan → Task 转换建议
+> - `task-breakdown` **新增**，按 ≤30 分钟/任务粒度将 plan.md 拆解为 Phase 组织的 tasks.md，支持垂直切片与执行模式建议
+> - `executing-plans` 增强 **Batch 执行**、**Gate Non-Collapse Rule**、**自动勾选 tasks.md**、**Inline Audit** 与 **Simplicity First / Scope Discipline / Rollback-Friendly** 执行纪律
 
 ---
 
@@ -159,6 +164,8 @@ Superpowers 的核心工作流遵循四个必须的阶段：
 | Plan | 生成精细到每个 2-5 分钟任务的实现计划 |
 | Execute with TDD | 子 Agent 按 RED-GREEN-REFACTOR 循环执行，并经过两轮审查 |
 
+> **本方案改造说明**：本方案在 Superpowers 原生工作流基础上增加了 **设计文档级计划层**（`writing-plans` 输出 plan.md）和 **微观任务拆解层**（`task-breakdown` 输出 tasks.md），形成 `plan.md → tasks.md → Batch 执行` 的三级递进。`writing-plans` 的粒度从 2-5 分钟 micro-step 升级为模块级，`executing-plans` 的执行从直接消费 micro-steps 变为按 Batch 消费 tasks.md。
+
 #### 2.3.3 关键技能
 
 Superpowers 提供了丰富的技能集，本方案中主要使用的技能包括：
@@ -166,8 +173,8 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 | Skill名称 | 来源 | 当前状态 | 核心职责 |
 |-----------|------|----------|----------|
 | brainstorming | Superpowers | ✅ 可用 | 需求探索，苏格拉底式提问 |
-| writing-plans | Superpowers | ✅ 可用 | 编写详细实现计划 |
-| executing-plans | Superpowers | ✅ 可用 | 按计划执行代码实现 |
+| writing-plans | Superpowers | ✅ 已改造 | 编写模块级实现计划（plan.md），衔接 task-breakdown |
+| executing-plans | Superpowers | ✅ 已改造 | 按 tasks.md 逐 Batch 执行，含强制自测、接口校验、自动勾选 |
 | test-driven-development | Superpowers | ✅ 可用 | TDD 红绿重构循环 |
 | systematic-debugging | Superpowers | ✅ 可用 | 四阶段根因分析 |
 | requesting-code-review | Superpowers | 🔧 需修改 | 代码审查检查清单，需输出结构化报告 |
@@ -181,7 +188,7 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 | **human** | **本方案** | **➕ 需新增** | **人工决策审计与闸门控制** |
 | **detailed-design** | **本方案** | **➕ 需新增** | **按模块输出详细设计** |
 | **interface-first-dev** | **本方案** | **➕ 需新增** | **接口驱动开发** |
-| **task-breakdown** | **本方案** | **➕ 需新增** | **任务拆解** |
+| **task-breakdown** | **本方案** | **✅ 可用** | **将 plan.md 按 ≤30 分钟/任务粒度拆解为 Phase 组织的 tasks.md** |
 | **unit-test** | **本方案** | **➕ 需新增** | **单元测试生成与执行** |
 | **integration-test** | **本方案** | **➕ 需新增** | **集成测试生成与执行** |
 | **uat-verification** | **本方案** | **➕ 需新增** | **UAT 业务验证** |
@@ -302,10 +309,11 @@ Human Gate 不是独立的第三方工具，而是本方案定义的 Skill（`hu
 | high-level-design | prd + CA + DR | detailed-design, **monitoring-setup** |
 | **monitoring-setup** | high-level-design | **monitoring-analysis** |
 | **human (Gate2)** | high-level-design | detailed-design |
-| detailed-design | HLD + DR | interface-first-dev |
-| interface-first-dev | detailed-design | task-breakdown |
-| task-breakdown | DD + IFD | executing-plans |
-| executing-plans | task-breakdown | unit-test, integration-test |
+| detailed-design | HLD + DR | interface-first-dev, **writing-plans** |
+| interface-first-dev | detailed-design | **task-breakdown** |
+| **writing-plans** | detailed-design + IFD | **task-breakdown** |
+| task-breakdown | plan.md + IFD | executing-plans |
+| executing-plans | tasks.md | unit-test, integration-test |
 | unit-test | executing-plans | integration-test |
 | integration-test | unit-test | **uat-verification** |
 | **uat-verification** | integration-test | **human (Gate3)** |
@@ -358,19 +366,23 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 3. **详细需求阶段——** `detailed-requirements` 按模块输出详细需求（含 `interaction-spec.md`），通过 `human` Skill 触发 **Gate 2.5** 原型冻结。
 
-4. **设计阶段——** Kimi Code 调用 Superpowers 的 `writing-plans` 生成实现计划，同时通过 OpenSpec 管理设计文档和任务清单；`high-level-design` 产出架构文档和 `rollback-plan.md`，通过 `human` Skill 触发 **Gate 2** 设计冻结；`monitoring-setup` 生成监控规则初稿。
+4. **设计阶段——** `high-level-design` 产出架构文档和 `rollback-plan.md`，通过 `human` Skill 触发 **Gate 2** 设计冻结；`monitoring-setup` 生成监控规则初稿。`detailed-design` 按模块输出详细设计（含 `api-spec.md`、`db-schema.md`、`state-machine.md`）。`interface-first-dev` 基于详细设计定义前后端接口契约（`openapi.yaml` + Mock 数据 + 并行开发计划）。
 
-5. **开发阶段——** Kimi Code 调用 Superpowers 的 `executing-plans` 和 `tdd` 执行代码开发，并通过 OpenSpec 的 `apply` 命令跟踪任务执行进度。
+5. **计划阶段——** `writing-plans` 基于 detailed-design 和 interface-first-dev 的产出，生成模块级实现计划（plan.md），包含技术路线、模块实现顺序、验收标准，并输出「Plan → Task 转换建议」。plan.md 经 Self-Review 四检（Spec Coverage / Placeholder Scan / Type Consistency / Design Alignment）通过后保存。
 
-6. **测试阶段——** `unit-test` 和 `integration-test` 生成并执行测试；`integration-test` 额外输出 `user-stories-checklist.md` 供 UAT 使用。
+6. **任务拆解阶段——** `task-breakdown` 读取 plan.md 和接口契约，按垂直切片原则将模块拆分为 ≤30 分钟/任务的开发清单（tasks.md），按 Phase 组织并标注 `[前端]`/`[后端]`/`[AI模型]`/`[配置]`/`[测试]` 标签。自检通过（覆盖度/无XL/依赖无环/标签完整/验收可验证）后保存。
 
-7. **UAT 阶段（V2.1 新增）——** `uat-verification` 生成检查清单，人工在预览环境点击走通业务流程，通过 `human` Skill 触发 **Gate 3** 发布冻结。
+7. **开发阶段——** Kimi Code 调用 `executing-plans` 按 tasks.md 逐 Batch（默认 3 任务/批次）执行代码开发。每个任务执行后必须经过三个独立门控：强制自测（self-check）、接口一致性校验（代码 vs api-spec）、单测运行（覆盖率 ≥ 70%）。任务完成后自动勾选 tasks.md，Batch 完成后执行 Inline Audit。执行纪律包括 Simplicity First、Scope Discipline、Rollback-Friendly。
 
-8. **发布阶段（V2.1 新增）——** `requesting-code-review` 输出结构化审查报告；`release-management` 生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
+8. **测试阶段——** `unit-test` 和 `integration-test` 生成并执行测试；`integration-test` 额外输出 `user-stories-checklist.md` 供 UAT 使用。
 
-9. **归档阶段——** 开发完成后，Kimi Code 调用 OpenSpec 的 `archive` 命令归档变更（范围扩大至纳入 uat-report、release-notes、human-decisions）。
+9. **UAT 阶段（V2.1 新增）——** `uat-verification` 生成检查清单，人工在预览环境点击走通业务流程，通过 `human` Skill 触发 **Gate 3** 发布冻结。
 
-10. **监控阶段（V2.1 新增）——** `monitoring-analysis` 周期性运行，输出 `feedback-loop.md` 反哺下一变更的 `brainstorming`，形成闭环。
+10. **发布阶段（V2.1 新增）——** `requesting-code-review` 输出结构化审查报告；`release-management` 生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
+
+11. **归档阶段——** 开发完成后，Kimi Code 调用 OpenSpec 的 `archive` 命令归档变更（范围扩大至纳入 uat-report、release-notes、human-decisions）。
+
+12. **监控阶段（V2.1 新增）——** `monitoring-analysis` 周期性运行，输出 `feedback-loop.md` 反哺下一变更的 `brainstorming`，形成闭环。
 
 ### 4.4 人工阻塞机制实现（V2.1 新增）
 
@@ -455,7 +467,9 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 ### 6.1 短期规划（6-12个月）
 
-> • 完善 10 个新增 Skill（`human`、`uat-verification`、`release-management`、`monitoring-setup`、`monitoring-analysis`、`detailed-design`、`interface-first-dev`、`task-breakdown`、`unit-test`、`integration-test`）的实现
+> • 完善 9 个新增 Skill（`human`、`uat-verification`、`release-management`、`monitoring-setup`、`monitoring-analysis`、`detailed-design`、`interface-first-dev`、`unit-test`、`integration-test`）的实现
+>
+> • 改造 2 个 Superpowers 原生 Skill（`writing-plans` 从 micro-step 升级为模块级计划并衔接 task-breakdown；`executing-plans` 增加 Batch 执行、强制自测、接口校验、自动勾选、Inline Audit、Simplicity First / Scope Discipline / Rollback-Friendly 执行纪律）
 >
 > • 修改 6 个现有 Skill（`prd-generation`、`detailed-requirements`、`high-level-design`、`progress-tracker`、`self-check`、`requesting-code-review`），补充交互规格、回滚方案、人工状态等能力
 >

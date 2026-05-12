@@ -1,0 +1,7 @@
+{
+  "name": "writing-plans",
+  "version": "2.0.0",
+  "pattern": "generator",
+  "tags": ["sdlc", "planning", "implementation", "openspec", "stage-4"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

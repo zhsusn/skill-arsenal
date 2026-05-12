@@ -1,0 +1,7 @@
+{
+  "name": "executing-plans",
+  "version": "2.0.0",
+  "pattern": "pipeline",
+  "tags": ["sdlc", "execution", "implementation", "openspec", "stage-5"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}
