@@ -1,7 +1,7 @@
 {
   "name": "requesting-code-review",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "pattern": "reviewer",
-  "tags": ["code-review", "quality-gate", "sdlc", "superpowers", "stage-10"],
+  "tags": ["code-review", "quality-gate", "sdlc", "superpowers", "stage-10", "traceability"],
   "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
 }

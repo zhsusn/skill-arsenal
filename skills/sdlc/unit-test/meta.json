@@ -1,0 +1,7 @@
+{
+  "name": "unit-test",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": ["sdlc", "testing", "quality-gate", "coverage", "openspec", "stage-8"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

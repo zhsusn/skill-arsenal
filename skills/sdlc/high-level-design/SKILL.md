@@ -20,7 +20,7 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 2. **配置驱动**：按 `config.yaml` 的 `artifact_specs.high-level-design.required_sections` 逐项输出
 3. **严格边界**：只输出影响 ≥2 个模块的架构决策，禁止下钻到详细设计
 4. **图表自治**：自动生成 Mermaid 架构图、ER 图、时序图、部署拓扑图
-5. **需求追溯**：每个架构决策必须能追溯到上游需求文档
+5. **需求追溯**：每个架构决策必须能追溯到上游需求文档；**每个设计文件末尾必须包含"需求可追溯性"段落**，列出本文件回应的 REQ-XXX 及对应验证方式
 6. **运维架构与回滚方案（V2.1 新增）**：输出运维监控架构、告警策略、可观测性方案，并生成 `rollback-plan.md`
 7. **Gate 2 人工冻结提示（V2.1 新增）**：全部章节输出完成后，自动宣读 🚪 Gate 2 阻塞提示，等待人工签字后方可进入详细设计阶段
 
@@ -51,11 +51,40 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 
 ### Step 3: 逐项生成（按 required_sections）
 
+#### introduction（新增）
+文档引言，包含：
+- **1.1 目的**：本文档覆盖范围及目标读者
+- **1.2 范围**：系统边界——包含与不包含的内容
+- **1.3 术语与缩写**：统一术语表（与 `specs/02-requirements-list.md` 中的术语保持一致）
+- **1.4 参考资料**：PRD 链接 + 竞品分析报告 + AI 架构决策文档（若存在）
+
+#### design_considerations（新增）
+设计前提与约束，包含：
+- **假设**：业务假设、技术假设、环境假设
+- **约束**：技术约束（如必须兼容的技术栈）、业务约束（如合规要求）、预算约束
+- **依赖**：外部系统、第三方服务、内部模块依赖及版本要求
+- **风险**：技术风险、业务风险、AI 模型风险（AI 项目），每项含影响等级（高/中/低）和缓解策略
+
 #### system_architecture
 分层/服务划分、部署拓扑、Mermaid 架构图（支持 C4-Model 分层：Context→Container→Component）。禁止写模块内部类图。
 
 #### tech_stack
-技术项 + 选型理由 + 竞品溯源。每个选型必须关联 `competitive-analysis.md` 结论。禁止展开框架专属模式（如 Spring DI 配置、React Hook 模式）。
+技术项 + 选型理由 + 竞品溯源 + **架构策略对比矩阵 + ADR（Architecture Decision Record）**。
+
+每个选型必须：
+- 关联 `competitive-analysis.md` 结论
+- 输出**备选方案对比矩阵**（强制）：
+  | 方案 | 优点 | 缺点 | 决策 | 适用场景 |
+  |------|------|------|------|----------|
+  | [方案 A] | [优点] | [缺点] | 选中 | [理由] |
+  | [方案 B] | [优点] | [缺点] | 放弃 | [理由] |
+- 输出**关键架构决策（ADR 格式）**：
+  - **决策**：[内容]
+  - **背景**：[上下文]
+  - **备选**：[考虑过的方案]
+  - **后果**：[正面/负面影响]
+
+禁止展开框架专属模式（如 Spring DI 配置、React Hook 模式）。
 
 #### data_architecture
 逻辑 ER 图、主数据流向、存储策略选型、分库分表策略、核心表清单。生成 Mermaid ER 图。禁止写字段类型、索引、DDL、ORM 配置。
@@ -82,7 +111,13 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁止写缓存 Key 设计、过期策略、连接池配置。
 
 #### exception_handling_global
-全局异常分类体系、降级策略、熔断规则、重试策略。禁止写单接口异常码、补偿事务、日志格式。
+全局错误处理与重试策略。必须包含：
+- **错误分类**：业务错误 / 系统错误 / 网络错误 / AI 模型错误（AI 项目）
+- **处理策略**：降级 / 重试 / 熔断 / 人工介入
+- **重试策略**：指数退避、最大重试次数、死信队列
+- **与 rollback-plan.md 的衔接**：明确哪些错误类别触发回滚，哪些仅触发告警
+
+禁止写单接口异常码、补偿事务、日志格式。
 
 #### deployment_architecture
 容器化/K8s/Serverless 拓扑、CI/CD 流程。生成 Mermaid 部署拓扑图。
@@ -121,6 +156,7 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 ### Step 6: 输出与保存
 按命名规范保存到 `openspec/changes/{变更名}/design/`：
 ```
+00-introduction.md              # 新增：引言、范围、术语、参考资料
 01-system-architecture.md
 02-tech-stack.md
 03-data-architecture.md
@@ -134,11 +170,12 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 11-exception-handling-global.md
 12-deployment-architecture.md
 13-test-strategy.md
-14-operations-architecture.md    # V2.1 新增
-15-rollback-plan.md             # V2.1 新增（同时生成 ops/rollback-plan.md 副本）
+14-operations-architecture.md
+15-rollback-plan.md             # 同时生成 ops/rollback-plan.md 副本
 16-extensibility-design.md      # 可选
 17-decision-records.md          # 可选
 18-governance-rules.md          # 可选
+19-design-considerations.md     # 新增：假设、约束、依赖、风险
 ```
 
 > **rollback-plan.md 双写规则**：一份保存在变更目录 `design/15-rollback-plan.md`，另一份同步更新项目级 `ops/rollback-plan.md`（若存在）。确保回滚方案与变更绑定，同时项目级 ops 目录保持最新。
@@ -187,6 +224,22 @@ self-check 通过后，自动宣读阻塞提示：
 - [ ] 将运维监控阈值写入 `operations-architecture` → 应移至 `monitoring-setup/monitoring-rules.yaml`
 - [ ] 将数据库回滚脚本写入 `rollback-plan` → 应移至 ops 目录下的独立脚本文件，plan 中只写脚本清单和触发条件
 
+## 需求可追溯性格式（每个设计文件末尾强制附加）
+
+每个设计文件（`00-introduction.md` 至 `19-design-considerations.md`）末尾必须包含以下段落：
+
+```markdown
+### 需求可追溯性
+
+| 需求编号 | 需求描述（来自 `specs/02-requirements-list.md`） | 本文件对应章节 | 验证方式 |
+|---------|---------------------------------------------|-------------|---------|
+| REQ-XXX | [需求原文摘要] | [章节编号/标题] | [评审类型] |
+```
+
+- 若某文件不直接回应任何需求，标注"本文件为架构支撑文档，不直接映射单一需求"
+- `rollback-plan.md` 必须追溯至 `05-non-functional.md` 中的可靠性/可用性需求
+- `19-design-considerations.md` 的风险项必须追溯至 `brainstorming/requirement-draft.md` 中的风险点
+
 ## 下游消费
 
 | 下游 Skill | 消费文档 | 衔接规则 |
@@ -210,7 +263,10 @@ self-check 通过后，自动宣读阻塞提示：
 - **状态机兼容**：若提供了详细需求（`feature-*/spec.md`），全局状态机应与其各模块状态描述兼容，发现冲突时标记 BLOCKER。
 - **禁止自动下钻**：生成时若 AI 自发输出详细设计内容，必须自我拦截并提升抽象层级，不得直接保存。
 - **设计锁定原则**：用户确认评审通过后，概要设计冻结。变更需重新走架构评审会，禁止偷偷修改已冻结文档。
-- **ADR 流于形式**：若输出决策记录，必须包含"备选方案及排除原因"，否则视为不完整。
+- **ADR 流于形式**：若输出决策记录或 `02-tech-stack.md` 中的架构策略，必须包含"备选方案及排除原因"，否则视为不完整
+- **引言不可空泛**：`00-introduction.md` 的术语表必须与 `specs/02-requirements-list.md` 严格一致，发现术语冲突时标记 BLOCKER
+- **设计考量必须量化**：`19-design-considerations.md` 的风险项必须标注影响等级（高/中/低），禁止只列风险不列缓解策略
+- **错误处理与回滚联动**：`11-exception-handling-global.md` 必须明确哪些错误类别触发 `rollback-plan.md` 中的回滚步骤，未明确联动视为 WARNING
 - **图表一致性**：Mermaid 图表必须从文本架构描述自动生成，禁止图表与文字描述矛盾。
 - **rollback-plan 必须可执行**：回滚步骤不能只写"回滚数据库"，必须明确到"执行 rollback-v1.2.sql → 验证核心表数据行数 → 切换流量"。不可操作的回滚方案 = BLOCKER。
 - **运维架构不是运维手册**：`operations-architecture` 只定义监控三支柱的架构方案（用什么采集、存储、展示），不写具体 Dashboard 配置或告警通知人。

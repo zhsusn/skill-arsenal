@@ -21,18 +21,9 @@
       }
     },
     {
-      "name": "ai-architecture-advisor",
-      "path": "skills/sdlc/ai-architecture-advisor",
-      "description": "当用户询问'AI 架构'、'Agent 设计'、'多 Agent 协作'、'Skill 体系'或需要 AI 项目技术选型时触发。推荐最优 AI 助手架构组合。",
-      "metadata": {
-        "tags": "architecture,ai,design,agent,skill",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
       "name": "brainstorming",
       "path": "skills/sdlc/brainstorming",
-      "description": "当用户提到'新功能'、'变更需求'、'想法探索'、'帮我理清思路'、'需求不清晰'或任何模糊的产品/技术需求时触发。",
+      "description": "当用户提到'新功能'、'变更需求'、'想法探索'、'帮我理清思路'、'需求不清晰'或任何模糊的产品/技术需求时触发。已融合 AI 架构原语选型能力（AI 原生项目专用）。",
       "metadata": {
         "tags": "sdlc,requirement-analysis,brainstorming,openspec,stage-1",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -84,16 +75,11 @@
       }
     },
     {
-      "name": "finishing-a-development-branch",
-      "path": "skills/sdlc/finishing-a-development-branch",
-      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup"
-    },
-    {
-      "name": "high-level-design",
-      "path": "skills/sdlc/high-level-design",
-      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。正向生成系统概要设计文档（含运维架构与回滚方案），回答系统拆成几块、数据怎么走、用什么技术栈。",
+      "name": "finish",
+      "path": "skills/sdlc/finish",
+      "description": "当 release-management 完成且用户确认上线后触发，或用户提到'归档'、'收尾'、'变更完成'、'结束开发'、'合并分支并归档'时触发。执行分支合并、临时文件清理、OpenSpec 归档、CHANGELOG 生成和最终一致性校验。",
       "metadata": {
-        "tags": "sdlc,design,architecture,hld,openspec,stage-3",
+        "tags": "archive,finish,sdlc,openspec,superpowers,stage-11,release",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
@@ -145,9 +131,9 @@
     {
       "name": "requesting-code-review",
       "path": "skills/sdlc/requesting-code-review",
-      "description": "当用户提到'代码审查'、'code review'、'审查代码'、'检查实现质量'或在完成任务、实现主要功能、合并前验证工作是否符合需求时触发。分派代码审查子代理捕获级联前的问题，并输出结构化 code-review-report.md。",
+      "description": "当用户提到'代码审查'、'code review'、'审查代码'、'检查实现质量'或在完成任务、实现主要功能、合并前、Gate 3（UAT）通过后验证工作是否符合需求时触发。分派代码审查子代理捕获级联前的问题，并输出结构化 code-review-report.md。",
       "metadata": {
-        "tags": "code-review,quality-gate,sdlc,superpowers,stage-10",
+        "tags": "code-review,quality-gate,sdlc,superpowers,stage-10,traceability",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
@@ -163,21 +149,47 @@
     {
       "name": "systematic-debugging",
       "path": "skills/sdlc/systematic-debugging",
-      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"
+      "description": "当遇到任何 Bug、测试失败、异常行为、性能问题、构建失败或集成问题时触发。在任何修复尝试之前，必须先找到根因。",
+      "metadata": {
+        "tags": "debugging,root-cause-analysis,sdlc,quality,superpowers",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     },
     {
-      "name": "technical-design-document-generator",
-      "path": "skills/sdlc/technical-design-document-generator",
-      "description": "当用户基于已审批 PRD 要求生成技术设计文档、SDD、架构设计或详细设计时触发。遵循八章节结构输出 comprehensive 设计文档。",
+      "name": "high-level-design",
+      "path": "skills/sdlc/high-level-design",
+      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。已融合技术设计文档生成器的八章节模板、ADR 对比矩阵与需求可追溯性机制。",
       "metadata": {
-        "tags": "architecture,design-document,sdd,api-design,system-design",
+        "tags": "sdlc,design,architecture,hld,openspec,stage-3",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
     {
       "name": "test-driven-development",
       "path": "skills/sdlc/test-driven-development",
-      "description": "Use when implementing any feature or bugfix, before writing implementation code"
+      "description": "当用户在 executing-plans 编码阶段、需要为单个开发任务执行 RED-GREEN-REFACTOR 循环，或用户提到'先写测试'、'TDD'、'测试驱动'时触发。任务级测试先行方法论，驱动接口设计。",
+      "metadata": {
+        "tags": "sdlc,testing,tdd,methodology,openspec,stage-5",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "unit-test",
+      "path": "skills/sdlc/unit-test",
+      "description": "当 executing-plans 完成一个 Batch 后、用户要求'补全单元测试'、'覆盖率检查'、'运行单测'，或需要模块级边界测试与 ≥70% 覆盖率门控时触发。",
+      "metadata": {
+        "tags": "sdlc,testing,quality-gate,coverage,openspec,stage-8",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "integration-test",
+      "path": "skills/sdlc/integration-test",
+      "description": "当 unit-test 覆盖率 ≥70% 通过后、用户要求'集成测试'、'端到端测试'、'E2E'、'主链路验证'，或需要生成 UAT 检查清单时触发。",
+      "metadata": {
+        "tags": "sdlc,testing,e2e,quality-gate,openspec,stage-9",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     },
     {
       "name": "task-breakdown",

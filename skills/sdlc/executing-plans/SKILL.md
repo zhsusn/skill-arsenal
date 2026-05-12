@@ -5,7 +5,7 @@ description: 当用户拥有已编写的 tasks.md 或 plan.md，需要按任务�
 
 # Executing Plans
 
-按 tasks.md 逐个执行编码任务，含强制自测、接口校验、自动勾选。上游是 task-breakdown，下游是 finishing-a-development-branch。
+按 tasks.md 逐个执行编码任务，含强制自测、接口校验、自动勾选。上游是 task-breakdown，下游是 finish。
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
@@ -71,12 +71,19 @@ description: 当用户拥有已编写的 tasks.md 或 plan.md，需要按任务�
 - 跨 Phase 任务必须分属不同 Batch
 - 每个 Batch 执行前输出："开始 Batch N：任务 X.Y, X.Z, X.W"
 
-### Step 3: 编码实现
+### Step 3: 编码实现（含 TDD 内循环）
 
-按任务描述实现代码，遵守：
+每个任务内部必须调用 test-driven-development Skill 执行 RED-GREEN-REFACTOR：
+
+**R - RED**：基于当前任务验收标准 + api-spec.md，先写失败测试  
+**G - GREEN**：写最小实现让测试通过  
+**R - REFACTOR**：清理代码，严禁顺手重构  
+
+遵守执行纪律：
 - **Simplicity First**：先写最简单可行方案
 - **Scope Discipline**：不碰相邻文件，发现的重构点记入 `NOTICED BUT NOT TOUCHING`
 - **精确路径**：严格遵循 tasks.md 中指定的文件路径
+- **TDD 门控**：每个任务完成后确认 RED 先写、GREEN 最小、REFACTOR 后测试全绿
 
 ### Step 4: 强制自测（Self-Check Gate）
 
@@ -97,12 +104,17 @@ description: 当用户拥有已编写的 tasks.md 或 plan.md，需要按任务�
 
 **不一致 → 标记为 blocker**，停止当前 Batch。
 
-### Step 6: 自动运行单测
+### Step 6: Batch 完成后触发 Unit-Test 门控
 
-运行 `pytest tests/unit/... -v`：
-- 要求覆盖率 ≥ 70%（可配置）
-- 现有测试不得失败（回归保护）
-- 失败则修复；通过则继续
+当前 Batch 全部任务编码完成后，调用 unit-test Skill 执行模块级验证：
+
+1. 读取 `feature-*/test-plan.md` 与 `logic.md`
+2. 补全边界测试（异常状态机、空值/越界、外部服务超时）
+3. 统一组织到 `tests/unit/{模块}/` 目录
+4. 运行 `pytest tests/unit/ -v --cov={模块} --cov-report=term-missing`
+5. **门控**：覆盖率 ≥ 70%？是 → 继续 Step 7；否 → 输出未覆盖清单，返回 Step 3 补 TDD 或补边界测试
+
+**现有测试不得失败**：任何增量导致回归，立即停止当前 Batch
 
 ### Step 7: 自动勾选 tasks.md
 
@@ -155,7 +167,7 @@ git commit -m "feat({module}): {task_description}"
 
 全部任务完成后：
 - 输出执行摘要：总任务数、通过数、失败数、耗时
-- 自动调用 finishing-a-development-branch Skill 完成收尾
+- 自动调用 finish Skill 完成收尾
 - 若配置了 requesting-code-review，自动触发代码审查
 
 ## 批次执行摘要模板
@@ -192,11 +204,12 @@ git commit -m "feat({module}): {task_description}"
 | 上游: task-breakdown | 消费 tasks.md 作为执行蓝图；解析 checkbox 识别未完成任务 |
 | 上游: detailed-design | 读取 feature-*/design.md 作为编码依据 |
 | 上游: interface-first-dev | 读取 api-spec.md / openapi.yaml 作为接口校验基准 |
+| 横向: test-driven-development | 每个任务内部调用，执行 RED-GREEN-REFACTOR 内循环 |
 | 横向: self-check | 每个任务后调用 self-check 进行产出物自查 |
-| 横向: unit-test | 编码后自动运行单测；unit-test Skill 负责生成补充测试用例 |
+| 横向: unit-test | Batch 完成后触发模块级验证与覆盖率门控（≥70%） |
 | 横向: progress-tracker | 每批次完成后自动更新进度 |
 | 下游: requesting-code-review | 全部完成后自动触发代码审查 |
-| 下游: finishing-a-development-branch | 最终交接收尾 Skill |
+| 下游: finish | 最终交接收尾 Skill |
 
 ## Gotchas
 
@@ -209,5 +222,7 @@ git commit -m "feat({module}): {task_description}"
 - **tasks.md 是状态机**：自动勾选是执行进度的唯一可信源；禁止口头汇报"做完了"而不勾选
 - **main/master 分支保护**：严禁在 main/master 上直接执行，除非用户明确同意
 - **现有测试是底线**：任何增量不得导致现有测试失败；出现回归立即停止当前 Batch
-- ** Simplicity First 不是简陋**：最简单可行方案仍需处理边界条件和异常路径，只是不预先过度工程化
+- **Simplicity First 不是简陋**：最简单可行方案仍需处理边界条件和异常路径，只是不预先过度工程化
 - **执行模式降级**：若 executing-plans 执行中发现任务比 tasks.md 预估更复杂，暂停并建议用户重新执行 task-breakdown
+- **TDD 内循环不可跳过**：每个任务必须先写失败测试，再写实现，最后重构；代码文件修改时间早于测试文件 = 拒绝进入 GREEN
+- **Unit-Test 门控独立执行**：覆盖率检查是 Batch 完成后的独立门控，禁止与自测、接口校验合并（Gate Non-Collapse）

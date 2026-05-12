@@ -97,7 +97,39 @@ digraph brainstorming {
 
 完整格式规范见 `references/OUTPUT_SPEC.md`。
 
-### Step 5.5: 可选市场定位分析（Recommended）
+### Step 5.5: AI 架构原语选型（AI 原生项目专用）
+
+当需求草案中涉及大模型调用、多模态生成、Agent 协作或 AI 流水线时，基于 `requirement-draft.md` 的模块初分执行 AI 原语选型分析。
+
+**模块级原语映射**：
+对每个功能模块，使用七维度评分（复杂度/复用性/上下文/安全/性能/维护/上市时间），按加权平均计算总分：
+- **1-3 分** → 直接提示词（简单、一次性任务）
+- **4-6 分** → Skill（可复用领域知识库，跨项目共享）
+- **7-9 分** → Agent / Subagent（复杂自主任务，需上下文隔离）
+- **10 分** → SDK 原语（独特工作流，需细粒度控制）
+
+默认权重：复杂度 25%、复用性 20%、上下文 15%、安全 15%、性能 10%、维护 10%、上市时间 5%。
+
+**架构模式选择**：
+根据模块间关系选择：
+- **Skill 优先架构**：可复用专业知识（如角色设计规范、代码审查规范）
+- **Agent 流水线架构**：复杂自主任务（如剧本生成 → 审核 → 修订）
+- **混合架构**：各任务使用合适工具（推荐）
+
+**输出物**：
+生成 `ai-architecture-decision.md` 到 `openspec/changes/{变更名}/brainstorming/`，包含：
+- 每个模块的原语选型及七维度评分表
+- 架构模式图示（Mermaid）
+- 上下文管理策略（渐进式披露方案、上下文压缩/重置规则）
+- 安全边界（工具权限白名单、敏感操作确认机制）
+- 与 `rollback-plan.md` 的衔接：AI 模型错误触发回滚的条件
+
+> 若项目不涉及 AI 功能（纯传统软件），本步骤跳过，在 `requirement-draft.md` 中标注"本变更无 AI 组件"。
+
+**下游衔接**：
+该文档自动作为 `prd-generation` 的输入之一，影响 `05-non-functional.md` 中的 AI 架构需求章节（如模型延迟、Token 成本、并发限制）。
+
+### Step 5.6: 可选市场定位分析（Recommended）
 
 当用户对市场格局不确定、或需要结构化竞品输入来支撑 PRD 时，在执行 self-check 前触发 `competitive-analysis` 的 `positioning` 模式：
 
@@ -129,11 +161,13 @@ digraph brainstorming {
 | `brainstorming-log.md` | 完整问答日志 |
 | `research-report.md` | 资料收集报告（含来源 URL/文件、引用摘要） |
 | `requirement-draft.md` | 结构化需求摘要 |
+| `ai-architecture-decision.md` | AI 架构原语选型决策（AI 原生项目） |
 
 **衔接 prd-generation 时传递**：
 - `requirement-draft.md` 路径
 - `research-report.md` 路径
-- `market-positioning.md` 路径（若已执行 Step 5.5）
+- `ai-architecture-decision.md` 路径（若已执行 Step 5.5）
+- `market-positioning.md` 路径（若已执行 Step 5.6）
 - 澄清度评分
 - 未解决风险点列表
 

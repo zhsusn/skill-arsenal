@@ -176,9 +176,9 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 | writing-plans | Superpowers | ✅ 已改造 | 编写模块级实现计划（plan.md），衔接 task-breakdown |
 | executing-plans | Superpowers | ✅ 已改造 | 按 tasks.md 逐 Batch 执行，含强制自测、接口校验、自动勾选 |
 | test-driven-development | Superpowers | ✅ 可用 | TDD 红绿重构循环 |
-| systematic-debugging | Superpowers | ✅ 可用 | 四阶段根因分析 |
-| requesting-code-review | Superpowers | 🔧 需修改 | 代码审查检查清单，需输出结构化报告 |
-| finishing-a-development-branch | Superpowers | ✅ 可用 | 变更完成时联动归档 |
+| systematic-debugging | Superpowers | ✅ 已适配 | 四阶段根因分析，新增 progress-tracker 技术债务联动 |
+| requesting-code-review | Superpowers | ✅ 已改造 | 代码审查，V2.1 增强：design.md 对比、tasks.md 追溯、UAT 交叉验证、release-management 衔接 |
+| finish | Superpowers | ✅ 已改造 | 归档收尾（原 finishing-a-development-branch），扩展为八步流水线：人工确认→合并清理→归档→规格同步→纳入交付后文档→CHANGELOG→一致性校验→确认单 |
 | prd-generation | 本方案 | 🔧 需修改 | 概要需求生成，需增加 Gate1 确认提示 |
 | competitive-analysis | 本方案 | ✅ 可用 | 竞品分析（positioning/technical 双模式） |
 | high-level-design | 本方案 | 🔧 需修改 | 概要设计，需增加 rollback-plan.md |
@@ -318,9 +318,9 @@ Human Gate 不是独立的第三方工具，而是本方案定义的 Skill（`hu
 | integration-test | unit-test | **uat-verification** |
 | **uat-verification** | integration-test | **human (Gate3)** |
 | **human (Gate3)** | uat-verification | **release-management** |
-| requesting-code-review | executing-plans | **release-management** |
-| **release-management** | uat + CR + rollback | finishing-a-development-branch |
-| finishing-a-development-branch | release-management | 无 |
+| requesting-code-review | executing-plans + design.md + tasks.md | **release-management** / rework-tasks.md |
+| **release-management** | uat + CR + rollback | finish（人工确认后） |
+| finish | release-management（人工确认信号） | **monitoring-analysis** |
 | **monitoring-analysis** | release-management | brainstorming（下一迭代） |
 | self-check | 贯穿全程 | 各阶段门控 |
 | progress-tracker | 贯穿全程 | 各阶段状态更新 |
@@ -378,9 +378,9 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 9. **UAT 阶段（V2.1 新增）——** `uat-verification` 生成检查清单，人工在预览环境点击走通业务流程，通过 `human` Skill 触发 **Gate 3** 发布冻结。
 
-10. **发布阶段（V2.1 新增）——** `requesting-code-review` 输出结构化审查报告；`release-management` 生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
+10. **发布阶段（V2.1 新增）——** `requesting-code-review` 输出结构化审查报告（含 design.md 设计偏差分析、tasks.md 任务追溯矩阵、UAT 交叉验证）。若结论为不通过，生成 `rework-tasks.md` 返回 `executing-plans` 修复。`release-management` 生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
 
-11. **归档阶段——** 开发完成后，Kimi Code 调用 OpenSpec 的 `archive` 命令归档变更（范围扩大至纳入 uat-report、release-notes、human-decisions）。
+11. **归档阶段——** `finish` 执行八步归档流水线：人工最终确认 → 分支合并与清理 → OpenSpec 归档 → 增量规格合并（`/opsx:sync`，保留历史谱系） → 纳入交付后文档（uat-report + release-notes + human-decisions + code-review-report） → 生成 CHANGELOG.md → 最终一致性校验（8 项检查清单） → 输出归档完成确认单。**严禁 AI 自动执行归档，必须等待人工确认信号。**
 
 12. **监控阶段（V2.1 新增）——** `monitoring-analysis` 周期性运行，输出 `feedback-loop.md` 反哺下一变更的 `brainstorming`，形成闭环。
 
@@ -471,7 +471,7 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 >
 > • 改造 2 个 Superpowers 原生 Skill（`writing-plans` 从 micro-step 升级为模块级计划并衔接 task-breakdown；`executing-plans` 增加 Batch 执行、强制自测、接口校验、自动勾选、Inline Audit、Simplicity First / Scope Discipline / Rollback-Friendly 执行纪律）
 >
-> • 修改 6 个现有 Skill（`prd-generation`、`detailed-requirements`、`high-level-design`、`progress-tracker`、`self-check`、`requesting-code-review`），补充交互规格、回滚方案、人工状态等能力
+> • 改造 3 个现有 Skill（`requesting-code-review` 新增 design.md 对比与 tasks.md 追溯；`finish` 从 finishing-a-development-branch 重命名并扩展为八步归档流水线；`systematic-debugging` 新增 progress-tracker 技术债务联动）。修改 5 个现有 Skill（`prd-generation`、`detailed-requirements`、`high-level-design`、`progress-tracker`、`self-check`），补充交互规格、回滚方案、人工状态等能力
 >
 > • 实现 OpenSpec 归档时自动纳入 `uat-report`、`release-notes`、`human-decisions.md`
 >

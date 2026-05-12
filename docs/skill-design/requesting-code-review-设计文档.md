@@ -3,7 +3,7 @@
 > 版本：V2.1  
 > 最后更新：2026-05-08  
 > 对应 Skill：`skills/sdlc/requesting-code-review`  
-> 对应 meta.json version：`1.1.0`
+> 对应 meta.json version：`1.2.0`
 
 ---
 
@@ -30,6 +30,8 @@
 | **发布前门控（Pre-Release Gate）** | UAT 通过后、正式发布前触发的最后一次代码质量审查。 |
 | **占位符（Placeholder）** | 审查指令模板中的可替换变量，用于注入上下文信息。 |
 | **UAT 交叉验证（UAT Cross-Validation）** | 将 UAT 阶段发现的 issues 与代码变更进行关联性复核。 |
+| **实现偏差（Design Deviation）** | 代码实现与 design.md 设计意图之间的差异分析。 |
+| **任务追溯（Task Traceability）** | 将代码变更映射回 tasks.md 中的任务编号，检查覆盖度与范围偏离。 |
 
 ### 2.2 审查报告结构（V2.1 强制输出）
 
@@ -45,9 +47,13 @@ code-review-report.md
 │   └── 风格、命名、注释优化等建议
 ├── 5. 亮点（Highlights）
 │   └── 值得保留和推广的良好实践
-├── 6. UAT 交叉验证（UAT Cross-Validation）
+├── 6. 实现与设计偏差分析（Design Alignment）
+│   └── 代码实现与 design.md 的逐章节对比
+├── 7. 任务追溯矩阵（Task Traceability）
+│   └── 审查意见 ↔ tasks.md 任务编号的映射与覆盖度分析
+├── 8. UAT 交叉验证（UAT Cross-Validation）
 │   └── UAT issues 与代码变更的关联分析
-└── 7. 下一步行动（Next Actions）
+└── 9. 下一步行动（Next Actions）
     └── 明确的修复清单与责任人建议
 ```
 
@@ -70,6 +76,8 @@ InputSet ::= {
   plan_or_requirements : string,      // 关联的需求或实现计划（PLACEHOLDER: PLAN_OR_REQUIREMENTS）
   diff_context      : DiffBundle,     // 代码变更集合（PLACEHOLDER: BASE_SHA .. HEAD_SHA）
   uat_issues        : Issue[],        // UAT 阶段遗留问题（PLACEHOLDER: UAT_ISSUES）
+  tasks_md          : string,         // 任务清单路径（PLACEHOLDER: TASKS_MD）
+  design_md         : string,         // 设计文档路径（PLACEHOLDER: DESIGN_MD）
   review_policy     : Policy,         // 团队审查策略（可选自定义规则）
   target_audience   : enum            // PRE_MERGE | PRE_RELEASE（影响门控严格度）
 }
@@ -108,9 +116,27 @@ DiffBundle ::= {
     └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
+**新增专项子代理（V2.1）**
+
+```
+┌─────────────────┐     ┌─────────────────┐
+│ Design Alignment│     │ Task Traceability│
+│ Agent           │     │ Agent            │
+└────────┬────────┘     └────────┬────────┘
+         │                       │
+         ▼                       ▼
+┌─────────────────┐     ┌─────────────────┐
+│ - 对比 design.md│     │ - 解析 tasks.md │
+│ - 检查架构符合度│     │ - 映射代码变更  │
+│ - 标记正向/负向 │     │ - 标记 scope    │
+│   偏离          │     │   deviation     │
+└─────────────────┘     └─────────────────┘
+```
+
 **1. 上下文组装层（Context Builder）**
 - 解析四个占位符（DESCRIPTION, PLAN_OR_REQUIREMENTS, BASE_SHA/HEAD_SHA, UAT_ISSUES）。
 - 若 `target_audience=PRE_RELEASE`，自动附加发布前检查清单（如日志级别、配置硬编码、回滚方案可见性）。
+- 加载 `tasks.md` 和 `design.md` 作为审查基准。
 - 将大型 Diff 切分为多个子包，供子代理并行处理。
 
 **2. 子代理分派层（Subagent Router）**
@@ -119,6 +145,8 @@ DiffBundle ::= {
   - **安全审计代理**：注入、XSS、密钥硬编码、权限绕过。
   - **架构评审代理**：分层合规、依赖方向、重复代码、圈复杂度。
   - **性能检查代理**：N+1 查询、内存泄漏热点、算法复杂度。
+  - **设计对齐代理（V2.1）**：对比 `design.md`，检查实现是否偏离设计意图。
+  - **任务追溯代理（V2.1）**：解析 `tasks.md`，检查代码变更对任务的覆盖度。
 - 各子代理独立输出原始发现（Raw Findings）。
 
 **3. 报告聚合层（Report Merge）**
@@ -137,6 +165,8 @@ OutputSet ::= {
   majors            : Finding[],
   minors            : Finding[],
   highlights        : Highlight[],
+  design_alignment  : DesignAlignmentResult, // 实现与设计偏差分析（V2.1）
+  task_traceability : TaskTraceabilityResult, // 任务追溯矩阵（V2.1）
   uat_cross_check   : CrossCheckResult,    // UAT 关联性分析结果
   next_actions      : ActionItem[]         // 可执行任务列表
 }
@@ -322,6 +352,8 @@ Highlight:
 | `BASE_SHA` | Git 差异基线 | 代码范围定义 | 是（除 Ad-Hoc） |
 | `HEAD_SHA` | Git 差异目标 | 代码范围定义 | 是（除 Ad-Hoc） |
 | `UAT_ISSUES` | UAT 阶段输出 | 交叉验证数据源 | 仅 PRE_RELEASE |
+| `TASKS_MD` | 任务拆解输出 | 任务追溯基准 | 是 |
+| `DESIGN_MD` | 详细设计输出 | 设计对齐基准 | 是 |
 
 ---
 
@@ -448,3 +480,4 @@ Highlight:
 | V1.0 | — | 基础代码审查框架，支持单代理审查与简单报告。 |
 | V2.0 | — | 引入子代理驱动模式、四种工作流、占位符系统。 |
 | V2.1 | 2026-05 | 新增 UAT 通过后强制触发逻辑；强制输出结构化 `code-review-report.md`；新增 UAT 交叉验证章节；与 `release-management` 正式衔接；meta.json 升级至 1.1.0。 |
+| V2.1 增强 | 2026-05-12 | 新增实现与设计偏差分析（design.md 对比）；新增任务追溯矩阵（tasks.md 映射）；code-reviewer.md 模板增加 DESIGN_MD / TASKS_MD 占位符；meta.json 升级至 1.2.0。 |

@@ -121,9 +121,9 @@ mkdir -p ops/
 19. **集成测试 ——** 调用 `integration-test` 生成并执行集成测试（含 `user-stories-checklist.md`）
 20. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
 21. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过，调用 `human gate=Gate3 action=sign-off`
-22. **代码审查 ——** 调用 `requesting-code-review` 输出结构化审查报告
+22. **代码审查 ——** 调用 `requesting-code-review` 输出结构化审查报告（含 design.md 设计偏差分析、tasks.md 任务追溯矩阵、UAT 交叉验证）
 23. **上线发布 ——** 调用 `release-management` 生成发布清单，人工最终确认后上线
-24. **归档收尾 ——** 调用 OpenSpec 的 `archive` + Superpowers 的 `finishing-a-development-branch`
+24. **归档收尾 ——** 调用 `finish` 执行八步归档流水线（人工确认 → 分支合并 → OpenSpec 归档 → 规格同步 → 纳入交付后文档 → CHANGELOG → 一致性校验 → 确认单）
 25. **线上监控 ——** 周期性调用 `monitoring-analysis`，输出 `feedback-loop.md` 反哺下一变更
 
 ### 3.3 各阶段操作指令
@@ -493,10 +493,23 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ```bash
 /skill:requesting-code-review 对已完成的代码进行审查。
-参考：@openspec/changes/{变更名}/tasks.md
+参考：
+  - @openspec/changes/{变更名}/tasks.md（任务追溯基准）
+  - @openspec/changes/{变更名}/specs/feature-*/design.md（设计对齐基准）
+  - @openspec/changes/{变更名}/uat-report.md（UAT 交叉验证）
 ```
 
-产出： **`code-review-report.md`（V2.1 新增）** —— 结构化记录通过/有条件通过/不通过结论及阻塞性问题清单
+产出： **`code-review-report.md`（V2.1 增强）** —— 结构化记录：
+- 总体结论（通过 / 有条件通过 / 不通过）
+- 阻塞性问题清单
+- 实现与设计偏差分析（对比 design.md）
+- 任务追溯矩阵（审查意见 ↔ tasks.md 任务编号）
+- UAT 交叉验证结果
+
+**不通过时的处理：**
+- 生成 `rework-tasks.md`
+- 返回 `executing-plans` 修复阻塞性问题
+- 修复完成后重新触发 `requesting-code-review`
 
 ---
 
@@ -527,14 +540,33 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 #### 阶段 11：归档收尾
 
 ```bash
-# 归档变更
-/opsx:archive
-
-# 最终自查
-/skill:self-check 最终自查
+# 必须等待人工确认上线成功后方可执行
+/skill:finish
 ```
 
-说明：归档范围扩大（V2.1），纳入 `uat-report` + `release-notes` + `human-decisions.md`
+**Step 0 人工确认（严禁自动执行）：**
+```text
+请输入 "确认归档" 继续归档收尾流程。
+```
+
+**八步归档流水线：**
+1. **分支合并**：开发分支合并到主分支，生成合并报告
+2. **临时文件清理**：删除 `.kimi/temp-tests/`、`.kimi/temp-builds/` 等
+3. **OpenSpec 归档**：将全部产物复制到 `openspec/changes/archive/{变更名}/`
+4. **增量规格合并**（`/opsx:sync`）：追加到主规格，保留历史谱系
+5. **纳入交付后文档**：uat-report.md + release-notes.md + human-decisions.md + code-review-report.md
+6. **生成 CHANGELOG.md**：遵循 Keep a Changelog 规范，追加到根目录
+7. **最终一致性校验**（`self-check` 归档版）：8 项检查清单，全过方可继续
+8. **输出归档完成确认单**：记录归档路径、合并 SHA、校验结果
+
+**强制归档的 7 类文档：**
+- specs/（设计文档）
+- tasks.md（任务清单）
+- uat-report.md（UAT 报告）
+- release-notes.md（发布说明）
+- human-decisions.md（人工决策记录）
+- code-review-report.md（代码审查报告）
+- merge-report.md（分支合并报告）
 
 ---
 
@@ -590,9 +622,9 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 | 8 | unit-test | 单元测试 | tests/unit/ | — |
 | 9 | integration-test | 集成测试 | tests/integration/ + checklist.md | — |
 | 9.5 | uat-verification | UAT 验证 | uat-report.md | 🚪 Gate 3 |
-| 10 | requesting-code-review | 代码审查 | code-review-report.md | — |
+| 10 | requesting-code-review | 代码审查 | code-review-report.md（含 design 对比、任务追溯） | — |
 | 10.5 | release-management | 上线发布 | release-notes.md | 人工最终决策 |
-| 11 | archive + finish | 归档收尾 | archive/ | — |
+| 11 | finish | 归档收尾 | archive/ + CHANGELOG.md + 确认单 | — |
 | 12 | monitoring-analysis | 线上监控（周期性） | dashboard.md | — |
 
 > 📄 **详细命令、参数和人工操作步骤见独立文档**：

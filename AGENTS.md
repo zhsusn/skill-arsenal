@@ -45,7 +45,7 @@ skill-arsenal/
 │   │   ├── code-review/
 │   │   ├── documentation/
 │   │   ├── executing-plans/
-│   │   ├── finishing-a-development-branch/
+│   │   ├── finish/
 │   │   ├── git-automation/
 │   │   ├── prd-feature-detail/
 │   │   ├── prd-system-outline/

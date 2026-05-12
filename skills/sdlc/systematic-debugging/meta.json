@@ -1,0 +1,7 @@
+{
+  "name": "systematic-debugging",
+  "version": "1.1.0",
+  "pattern": "pipeline",
+  "tags": ["debugging", "root-cause-analysis", "sdlc", "quality", "superpowers"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

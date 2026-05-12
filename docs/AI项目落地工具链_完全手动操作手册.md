@@ -39,29 +39,29 @@
 
 ## 二、完整命令执行流程速查
 
-| 步骤 | 命令 | 说明 | 产出物 | 人工闸门 |
-|------|------|------|--------|----------|
-| 0 | progress-tracker | 初始化目录结构 | config.yaml + ops/ | — |
-| 1 | /opsx:propose | 创建变更提案 | proposal.md | — |
-| 1 | brainstorming | 需求探索 | 探索记录 | — |
-| 1.5 | competitive-analysis | 市场定位分析（可选） | market-positioning.md | — |
-| 2 | prd-generation | 生成概要需求 | 01-05.md | 🚪 Gate 1 |
-| 2.5 | detailed-requirements | 生成详细需求 | feature-*/ | 🚪 Gate 2.5 |
-| 3 前置 | competitive-analysis | 技术竞品分析 | competitive-analysis.md + design-input.md | — |
-| 3 | high-level-design | 概要设计 | design/*.md + rollback-plan.md | 🚪 Gate 2 |
-| 3.5 | monitoring-setup | 监控初始化（一次性） | monitoring-rules.yaml | — |
-| 4 | detailed-design | 详细设计 | feature-*/design.md | — |
-| 5 | interface-first-dev | 接口驱动 | openapi.yaml | — |
-| 5.5 | writing-plans | 编写实现计划 | plan.md | — |
-| 6 | task-breakdown | 任务拆解 | tasks.md | — |
-| 7 | executing-plans | 编码实现 | 代码文件 | — |
-| 8 | unit-test | 单元测试 | tests/unit/ | — |
-| 9 | integration-test | 集成测试 | tests/integration/ + user-stories-checklist.md | — |
-| 9.5 | uat-verification | UAT 验证 | uat-report.md | 🚪 Gate 3 |
-| 10 | requesting-code-review | 代码审查 | code-review-report.md | — |
-| 10.5 | release-management | 上线发布 | release-notes.md | 人工最终决策 |
-| 11 | archive + finish | 归档收尾 | archive/ | — |
-| 12 | monitoring-analysis | 线上监控（周期性） | monitoring-dashboard.md | — |
+| 步骤   | 命令                     | 说明         | 产出物                                            | 人工闸门        |
+| ---- | ---------------------- | ---------- | ---------------------------------------------- | ----------- |
+| 0    | progress-tracker       | 初始化目录结构    | config.yaml + ops/                             | —           |
+| 1    | /opsx:propose          | 创建变更提案     | proposal.md                                    | —           |
+| 1    | brainstorming          | 需求探索       | 探索记录                                           | —           |
+| 1.5  | competitive-analysis   | 市场定位分析（可选） | market-positioning.md                          | —           |
+| 2    | prd-generation         | 生成概要需求     | 01-05.md                                       | 🚪 Gate 1   |
+| 2.5  | detailed-requirements  | 生成详细需求     | feature-*/                                     | 🚪 Gate 2.5 |
+| 3 前置 | competitive-analysis   | 技术竞品分析     | competitive-analysis.md + design-input.md      | —           |
+| 3    | high-level-design      | 概要设计       | design/*.md + rollback-plan.md                 | 🚪 Gate 2   |
+| 3.5  | monitoring-setup       | 监控初始化（一次性） | monitoring-rules.yaml                          | —           |
+| 4    | detailed-design        | 详细设计       | feature-*/design.md                            | —           |
+| 5    | interface-first-dev    | 接口驱动       | openapi.yaml                                   | —           |
+| 5.5  | writing-plans          | 编写实现计划     | plan.md                                        | —           |
+| 6    | task-breakdown         | 任务拆解       | tasks.md                                       | —           |
+| 7    | executing-plans        | 编码实现       | 代码文件                                           | —           |
+| 8    | unit-test              | 单元测试       | tests/unit/                                    | —           |
+| 9    | integration-test       | 集成测试       | tests/integration/ + user-stories-checklist.md | —           |
+| 9.5  | uat-verification       | UAT 验证     | uat-report.md                                  | 🚪 Gate 3   |
+| 10   | requesting-code-review | 代码审查       | code-review-report.md（含 design.md 对比、tasks.md 追溯） | —           |
+| 10.5 | release-management     | 上线发布       | release-notes.md                               | 人工最终决策      |
+| 11   | finish                 | 归档收尾       | archive/ + CHANGELOG.md + 归档完成确认单       | —           |
+| 12   | monitoring-analysis    | 线上监控（周期性）  | monitoring-dashboard.md                        | —           |
 
 ---
 
@@ -328,9 +328,19 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ```bash
 /skill:requesting-code-review 对已完成的代码进行审查。
+参考：@openspec/changes/{变更名}/tasks.md
+      @openspec/changes/{变更名}/specs/feature-*/design.md
+      @openspec/changes/{变更名}/uat-report.md
 ```
 
-产出：`code-review-report.md`。
+产出：`code-review-report.md`（含总体结论、阻塞性问题、设计偏差分析、任务追溯矩阵、UAT 交叉验证）。
+
+**若结论为不通过：**
+```bash
+# 生成 rework-tasks.md，返回 executing-plans 修复
+/skill:executing-plans 修复代码审查发现的阻塞性问题
+# 修复完成后重新触发 requesting-code-review
+```
 
 ---
 
@@ -338,6 +348,11 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ```bash
 /skill:release-management 准备发布。
+输入：
+  - uat-report.md（通过）
+  - code-review-report.md（通过/有条件通过）
+  - rollback-plan.md（来自阶段 3）
+  - 代码分支/commit SHA
 ```
 
 **人工操作（阻塞，最终决策）：**
@@ -352,10 +367,27 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 ### 步骤 11：归档收尾
 
 ```bash
-/skill:requesting-code-review
-/opsx:archive
-/skill:self-check 最终自查
+# 必须等待人工确认上线成功后方可执行
+/skill:finish
 ```
+
+**Step 0 人工确认（严禁自动执行）：**
+```text
+请输入 "确认归档" 继续归档收尾流程。
+```
+
+**归档流水线（8 步）：**
+1. 合并开发分支到主分支 → 生成合并报告
+2. 清理临时文件（`.kimi/temp-*`）
+3. OpenSpec 归档：复制全部产物到 `openspec/changes/archive/{变更名}/`
+4. 增量规格合并（`/opsx:sync`）：追加到主规格，保留历史谱系
+5. 纳入交付后文档：uat-report.md + release-notes.md + human-decisions.md + code-review-report.md
+6. 生成 CHANGELOG.md（遵循 Keep a Changelog）
+7. 最终一致性校验（8 项检查清单）
+8. 输出归档完成确认单
+
+**强制归档的 7 类文档：**
+- specs/、tasks.md、uat-report.md、release-notes.md、human-decisions.md、code-review-report.md、merge-report.md
 
 ---
 

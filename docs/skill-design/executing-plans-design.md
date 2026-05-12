@@ -13,7 +13,7 @@
 | **核心职责** | 按 tasks.md 逐个执行编码任务，含执行前审查、强制自测、接口校验、自动勾选与批次检查点 |
 | **所处阶段** | 开发阶段（任务拆解完成后 → 测试前） |
 | **上游输入** | task-breakdown（tasks.md）、detailed-design、interface-first-dev |
-| **下游输出** | finishing-a-development-branch、requesting-code-review |
+| **下游输出** | finish、requesting-code-review |
 | **设计模式** | `pipeline`（多步骤流水线） |
 | **开源对标** | Superpowers `executing-plans`（Batch 执行、Critical Review、Blocker 停止）、agent-skills `incremental-implementation`（Simplicity First、Scope Discipline、Rollback-Friendly）、spellbook `develop` Phase 4（Gate Non-Collapse Rule、Inline Audit） |
 
@@ -90,7 +90,7 @@ Step 13: 全部完成？
     ├── 否 → 返回 Step 3 组织下一 Batch
     └── 是 → Step 14
     ↓
-Step 14: 交接 finishing-a-development-branch
+Step 14: 交接 finish
 ```
 
 ### 3.2 详细步骤
@@ -175,7 +175,7 @@ Step 14: 交接 finishing-a-development-branch
 #### Step 14: 完成交接
 
 - 输出执行摘要
-- 自动调用 finishing-a-development-branch Skill
+- 自动调用 finish Skill
 - 若配置 requesting-code-review，自动触发代码审查
 
 ---
@@ -305,7 +305,7 @@ Blocker 报告格式：
 | 横向: unit-test | 编码后自动运行单测；unit-test Skill 负责生成补充测试用例 |
 | 横向: progress-tracker | 每批次完成后自动更新进度 |
 | 下游: requesting-code-review | 全部完成后自动触发代码审查 |
-| 下游: finishing-a-development-branch | 最终交接收尾 Skill |
+| 下游: finish | 最终交接收尾 Skill |
 
 ---
 
@@ -360,7 +360,7 @@ detailed-design + interface-first-dev
          ↓
    【executing-plans】→ 代码文件 + 单元测试 + 自测报告
          ↓
-   【finishing-a-development-branch】→ 收尾
+   【finish】→ 收尾
 ```
 
 **协作规则**：

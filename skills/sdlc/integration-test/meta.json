@@ -1,0 +1,7 @@
+{
+  "name": "integration-test",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "tags": ["sdlc", "testing", "e2e", "quality-gate", "openspec", "stage-9"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

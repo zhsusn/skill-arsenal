@@ -13,7 +13,7 @@
 在 AI 编码助手日益普及的今天，提示词的质量直接决定了产出的上限。`skill-arsenal` 不仅仅是一个 Skill 收藏库，更是一套**可扩展的框架**：
 
 - **标准化**：每个 Skill 遵循统一的 `SKILL.md` + `meta.json` 双轨制规范，配合 `validate.py` 静态校验，确保任何新增 Skill 都能被各平台正确识别与加载。
-- **全生命周期覆盖**：从需求脑暴（`brainstorming`）→ 概要需求（`prd-generation`）→ 详细需求（`prd-feature-detail`）→ 概要设计（`high-level-design`）→ 详细设计（`technical-design-document-generator`）→ 编码（`code-review`、`test-driven-development`）→ 自查（`self-check`）→ 收尾（`finishing-a-development-branch`），每个阶段都有标准化的 AI 协作接口。
+- **全生命周期覆盖**：从需求脑暴（`brainstorming`）→ 概要需求（`prd-generation`）→ 详细需求（`prd-feature-detail`）→ 概要设计（`high-level-design`）→ 详细设计（`technical-design-document-generator`）→ 编码（`code-review`、`test-driven-development`）→ 自查（`self-check`）→ 收尾（`finish`），每个阶段都有标准化的 AI 协作接口。
 - **质量门控**：`self-check` 与 `progress-tracker` 贯穿全程，确保"不自查不流转"，让 AI 产出物具备可评审、可追溯、可冻结的工程质量。
 - **可复用与可扩展**：通过 `config.yaml` 配置驱动输出模板，通过 `skill-create-pattern.py` 脚手架快速生成新 Skill，通过 `convert.py` 一键分发到 Kimi / Cursor / Aider / VS Code 等多平台。
 
@@ -82,7 +82,7 @@ skill-arsenal/
 │   │   ├── code-review/
 │   │   ├── documentation/
 │   │   ├── executing-plans/
-│   │   ├── finishing-a-development-branch/
+│   │   ├── finish/
 │   │   ├── git-automation/
 │   │   ├── high-level-design/
 │   │   ├── prd-feature-detail/
@@ -220,7 +220,7 @@ python3 scripts/skill-create-pattern.py my-skill "My Skill Description" --patter
 | `executing-plans` | 按已有计划执行多步骤任务 | 开发阶段 |
 | `writing-plans` | 有需求后先写实施计划 | 开发阶段 |
 | `requesting-code-review` | 完成任务后请求评审 | 开发阶段 |
-| `finishing-a-development-branch` | 开发分支收尾、合并决策 | 开发阶段 |
+| `finish` | 归档收尾、分支合并、OpenSpec 归档、CHANGELOG 生成 | 交付阶段 |
 | `systematic-debugging` | 遇到 Bug 时系统排查 | 开发阶段 |
 | `git-automation` | 生成规范提交信息 | 开发阶段 |
 | `documentation` | 编写技术文档、ADR、README | 贯穿 |

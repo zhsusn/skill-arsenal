@@ -1,0 +1,7 @@
+{
+  "name": "finish",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "tags": ["archive", "finish", "sdlc", "openspec", "superpowers", "stage-11", "release"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

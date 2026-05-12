@@ -1,0 +1,7 @@
+{
+  "name": "test-driven-development",
+  "version": "2.0.0",
+  "pattern": "inversion",
+  "tags": ["sdlc", "testing", "tdd", "methodology", "openspec", "stage-5"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

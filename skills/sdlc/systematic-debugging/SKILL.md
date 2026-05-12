@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: 当遇到任何 Bug、测试失败、异常行为、性能问题、构建失败或集成问题时触发。在任何修复尝试之前，必须先找到根因。
 ---
 
 # Systematic Debugging
@@ -176,7 +176,7 @@ You MUST complete each phase before proceeding to the next.
    - Automated test if possible
    - One-off test script if no framework
    - MUST have before fixing
-   - Use the `superpowers:test-driven-development` skill for writing proper failing tests
+   - Use the `test-driven-development` skill for writing proper failing tests
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -275,6 +275,39 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 **But:** 95% of "no root cause" cases are incomplete investigation.
 
+## Integration with Project Workflow
+
+### 与 progress-tracker 联动（V2.1）
+
+根因无法定位时，不强行修复：
+1. 在 `progress.md` 的 `risks` 数组中登记技术债务：
+   ```yaml
+   - id: R-{NNN}
+     type: technical-debt
+     description: "[{模块}] {现象简述} — 根因未定位"
+     phase: {当前阶段}
+     created_at: {ISO8601}
+     status: open
+   ```
+2. 通知 `progress-tracker` 更新风险登记
+3. 继续原流程断点执行，不阻塞主流程进度
+
+### 与 executing-plans / unit-test / integration-test 衔接
+
+```
+executing-plans / unit-test / integration-test
+    └── 遇到 Bug/异常
+         └── 自动触发 systematic-debugging
+              ├── 输出：根因报告 + 修复方案
+              └── 验证修复后
+                   └── 返回原流程断点继续执行
+                        ├── 若在 executing-plans 中触发 → 回到当前任务
+                        ├── 若在 unit-test 中触发 → 重新运行当前模块测试
+                        └── 若在 integration-test 中触发 → 重新运行集成测试
+```
+
+**关键规则**：调试完成后回到触发点，不重置 Gate 状态。
+
 ## Supporting Techniques
 
 These techniques are part of systematic debugging and available in this directory:
@@ -284,8 +317,8 @@ These techniques are part of systematic debugging and available in this director
 - **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
 
 **Related skills:**
-- **superpowers:test-driven-development** - For creating failing test case (Phase 4, Step 1)
-- **superpowers:verification-before-completion** - Verify fix worked before claiming success
+- **`test-driven-development`** - For creating failing test case (Phase 4, Step 1)
+- **`self-check`** - Verify fix worked before claiming success
 
 ## Real-World Impact
 

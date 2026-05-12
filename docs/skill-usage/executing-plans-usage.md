@@ -66,7 +66,7 @@ Batch 2: 任务 2.1, 2.2, 2.3
 
 全部任务完成后：
 - 输出执行摘要
-- 自动调用 finishing-a-development-branch Skill
+- 自动调用 finish Skill
 - （如配置）自动触发 requesting-code-review
 
 ---

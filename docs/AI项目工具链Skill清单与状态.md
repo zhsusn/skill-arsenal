@@ -118,7 +118,7 @@
 
 | 序号 | Skill 名 | 状态 | 说明 |
 |------|----------|------|------|
-| 25 | **finishing-a-development-branch** (finish) | ✅ 可用 | Superpowers 原生，变更完成时联动归档。 |
+| 25 | **finish** | ✅ 可用 | Superpowers 原生，变更完成时联动归档。 |
 
 ### 阶段 12：线上监控（周期性）
 
@@ -261,7 +261,7 @@
 | test-driven-development (tdd) | `skills/sdlc/test-driven-development/` | 直接可用 |
 | systematic-debugging | `skills/sdlc/systematic-debugging/` | 直接可用 |
 | requesting-code-review | `skills/sdlc/requesting-code-review/` | 已增强（V2.1） |
-| finishing-a-development-branch (finish) | `skills/sdlc/finishing-a-development-branch/` | 直接可用 |
+| finish | `skills/sdlc/finish/` | 直接可用 |
 | prd-generation | `skills/sdlc/prd-generation/` | 已增强（V2.1） |
 | progress-tracker | `skills/sdlc/progress-tracker/` | 已增强（V2.1） |
 | self-check | `skills/sdlc/self-check/` | 已增强（V2.1） |
