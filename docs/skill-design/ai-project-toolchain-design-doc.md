@@ -186,7 +186,7 @@ Superpowers 提供了丰富的技能集，本方案中主要使用的技能包�
 | progress-tracker | 本方案 | 🔧 需修改 | 进度追踪，需增加 ops/ 目录与人工状态 |
 | self-check | 本方案 | 🔧 需修改 | 产出物自查，需增加交互/UAT 检查维度 |
 | **human** | **本方案** | **➕ 需新增** | **人工决策审计与闸门控制** |
-| **detailed-design** | **本方案** | **➕ 需新增** | **按模块输出详细设计** |
+| **detailed-design** | **本方案** | **✅ 可用（V2.3）** | **按模块输出 5 文件（design/api-spec/db-schema/state-machine/test-plan），内置 Cross-Module Audit、规格充分性审查（SPECIFIED/VAGUE/MISSING）、设计质量自评三级门控，支持增量更新** |
 | **interface-first-dev** | **本方案** | **➕ 需新增** | **接口驱动开发** |
 | **task-breakdown** | **本方案** | **✅ 可用** | **将 plan.md 按 ≤30 分钟/任务粒度拆解为 Phase 组织的 tasks.md** |
 | **unit-test** | **本方案** | **➕ 需新增** | **单元测试生成与执行** |
@@ -309,7 +309,7 @@ Human Gate 不是独立的第三方工具，而是本方案定义的 Skill（`hu
 | high-level-design | prd + CA + DR | detailed-design, **monitoring-setup** |
 | **monitoring-setup** | high-level-design | **monitoring-analysis** |
 | **human (Gate2)** | high-level-design | detailed-design |
-| detailed-design | HLD + DR | interface-first-dev, **writing-plans** |
+| detailed-design | HLD + DR + Gate2/Gate2.5 | interface-first-dev, **writing-plans** |
 | interface-first-dev | detailed-design | **task-breakdown** |
 | **writing-plans** | detailed-design + IFD | **task-breakdown** |
 | task-breakdown | plan.md + IFD | executing-plans |
@@ -366,7 +366,7 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 3. **详细需求阶段——** `detailed-requirements` 按模块输出详细需求（含 `interaction-spec.md`），通过 `human` Skill 触发 **Gate 2.5** 原型冻结。
 
-4. **设计阶段——** `high-level-design` 产出架构文档和 `rollback-plan.md`，通过 `human` Skill 触发 **Gate 2** 设计冻结；`monitoring-setup` 生成监控规则初稿。`detailed-design` 按模块输出详细设计（含 `api-spec.md`、`db-schema.md`、`state-machine.md`）。`interface-first-dev` 基于详细设计定义前后端接口契约（`openapi.yaml` + Mock 数据 + 并行开发计划）。
+4. **设计阶段——** `high-level-design` 产出架构文档和 `rollback-plan.md`，通过 `human` Skill 触发 **Gate 2** 设计冻结；`monitoring-setup` 生成监控规则初稿。**`detailed-design`（V2.3）按模块串行输出 5 个文件：design.md（模块内部架构）、api-spec.md（接口定义含 OpenAPI YAML）、db-schema.md（DDL + 索引 + 缓存）、state-machine.md（模块状态机）、test-plan.md（测试策略）。生成过程中自动执行三级质量门控：Cross-Module Design Audit（模块间矛盾检测）、规格充分性审查（SPECIFIED/VAGUE/MISSING 判定）、设计质量自评（阻塞维度评分）。支持增量更新（需求变更时仅重生成受影响模块）。** `interface-first-dev` 基于详细设计定义前后端接口契约（`openapi.yaml` + Mock 数据 + 并行开发计划）。
 
 5. **计划阶段——** `writing-plans` 基于 detailed-design 和 interface-first-dev 的产出，生成模块级实现计划（plan.md），包含技术路线、模块实现顺序、验收标准，并输出「Plan → Task 转换建议」。plan.md 经 Self-Review 四检（Spec Coverage / Placeholder Scan / Type Consistency / Design Alignment）通过后保存。
 
@@ -467,15 +467,17 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 ### 6.1 短期规划（6-12个月）
 
-> • 完善 9 个新增 Skill（`human`、`uat-verification`、`release-management`、`monitoring-setup`、`monitoring-analysis`、`detailed-design`、`interface-first-dev`、`unit-test`、`integration-test`）的实现
+> • 完善 8 个新增 Skill（`human`、`uat-verification`、`release-management`、`monitoring-setup`、`monitoring-analysis`、`interface-first-dev`、`unit-test`、`integration-test`）的实现
+>
+> • **`detailed-design` ✅ 已完成（V2.3）**：实现按模块 5 文件自动生成，融合 spellbook `reviewing-design-docs` / `reviewing-impl-plans` / `design-exploration`、CodeArchDoc、developer-kit 开源素材。内置三级质量门控：Cross-Module Design Audit、规格充分性审查（SPECIFIED/VAGUE/MISSING）、设计质量自评。支持增量更新。`self-check` 同步新增阶段 4 详细设计文档质量检查（7 项维度）
 >
 > • 改造 2 个 Superpowers 原生 Skill（`writing-plans` 从 micro-step 升级为模块级计划并衔接 task-breakdown；`executing-plans` 增加 Batch 执行、强制自测、接口校验、自动勾选、Inline Audit、Simplicity First / Scope Discipline / Rollback-Friendly 执行纪律）
 >
-> • 改造 3 个现有 Skill（`requesting-code-review` 新增 design.md 对比与 tasks.md 追溯；`finish` 从 finishing-a-development-branch 重命名并扩展为八步归档流水线；`systematic-debugging` 新增 progress-tracker 技术债务联动）。修改 5 个现有 Skill（`prd-generation`、`detailed-requirements`、`high-level-design`、`progress-tracker`、`self-check`），补充交互规格、回滚方案、人工状态等能力
+> • 改造 3 个现有 Skill（`requesting-code-review` 新增 design.md 对比与 tasks.md 追溯；`finish` 从 finishing-a-development-branch 重命名并扩展为八步归档流水线；`systematic-debugging` 新增 progress-tracker 技术债务联动）。修改 5 个现有 Skill（`prd-generation`、`detailed-requirements`、`high-level-design`、`progress-tracker`、`self-check`），补充交互规格、回滚方案、人工状态、详细设计检查等能力
 >
 > • 实现 OpenSpec 归档时自动纳入 `uat-report`、`release-notes`、`human-decisions.md`
 >
-> • 增强 `self-check` Skill 的能力，支持交互规格完整性检查和 UAT 报告质量检查
+> • 增强 `self-check` Skill 的能力，支持交互规格完整性检查、UAT 报告质量检查、**详细设计文档质量检查（V2.3）**
 
 ### 6.2 中期规划（1-2年）
 

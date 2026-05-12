@@ -1,0 +1,12 @@
+{
+  "name": "monitoring-analysis",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "domain": "observability",
+  "tags": ["sdlc", "observability", "monitoring", "feedback-loop", "openspec", "stage-12", "ops"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"],
+  "dependencies": ["finish", "monitoring-setup"],
+  "consumed_by": ["brainstorming"],
+  "run_once_per_change": false,
+  "language": "zh-CN"
+}

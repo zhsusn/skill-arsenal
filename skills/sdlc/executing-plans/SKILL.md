@@ -167,8 +167,9 @@ git commit -m "feat({module}): {task_description}"
 
 全部任务完成后：
 - 输出执行摘要：总任务数、通过数、失败数、耗时
-- 自动调用 finish Skill 完成收尾
-- 若配置了 requesting-code-review，自动触发代码审查
+- **自动触发 `integration-test`**：所有 Batch 编码与单元测试通过后，进入端到端集成测试阶段
+- 若用户明确要求或处于项目交付流程中，自动触发 `requesting-code-review`（阶段 10）
+- 严禁在未完成集成测试和 UAT 的情况下直接调用 `finish`
 
 ## 批次执行摘要模板
 
@@ -208,8 +209,10 @@ git commit -m "feat({module}): {task_description}"
 | 横向: self-check | 每个任务后调用 self-check 进行产出物自查 |
 | 横向: unit-test | Batch 完成后触发模块级验证与覆盖率门控（≥70%） |
 | 横向: progress-tracker | 每批次完成后自动更新进度 |
-| 下游: requesting-code-review | 全部完成后自动触发代码审查 |
-| 下游: finish | 最终交接收尾 Skill |
+| 下游: unit-test | 每个 Batch 完成后触发模块级验证与覆盖率门控（≥70%） |
+| 下游: integration-test | 全部任务完成后，进入端到端集成测试阶段 |
+| 下游: requesting-code-review | 编码与测试全部完成后自动触发代码审查（阶段 10） |
+| 下游: finish | 最终交接收尾 Skill（阶段 11，经 release-management 后） |
 
 ## Gotchas
 

@@ -4,7 +4,11 @@
 >
 > 当 MCP Server 不可用（网络不通、服务未部署或权限不足）时，按本手册逐条执行命令，完成从需求到发布的全生命周期操作。
 >
-> 版本 V2.2 | 2026年5月
+> 版本 V2.4 | 2026年5月
+>
+> **V2.4 更新**：补齐 `uat-verification`（阶段 9.5）、`release-management`（阶段 10.5）、`monitoring-analysis`（阶段 12）三个 Skill。修复 `integration-test` 下游衔接（改为 `uat-verification`）。
+>
+> **V2.3 更新**：`detailed-design` Skill 正式可用，内置三级质量门控与 Cross-Module Audit，支持增量更新。`self-check` 新增阶段 4 详细设计文档质量检查（7 项维度）。
 >
 > **适用场景**：
 > - 前期环境搭建阶段，MCP Server 尚未部署
@@ -203,17 +207,45 @@ EOF
 
 ---
 
-### 步骤 4：详细设计
+### 步骤 4：详细设计（V2.3 增强）
 
+**前置检查：**
+```bash
+# 确认 Gate 2 和 Gate 2.5 已签字
+/skill:human action=status
+```
+
+**执行命令：**
 ```bash
 /skill:detailed-design 按模块输出详细设计。
 参考：@openspec/changes/{变更名}/design/
 @openspec/changes/{变更名}/specs/feature-*/
+```
 
+**生成中自动执行的三级门控：**
+- Cross-Module Design Audit（模块间矛盾检测：字段类型、接口兼容性、状态枚举冲突）
+- 规格充分性审查（SPECIFIED/VAGUE/MISSING 判定，模糊语言零容忍）
+- 设计质量自评（阻塞维度评分：完备性/清晰度/准确性 < 3 分暂停）
+
+**执行 self-check（阶段 4，7 项检查）：**
+```bash
 /skill:self-check 详细设计
 ```
 
-产出：每个模块目录下增加 `design.md`、`api-spec.md`、`db-schema.md`、`state-machine.md`、`test-plan.md`。
+**产出（每个模块 5 文件）：**
+| 文件 | 内容 |
+|------|------|
+| `design.md` | 模块内部架构、组件设计、类/函数签名、算法逻辑 |
+| `api-spec.md` | 接口定义、OpenAPI 3.1 YAML 片段、错误码、权限 |
+| `db-schema.md` | DDL、索引策略、缓存 Key 设计、连接池配置 |
+| `state-machine.md` | Mermaid 状态图、转换条件、异常分支、全局映射 |
+| `test-plan.md` | 单测用例（Given/When/Then）、集成场景、边界覆盖 |
+
+**关键红线：**
+- 技术栈必须与概要设计一致（禁止擅自变更数据库类型）
+- URI 必须资源导向（禁止 `/getOrder` 等动词 URI）
+- 模糊语言零容忍（"TBD"/"standard approach" → VAGUE）
+- 状态机必须与全局状态机兼容
 
 ---
 
@@ -430,6 +462,14 @@ A：兼容。两种方式产生的文档格式和目录结构完全一致，可�
 ### Q7：需要多少人工干预？
 
 A：主要在以下节点需要人工确认：概要需求评审签字（Gate 1）、原型逐页确认（Gate 2.5）、架构评审与回滚方案确认（Gate 2）、UAT 业务流程走通（Gate 3）、发布窗口最终决策。其他环节由 AI 自主完成。
+
+### Q8：详细设计可以跳过某些模块吗？
+
+A：不可以。每个 P0/P1 模块必须独立输出 5 个文件。若某模块确实无数据库/无状态机，仍需输出说明文件（如"本模块无持久化存储，db-schema.md N/A"），不可省略。
+
+### Q9：需求变更后需要重新生成所有模块的详细设计吗？
+
+A：不需要。detailed-design 支持增量更新：对比新旧 spec.md / io-table.md 识别受影响模块 → 仅重新生成受影响模块的 5 个文件 → 未受影响模块保持冻结 → 重新执行 Cross-Module Audit。
 
 ---
 

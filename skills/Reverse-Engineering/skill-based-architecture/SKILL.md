@@ -171,11 +171,15 @@ skills/<name>/
 
 所有模板、薄壳、协议、约定和详细案例见 `references/` 目录：
 
-- **`migration-guide.md`** — 9 阶段迁移的完整流程、决策树与恢复原语
-- **`templates-guide.md`** — 最小化模板、update-rules.md、fix-bug.md 等元工作流模板
-- **`thin-shells.md`** — 所有 AI 工具的薄壳入口模板与内联路由表
-- **`protocol-blocks.md`** — 可复用协议块（合理化表、重启检查、模糊请求门禁）
-- **`examples.md`** — 16 个前后对比场景与真实失败案例
+- **[REFERENCE.md](references/REFERENCE.md)** — 参考资料总索引，按需加载入口
+- **[layout.md](references/layout.md)** — 推荐目录布局、`SKILL.md` 模板、项目边界
+- **[thin-shells.md](references/thin-shells.md)** — 所有 AI 工具的薄壳入口模板与内联路由表
+- **[protocols.md](references/protocols.md)** — 可复用协议块（任务闭环、记录阈值、泛化规则）
+- **[conventions.md](references/conventions.md)** — 按项目类型的规则集、反模式、故障排查
+- **[migration.md](references/migration.md)** — 9 阶段迁移的完整流程、决策树与拆分/合并标准
+- **[project-types.md](references/project-types.md)** — Java/Spring Boot、Python CLI、多 Skill 全栈等典型案例
+- **[self-evolution.md](references/self-evolution.md)** — 行动后复盘、描述触发失败、长期维护策略
+- **[behavior-failures.md](references/behavior-failures.md)** — 行为层 ❌/✅ 场景与真实失败案例
 
 ---
 

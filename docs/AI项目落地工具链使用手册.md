@@ -1,14 +1,22 @@
 # AI项目落地工具链使用手册
 
 > 工具集成方式 + 完全手动方式完整指南
-> 版本 V2.1 | 2026年5月
+> 版本 V2.4 | 2026年5月
 >
-> 本次更新基于 `lifesycle.md` 审查意见，补充 UAT、发布、监控环节，明确四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 统一记录人工决策。
+> **V2.4 更新**：`uat-verification`、`release-management`、`monitoring-analysis` 三个 Skill 正式可用。修复 `integration-test` 下游衔接为 `uat-verification`。
+>
+> **V2.3 更新**：`detailed-design` Skill 正式可用，内置三级质量门控与 Cross-Module Audit，支持增量更新。`self-check` 新增阶段 4 详细设计文档质量检查（7 项维度）。
+>
+> **V2.2 更新**：重构计划与执行阶段，引入 `writing-plans` → `task-breakdown` → `executing-plans` 三级递进工作流。
+>
+> **V2.1 更新**：基于 `lifesycle.md` 审查意见，补充 UAT、发布、监控环节，明确四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 统一记录人工决策。
 >
 > **V2.2 更新（2026年5月）**：重构计划与执行阶段，引入 `writing-plans` → `task-breakdown` → `executing-plans` 三级递进工作流。
 > - `writing-plans` 从 Superpowers 原生 micro-step 升级为**模块级实现计划**（plan.md），增加 Self-Review 四检与 Plan → Task 转换建议
 > - `task-breakdown` **新增**，按 ≤30 分钟/任务粒度将 plan.md 拆解为 Phase 组织的 tasks.md，支持垂直切片与执行模式建议
 > - `executing-plans` 增强 **Batch 执行**（3 任务/批次）、**Gate Non-Collapse Rule**（自测/接口校验/单测独立门控）、**自动勾选 tasks.md**、**Inline Audit** 与 **Simplicity First / Scope Discipline / Rollback-Friendly** 执行纪律
+>
+> **V2.3 更新（2026年5月）**：`detailed-design` Skill 正式可用。实现按模块 5 文件（design.md / api-spec.md / db-schema.md / state-machine.md / test-plan.md）自动生成，融合 spellbook `reviewing-design-docs` / `reviewing-impl-plans` / `design-exploration`、CodeArchDoc、developer-kit 开源素材，内置 Cross-Module Design Audit、规格充分性审查（SPECIFIED/VAGUE/MISSING）、设计质量自评三级门控，支持增量更新。`self-check` 同步新增阶段 4 详细设计文档质量检查（7 项检查维度）。
 
 ---
 
@@ -317,7 +325,11 @@ npx @fission-ai/openspec@latest init
 
 ---
 
-#### 阶段 4：详细设计
+#### 阶段 4：详细设计（V2.3 增强）
+
+**前置条件（硬性阻断）：**
+- Gate 2（概要设计）和 Gate 2.5（详细需求）均已签字通过
+- `openspec/config.yaml` 已配置 `high-level-design.required_sections`
 
 ```bash
 /skill:detailed-design 按模块输出详细设计。
@@ -327,7 +339,32 @@ npx @fission-ai/openspec@latest init
 /skill:self-check 详细设计
 ```
 
-产出：每个模块目录下增加 `design.md`、`api-spec.md`、`db-schema.md`、`state-machine.md`、`test-plan.md`
+**产出（每个模块 5 个文件）：**
+
+| 文件 | 核心内容 | 验收要点 |
+|------|----------|----------|
+| `design.md` | 模块分层、类/函数签名、算法逻辑、模块依赖图 | 覆盖 spec.md 所有功能点；与概要设计分层一致 |
+| `api-spec.md` | 端点清单、请求/响应字段表、错误码、权限、OpenAPI 3.1 YAML 片段 | URI 资源导向；错误码完整；YAML 可解析 |
+| `db-schema.md` | DDL、索引策略、缓存 Key 设计、连接池配置 | 字段类型与技术选型匹配；无硬编码密码 |
+| `state-machine.md` | Mermaid 状态图、转换条件、异常分支、全局映射 | 与全局状态机兼容；异常分支完整 |
+| `test-plan.md` | Given/When/Then 单测、集成场景、边界覆盖、Mock 策略 | 追溯所有 AC；覆盖空值/越界/并发/超时 |
+
+**内置三级质量门控（生成过程中自动执行）：**
+
+1. **Cross-Module Design Audit**：检测模块间字段类型冲突、接口不兼容、状态枚举冲突
+2. **规格充分性审查**：判定 SPECIFIED / VAGUE / MISSING，模糊语言零容忍
+3. **设计质量自评**：阻塞维度（完备性、清晰度、准确性）评分，< 3 分暂停
+
+**self-check 阶段 4 检查清单（7 项，V2.3 新增）：**
+1. 规格充分性判定（SPECIFIED/VAGUE/MISSING）
+2. 数据库与数据架构一致性
+3. API 与接口契约一致性
+4. 状态机与全局状态机兼容性
+5. 类设计覆盖功能点
+6. 测试计划追溯完整性
+7. 模块间接口契约审计
+
+> ⚠️ **红线提示**：详细设计阶段禁止修正概要设计缺陷；技术栈必须与概要设计一致；禁止动词 URI；发现"TBD"/"standard approach"等模糊表达将标记 VAGUE。
 
 ---
 
@@ -614,7 +651,7 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 | 3 前置 | competitive-analysis | 技术竞品分析 | CA.md + design-input.md | — |
 | 3 | high-level-design | 概要设计 | design/*.md + rollback-plan.md | 🚪 Gate 2 |
 | 3.5 | monitoring-setup | 监控初始化（一次性） | monitoring-rules.yaml | — |
-| 4 | detailed-design | 详细设计 | feature-*/design.md | — |
+| 4 | detailed-design | 详细设计 | feature-*/design.md 等 5 文件 | — |
 | 5 | interface-first-dev | 接口驱动 | openapi.yaml | — |
 | 5.5 | writing-plans | 编写实现计划 | plan.md | — |
 | 6 | task-breakdown | 任务拆解 | tasks.md | — |

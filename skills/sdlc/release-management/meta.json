@@ -1,0 +1,12 @@
+{
+  "name": "release-management",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "domain": "release-engineering",
+  "tags": ["sdlc", "release", "deployment", "openspec", "stage-10.5", "risk-assessment"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"],
+  "dependencies": ["requesting-code-review", "uat-verification", "high-level-design", "monitoring-setup"],
+  "consumed_by": ["finish"],
+  "run_once_per_change": true,
+  "language": "zh-CN"
+}

@@ -1,323 +1,388 @@
-# Progress Tracker 使用手册
+# progress-tracker（进度治理中枢）使用手册
 
-> **版本**：1.0.0  
-> **适用范围**：Kimi Code + OpenSpec + Superpowers 工作流（从阶段 2 概要需求开始追踪，共 10 个产出物阶段）  
-> **关联 Skill**：`task-breakdown`、`executing-plans`、`self-check`、`finish`
-
----
-
-## 0. 依赖与前置条件
-
-### 0.1 必依赖项
-
-使用本 Skill 前，请确认以下条件已满足：
-
-| 依赖类型 | 具体要求 | 说明 |
-|----------|----------|------|
-| **目录结构** | 项目已建立 `openspec/changes/{变更名}/` 目录 | 可通过 `opsx:propose` 或手动创建 |
-| **`task-breakdown`** | 已安装并可用 | 生成初始 `tasks.md`，本 Skill 读取其 Checkbox 状态 |
-| **`executing-plans`** | 已安装并可用 | 编码完成后发送任务完成信号，触发进度重算 |
-| **`self-check`** | 已安装并可用 | 提供产出物完整性校验，作为阶段门控的输入条件 |
-| **`finish`** | 已安装并可用 | 变更完成时触发归档联动 |
-| **`opsx:propose / opsx:archive`** | OpenSpec 生命周期可用 | 本 Skill 深度依赖 OpenSpec 目录规范 |
-
-### 0.2 可选推断源
-
-本 Skill 初始化时会**自动扫描**以下文件来推断项目上下文，用户无需手动输入：
-
-| 推断目标 | 扫描文件 | 说明 |
-|----------|----------|------|
-| 项目名 | 当前目录名 / `package.json` name / git repo name | 优先级依次递减 |
-| 技术栈 | `package.json` / `pyproject.toml` / `Cargo.toml` / `go.mod` / `pom.xml` / `requirements.txt` | 识别关键依赖并映射为技术栈描述 |
-| 数据库 | `docker-compose.yml` / `prisma/schema.prisma` / `application.yml` | 识别 PostgreSQL / MySQL / MongoDB / Redis 等 |
-| 核心模块 | `src/` / `apps/` / `services/` / `packages/` 的一级子目录 | 过滤工具目录，取前 5 个业务模块 |
-| 团队规模 | `git shortlog -sn` 的 contributor 数量 | 可选，推断失败时不阻断初始化 |
-
-> **最小输入原则**：若项目根目录已有明确的构建文件或源码结构，用户只需发送一句"请初始化进度追踪系统"，Skill 会自动完成其余工作。
+**版本**: V2.1  
+**最后更新**: 2026-05-08  
+**适用对象**: 项目经理、技术负责人、开发人员、测试人员、产品经理
 
 ---
 
-## 1. 快速开始（首次使用）
+## 1. 这是什么？
 
-### Step 1：初始化项目进度追踪系统
+`progress-tracker`（进度治理中枢）是一个**帮你管理项目进度的 AI 技能**。
 
-向 AI 助手发送以下指令（无需填写任何项目信息）：
+它不是又一个任务管理工具，而是你的**进度单一可信源（SSOT）**。什么意思呢？就是全团队只认这一份 `progress.md`，不管是开会汇报、周报填写，还是老板问「项目怎么样了」，看这一份文件就够了。没有「我觉得完成了 80%」这种模糊说法，进度是算出来的，不是猜出来的。
 
-```kimi
-💫  /skill:progress-tracker 请为当前项目初始化进度追踪系统
-```
-
-Skill 将自动执行：
-1. **扫描推断**：读取项目根目录下的 `package.json`、`pyproject.toml`、`requirements.txt`、`Dockerfile` 等文件，推断技术栈与核心模块
-2. **生成配置**：基于推断结果和 `config-template.yaml` 生成 `openspec/config.yaml`
-3. **创建结构**：创建 `openspec/changes/{变更名}/` 目录结构
-4. **生成 SSOT**：生成初始 `progress.md`（所有 10 个阶段状态为 `not_started`，总体进度 0%）
-5. **确认输出**：向用户展示推断出的项目上下文（项目名、技术栈、核心模块），请用户确认或修正
+### 一句话定位
+> 让项目进度透明、可量化、不可篡改，并且牢牢把住人工评审的闸门，没通过评审就别想「虚报」进度。
 
 ---
 
-## 2. 指令速查表
+## 2. 适用场景
 
-| 意图 | 指令模板 |
-|------|----------|
-| **查看进度** | `【查看进度 \| Skill：progress-tracker】请展示当前进度。` |
-| **阶段完成** | `【阶段 N 完成 \| Skill：progress-tracker】阶段 N 已完成，请更新进度。` |
-| **任务完成信号** | `【任务更新 \| Skill：progress-tracker】任务 T-XXX 已完成，自测通过。` |
-| **登记风险** | `【风险登记 \| Skill：progress-tracker】新增风险：{描述}，影响{级别}，应对方案：{方案}` |
-| **初始化项目** | `【初始化 \| Skill：progress-tracker】请为当前项目初始化进度追踪系统。` |
+| 场景 | 示例 |
+|------|------|
+| 📊 每周站会汇报 | 团队每周打开 `progress.md`，5 分钟说清楚当前在哪、卡在哪、风险是什么 |
+| 🚧 跨部门协作 | 业务部门问「还要多久上线」，直接把 `progress.md` 甩过去，不用临时编数字 |
+| ⚠️ 风险预警 | 开发同学发现第三方接口有坑，立刻登记风险，自动在进度报告中高亮显示 |
+| 🎯 里程碑管控 | 需求评审、设计冻结、上线审批——没通过人工 Gate，进度数字自动锁死 |
+| 🏗️ 新项目启动 | 一键初始化进度骨架 + 运维资产目录，省去手动建文件的麻烦 |
 
----
-
-## 3. 详细使用场景
-
-### 3.1 场景 A：阶段完成更新（以序号 1 / SDLC 阶段 2 为例）
-
-**用户指令**：
-
-```text
-【序号 1 完成 | Skill：progress-tracker】
-
-概要需求阶段（SDLC 阶段 2）已完成，产出物已保存到 specs/ 目录，请更新进度。
-```
-
-> **编号说明**：progress-tracker 内部使用"序号"（1-10）对应 SDLC 阶段 2-10。发送指令时使用序号， Skill 会自动映射到对应阶段。
-
-**Skill 执行逻辑**：
-1. 读取 `config.yaml` 中 `phases[0].gate_to_next`
-2. 校验 `specs/01-product-overview.md` 和 `specs/02-requirements-list.md` 是否存在且章节完整
-3. 检查 `progress.md` 中是否有"概要需求评审通过"签字记录
-4. **若通过**：标记 `high-level-requirements` 为 `completed`，计算 `overall_progress = 10%`，更新 `progress.md`
-5. **若未通过**：返回阻断原因清单（如"缺少 02-requirements-list.md"或"未找到评审签字"），要求修复
+**不适用的情况**：
+- 个人 Todo 管理 → 用备忘录或 Todoist 更合适。
+- 没有明确阶段划定的探索性项目 → 建议先定义好阶段再使用。
 
 ---
 
-### 3.2 场景 B：编码阶段精确追踪（由 executing-plans 触发）
+## 3. 核心功能
 
-当 `executing-plans` 完成编码并自测通过后，自动发送：
+### 3.1 单一可信进度源（SSOT）
 
-```text
-【任务更新 | Skill：progress-tracker】
+全项目只有一份 `progress.md`，所有人看到的是同一个数字。不会出现「开发说做完了 80%，测试说只测了 30%」的尴尬局面。
 
-任务 T-003 已完成，自测通过（verified_by: self-check-passed）。
-```
+### 3.2 双轨制进度计算
 
-**Skill 执行逻辑**：
-1. 在 `tasks.md` 中将 `T-003` 标记为 `- [x]` 并追加 `verified_by: self-check-passed`
-2. 重新计算 `implementation` 阶段完成率
-3. 更新 `progress.md` 中的 `tasks_summary`
-4. 若所有任务完成且验证通过，自动标记 `implementation` 为 `completed`，并触发向 `unit-test` 阶段的门控检查
+项目前期（需求、设计阶段）按**阶段权重**粗算，后期（开发、测试阶段）按**具体任务完成率**精算。平滑过渡，既简单又准确。
 
----
+### 3.3 人工闸门强管控（V2.1 升级）
 
-### 3.3 场景 C：主动查看进度
+四个关键节点设了人工评审：
+- **Gate 1**：需求确认
+- **Gate 2.5**：设计预审（V2.1 细化）
+- **Gate 2**：设计冻结
+- **Gate 3**：上线审批
 
-**用户指令**：
+没通过？进度上限自动锁死。比如 Gate 2 没通过，总进度最多只能显示 35%，想虚报也报不上去。
 
-```text
-【查看进度 | Skill：progress-tracker】
+### 3.4 风险登记与追踪
 
-请展示当前总体进度、阶段进度、任务列表及风险阻碍。
-```
+项目风险不是口头说说，必须登记到 `progress.md` 里。谁发现的、影响哪个阶段、严重度多高、谁负责解决，一目了然。严重风险会自动在进度报告中加 ⚠️ 警示。
 
-**Skill 输出示例**：
+### 3.5 运维资产自动初始化（V2.1 新增）
 
-```markdown
-# 总体进度：feature-role-factory
+新建项目时，Skill 会自动帮你建好 `ops/` 目录和基础文件：
+- `ops/staging-config.yaml` —— 预发环境配置
+- `ops/rollback-plan.md` —— 回滚方案占位
+- `ops/monitoring-rules.yaml` —— 监控规则占位
 
-> 最后更新：2026-05-05 15:30  
-> 整体进度：**35%** | 当前阶段：**详细需求（60%）**
-
-## 阶段进度看板
-
-| 阶段 | 状态 | 进度 | 计划 | 实际 | 完成日期 |
-|------|------|------|------|------|----------|
-| 概要需求 | ✅ 已完成 | 100% | 2天 | 2天 | 05-03 |
-| 详细需求 | 🔄 进行中 | 60% | 3天 | 2天 | - |
-| 概要设计 | ⏳ 未开始 | 0% | 2天 | - | - |
-
-## 当前任务燃尽（P0 模块）
-
-| 任务ID | 描述 | 状态 | 自测 | 优先级 |
-|--------|------|------|------|--------|
-| T-001 | 角色基础字段定义 | ✅ | ✅ 通过 | P0 |
-| T-003 | 角色关系图谱 | 🔄 | ⏳ 待测 | P0 |
-
-## 风险与阻碍
-
-| ID | 风险描述 | 影响 | 概率 | 状态 | 应对方案 |
-|----|---------|------|------|------|----------|
-| R-001 | 角色数据模型字段可能变动 | 高 | 中 | 🟡 开放 | 接口驱动阶段增加 mock 验证 |
-```
+这样开发一开始就把运维考虑进去，不用再等到上线前夜才匆忙补文档。
 
 ---
 
-### 3.4 场景 D：风险登记
+## 4. 使用方式
 
-**用户指令**：
+### 4.1 前置准备
 
-```text
-【风险登记 | Skill：progress-tracker】
+使用 progress-tracker 之前，请确保：
 
-新增风险：数据库 Schema 可能随需求变动，影响接口契约。
-影响级别：高。应对方案：在接口驱动阶段增加 mock 验证。
-```
+1. ✅ 项目根目录有 `config.yaml`（定义了阶段、权重、Gate 映射）。
+2. ✅ 知道当前项目所处的 Gate 状态（谁负责评审、评审过了没）。
+3. ✅ 如果是首次使用，准备好项目名称和阶段规划。
 
-**Skill 执行逻辑**：
-1. 生成风险 ID（如 `R-002`）
-2. 追加到 `progress.md` YAML frontmatter 的 `risks` 数组
-3. 同步更新 Markdown body 的风险表格
+### 4.2 配置 `config.yaml`
 
----
-
-## 4. 配置文件说明
-
-### 4.1 openspec/config.yaml
-
-由本 Skill 初始化生成，包含以下核心段落：
-
-- **`phases`**：10 个阶段的定义，每个阶段含 `id`、`name`、`weight`、`gate_to_next`
-- **`red_flags`**：进度异常拦截规则（跳过阶段、无规格编码、未自测算完成等）
-- **`artifact_specs`**：各阶段产出物的 `required_sections`，用于 `self-check` 完整性校验
-- **`rules`**：自动保存路径、自查检查项等全局规则
-
-### 4.2 项目定制方式
-
-直接修改 `config.yaml` 中的 `weight`、`gate_to_next` 或新增 `red_flags`，**无需修改 Skill 本身**。例如：
+在项目根目录创建 `config.yaml`：
 
 ```yaml
+# ========== 必填项 ==========
+project_name: order-platform        # 项目英文名
+domain: ecommerce
+
+# ========== 阶段定义（V2.1 支持 12 阶段）==========
 phases:
-  - id: implementation
-    name: 编码实现
-    weight: 20        # 根据项目复杂度调整权重
-    gate_to_next:
-      - artifact: tasks.md
-        check: all_tasks_completed_and_verified
-      - action: user_review          # 增加额外的人工评审门控
-        label: "代码走查通过"
+  - id: P1
+    name: 需求分析
+    weight: 10
+    gate: gate1                   # 关联 Gate
+    gate_progress_cap: 10         # 未通过 Gate 1，进度最多 10%
+  - id: P2
+    name: 概要设计
+    weight: 15
+    gate: gate2_5
+    gate_progress_cap: 25         # 10 + 15 = 25%
+  - id: P3
+    name: 详细设计
+    weight: 10
+    gate: gate2
+    gate_progress_cap: 35
+  - id: P4
+    name: 开发实现
+    weight: 30
+    gate: null                    # 无 Gate，进入任务级精算
+  - id: P5
+    name: 测试验证
+    weight: 15
+    gate: null
+  - id: P6
+    name: UAT                     # 🆕 V2.1 新增
+    weight: 10
+    gate: gate3
+    gate_progress_cap: 90
+  - id: P7
+    name: 发布上线                # 🆕 V2.1 新增
+    weight: 5
+    gate: gate3
+    gate_progress_cap: 95
+  - id: P8
+    name: 监控运维                # 🆕 V2.1 新增
+    weight: 5
+    gate: null
+
+# ========== 双轨切换点 ==========
+dual_track:
+  threshold_phase: P4             # 从 P4 开始按任务算进度
 ```
 
----
+**💡 小贴士**：
+- `weight` 总和必须为 100。
+- 有 `gate` 的阶段必须配 `gate_progress_cap`，且数值等于**该阶段及之前所有阶段权重之和**。
+- `threshold_phase` 之后的阶段建议拆成具体任务，这样进度才精确。
 
-## 5. 10 阶段定义与权重参考
+### 4.3 五大工作流速查
 
-> **注意**：progress-tracker 的序号 1-10 对应 SDLC 阶段 2-10（从概要需求开始追踪）。阶段 1（需求探索）和阶段 1.5（市场定位）由 `brainstorming` 和 `competitive-analysis` 完成，不纳入进度追踪体系。
+| 工作流 | 触发语 | 用途 |
+|--------|--------|------|
+| **W1 初始化** | "初始化项目进度跟踪" | 首次使用，创建 `progress.md` + `ops/` |
+| **W2 阶段完成** | "标记 P2 概要设计已完成" | 某个阶段工作全部做完 |
+| **W3 任务更新** | "更新 P4 的任务状态" | 开发/测试阶段更新具体任务 |
+| **W4 查看进度** | "查看当前项目进度" | 生成可读进度报告 |
+| **W5 风险登记** | "登记一个新风险" | 发现风险，记录到进度文档 |
 
-| 序号 | 阶段 ID | 阶段名称 | 权重 | 进度粒度 |
-|------|---------|----------|------|----------|
-| 1 | high-level-requirements | 概要需求 | 10% | 粗粒度 |
-| 2 | detailed-requirements | 详细需求 | 15% | 粗粒度 |
-| 3 | high-level-design | 概要设计 | 15% | 粗粒度 |
-| 4 | detailed-design | 详细设计 | 15% | 粗粒度 |
-| 5 | interface-first-dev | 接口驱动开发 | 10% | 粗粒度 |
-| 6 | task-breakdown | 任务拆解 | 5% | 粗粒度 |
-| 7 | implementation | 编码实现 | 15% | 任务级精粒度 |
-| 8 | unit-test | 单元测试 | 10% | 任务级精粒度 |
-| 9 | integration-test | 集成测试 | 5% | 任务级精粒度 |
-| 10 | finish | 收尾归档 | 0% | 粗粒度 |
+### 4.4 完整示例：从初始化到上线
 
-> **提示**：前期阶段（1-6）的权重之和为 70%，后期阶段（7-10）的权重之和为 30%。开发阶段（implementation）的精粒度进度会动态替代其 15% 的权重占比。
+假设你是项目经理，负责一个电商订单平台项目：
 
----
+**Step 1：初始化项目**
 
-## 6. 归档联动
+确保 `config.yaml` 已配置好，然后对 AI 说：
 
-当变更完成，执行 `opsx:archive` 时，本 Skill 自动：
+> "请为 `order-platform` 项目初始化进度跟踪。读取根目录的 `config.yaml`，创建 `progress.md` 和运维目录。"
 
-1. 校验 `finish` 阶段是否为 `completed`
-2. 将 `progress.md` 复制到 `openspec/archive/{变更名}/`
-3. 在归档副本中追加归档摘要（归档时间、总体耗时、最终进度 100%）
+AI 会：
+- 生成 `progress.md`，包含 8 个阶段（P1~P8），全部状态为 `not_started`。
+- `human_status` 设为 `gate1`。
+- 创建 `ops/` 目录及初始文件。
 
----
+**Step 2：需求分析完成，更新阶段**
 
-## 5. 自动推断能力详解（进阶）
+需求评审会开完了，大家确认需求没问题。负责 Gate 1 的产品总监把 `.gate-status/gate1` 文件改为 `passed`。
 
-### 5.1 推断失败怎么办？
+你对 AI 说：
 
-若 Skill 扫描后无法推断出项目信息（如空目录、纯文档项目、无构建文件），会执行以下降级策略：
+> "Gate 1 已通过，请标记 P1 需求分析为完成，并更新进度。"
 
-1. 将 `context` 字段留空或使用占位符 `"待补充"`
-2. 向用户展示扫描失败的文件清单（如"未找到 package.json / pyproject.toml / go.mod"）
-3. 询问用户是否手动补充，或接受空值并在后续阶段再填充
+AI 会：
+- 检查 Gate 1 状态为 `passed`，允许更新。
+- 将 P1 状态改为 `completed`。
+- 更新 `human_status` 为 `gate2_5`。
+- 计算总进度：10%。
 
-**用户此时仅需回复**：
-```text
-技术栈改为：React + Node.js + MongoDB
-核心模块：用户中心、订单系统、支付网关
-```
-Skill 会自动将修正内容写入 `config.yaml`。
+**Step 3：开发阶段，更新任务**
 
-### 5.2 推断结果不准确怎么办？
+项目进入 P4 开发实现阶段，团队成员每周更新任务：
 
-若自动推断的技术栈或模块不准确，用户无需重新初始化，直接修改 `openspec/config.yaml` 的 `context` 段落即可。本 Skill 在后续运行中只读取该文件，不强制要求与推断源保持一致。
+> "更新 P4 任务状态：T-401 已完成，T-402 进行中，T-403 未开始。"
 
----
+AI 会：
+- 记录任务状态到 `progress.md` 的 Tasks Summary。
+- 计算 P4 完成率（例如 1/3 ≈ 33%）。
+- 重新计算总进度：
+  - 前期完成：P1(10%) + P2(15%) + P3(10%) = 35%
+  - P4 精算：30% × 33% = 10%
+  - **总进度 = 45%**
 
-## 6. 归档联动
+**Step 4：发现风险，登记**
 
-当变更完成，执行 `opsx:archive` 时，本 Skill 自动：
+开发同学发现第三方支付接口限流策略要变：
 
-1. 校验 `finish` 阶段是否为 `completed`
-2. 将 `progress.md` 复制到 `openspec/archive/{变更名}/`
-3. 在归档副本中追加归档摘要（归档时间、总体耗时、最终进度 100%）
+> "登记风险：第三方支付接口限流策略变更，影响 P4 的支付回调任务，严重度高，概率中，负责人 dev-c。"
 
----
+AI 会：
+- 生成风险编号（如 R-003）。
+- 写入 `progress.md` 的 Risks 表格。
+- 下次查看进度时，该风险会高亮显示。
 
-## 7. 常见问题与排错
+**Step 5：查看进度**
 
-| 问题 | 原因 | 解决方法 |
-|------|------|----------|
-| 阶段更新被阻断 | 门控未通过（产物缺失 / 未评审） | 按阻断原因清单补齐产物或完成评审签字 |
-| 任务已完成但进度未增加 | `verified_by` 为 `pending` | 执行 `self-check` 或通过指令补充 `verified_by` |
-| 进度回滚到阶段 2 | 触发 `hl_requirement_change` Red Flag | 概要需求变更需走正式评审会，评审通过后重新标记阶段 2 完成 |
-| 多变更并行时进度混淆 | `change_id` 未正确区分 | 确保每次初始化使用唯一变更名，`progress.md` 中 `meta.change_id` 与目录名一致 |
-| 人工修改了 progress.md 导致解析失败 | 违反了"唯一写入口"约束 | 恢复备份或重新初始化，后续仅通过 Skill 指令更新 |
-| 初始化时技术栈推断错误 | 项目使用了非标准目录结构或构建工具 | 直接向 Skill 回复修正信息，无需重新初始化 |
-| 缺少依赖 Skill 导致进度不更新 | `task-breakdown` 或 `executing-plans` 未安装 | 确认相关 Skill 已放入 `.kimi/skills/` 或对应平台目录 |
+周五下午，你要给老板发周报：
 
----
+> "查看当前项目进度，生成报告。"
 
-## 8. 与上下游 Skill 的协作速查
+AI 输出：
 
-```mermaid
-sequenceDiagram
-    actor User
-    participant PT as progress-tracker
-    participant SC as self-check
-    participant TB as task-breakdown
-    participant EP as executing-plans
-    participant Config as openspec/config.yaml
-    participant SSOT as openspec/changes/{id}/progress.md
+```markdown
+# 项目进度报告：order-platform
 
-    User->>PT: 阶段 N 完成，更新进度
-    PT->>Config: 读取 gate_to_next 规则
-    PT->>SC: 请求产出物完整性校验
-    SC-->>PT: 返回校验报告
-    PT->>PT: 执行门控判断
-    alt 门控通过
-        PT->>SSOT: 更新阶段状态 + 计算进度
-        PT-->>User: 返回更新后进度看板
-    else 门控未通过
-        PT-->>User: 返回阻断原因 + 修复建议
-    end
+**总进度：48.5%**  
+**当前阶段：P4 开发实现（in_progress）**  
+**人工闸门：gate2（设计冻结已通过）**
 
-    TB->>PT: 生成 tasks.md 完成
-    PT->>PT: 解析任务列表，初始化 tasks_summary
+## 阶段概览
+- ✅ P1 需求分析 (10%)
+- ✅ P2 概要设计 (15%)
+- ✅ P3 详细设计 (10%)
+- 🔄 P4 开发实现 (30%) — 任务完成率 45%
+- ⬜ P5 测试验证 (15%)
+- ⬜ P6 UAT (10%) — 需 Gate 3
+- ⬜ P7 发布上线 (5%) — 需 Gate 3
+- ⬜ P8 监控运维 (5%)
 
-    EP->>PT: 任务 T-XXX 完成，自测通过
-    PT->>SSOT: 更新 tasks.md verified_by + 重算完成率
-    PT->>Config: 检查是否满足 implementation 完成门控
-    alt 所有任务完成且验证通过
-        PT->>SSOT: 标记 implementation 为 completed
-    end
+## ⚠️ 风险（1 个未关闭）
+- **[高] R-003**：第三方支付接口限流策略变更 — 负责人：dev-c — 状态：open
+
+## 下一步建议
+1. 推进 P4 剩余开发任务（重点关注 T-402 支付回调）。
+2. 跟踪 R-003 风险，建议本周内联系支付平台确认新限流阈值。
 ```
 
+**Step 6：UAT 前通过 Gate 3**
+
+UAT 和上线前，CTO 做最终审批，`.gate-status/gate3` 改为 `passed`。
+
+> "Gate 3 已通过，请解锁 P6、P7 进度上限。"
+
+AI 更新 `human_status`，进度上限解除，项目可以进入发布阶段。
+
 ---
 
-## 9. 附录：进度异常拦截清单（Red Flags）
+## 5. 输出产物说明
 
-| Red Flag ID | 描述 | 严重级别 | 触发条件 |
-|-------------|------|----------|----------|
-| `skip_phase` | 禁止跳过当前阶段直接进入下一阶段 | blocker | 前一阶段未完成时更新后一阶段 |
-| `code_without_spec` | 禁止在没有规格的情况下直接写代码 | blocker | `specs/` 为空但开发阶段进行中 |
-| `unverified_completion` | 禁止未自测的代码进入测试阶段 | blocker | 存在未通过自测的任务但测试阶段已启动 |
-| `hl_requirement_change` | 概要需求变更走正式变更流程 | warning | 阶段 2 完成后产物文件被修改 |
+### 5.1 progress.md 结构
+
+```
+progress.md
+├── Frontmatter（项目名、版本、最后更新时间）
+├── Human Status（当前所处 Gate）
+├── Phases（阶段表格：权重、状态、完成率、Gate、进度上限）
+├── Tasks Summary（任务级明细，双轨制精算阶段填充）
+├── Risks（风险登记表格）
+└── Change Log（操作审计日志）
+```
+
+### 5.2 ops/ 目录（V2.1 新增）
+
+```
+ops/
+├── staging-config.yaml      # 预发环境基础配置，开发初期即创建
+├── rollback-plan.md        # 回滚方案占位，后续由 high-level-design 或运维补充
+└── monitoring-rules.yaml   # 监控规则占位，后续由 monitoring-setup Skill 扩展
+```
+
+这些文件在项目初始化时就建好，提醒团队「运维不是上线前才想的事」。
+
+---
+
+## 6. 常见问题（FAQ）
+
+### Q1：进度是怎么算出来的？为什么不是我自己填个百分比？
+
+**答**：自己填的百分比叫「感觉进度」，往往不准。progress-tracker 采用双轨制：
+- 前期（需求/设计）：完成了几个阶段，权重一加就知道进度。
+- 后期（开发/测试）：你有 10 个任务，完成了 4 个，那就是 40%。
+
+这样算出来的进度客观、可复现、不怕老板追问。
+
+### Q2：为什么我的进度卡在 35% 不动了？
+
+**答**：大概率是某个 Gate 没通过。查看 `progress.md` 里的 `Human Status`，看看当前卡在哪个 Gate。比如 `human_status` 是 `gate2`，但 Gate 2 还没审批通过，那进度上限就是 35%，开发任务做得再多也不会超过这个数。
+
+**解决办法**：找对应的评审人（架构师/CTO）把 Gate 审了。
+
+### Q3：我能跳过某个阶段直接标记后面的完成吗？
+
+**答**：**不能**。这是 Red Flag 规则。比如 P2 还没做完，你想直接标记 P3 完成，Skill 会拒绝并警告你。必须按顺序来，前置阶段完成且 Gate 通过后，才能推进。
+
+### Q4：风险登记了有什么用？
+
+**答**：
+1. **提醒作用**：下次查看进度时，严重风险会自动高亮，不会遗忘。
+2. **追溯作用**：出了问题翻 `progress.md`，能看到风险是什么时候登记的、谁负责、当时定的应对措施是什么。
+3. **汇报作用**：给老板汇报时，主动说出风险比被问到才说，专业度差很多。
+
+### Q5：config.yaml 里的 weight 怎么定比较合理？
+
+**答**：没有绝对标准，但推荐一个电商项目参考：
+
+| 阶段 | 推荐权重 | 理由 |
+|------|---------|------|
+| 需求分析 | 10% | 重要但周期短 |
+| 概要设计 | 15% | 影响全局，值得投入 |
+| 详细设计 | 10% | 为开发铺路 |
+| 开发实现 | 30% | 核心工作，权重最大 |
+| 测试验证 | 15% | 质量保障 |
+| UAT | 10% | 用户验收 |
+| 发布上线 | 5% | 操作密集但周期短 |
+| 监控运维 | 5% | 上线后持续投入 |
+
+总和必须是 100%。
+
+### Q6：ops/ 目录里的文件是自动生成的还是我要自己填？
+
+**答**：初始化时生成的是**占位文件**，带有基础结构和 TODO 注释。后续需要：
+- `staging-config.yaml`：开发/运维同学根据实际环境补充。
+- `rollback-plan.md`：由 `high-level-design` Skill（15-rollback-plan 章节）双写，或运维手动维护。
+- `monitoring-rules.yaml`：由 `monitoring-setup` Skill 读取并扩展。
+
+### Q7：一个人能随便改 progress.md 吗？会不会被乱改？
+
+**答**：
+- `progress.md` 建议纳入版本控制（Git），所有修改都有记录。
+- `human_status` 和阶段完成状态由 Gate 状态驱动，不是谁想改就能改。
+- 任务级更新建议由团队成员在 AI 对话中提交，AI 负责校验后写入，避免直接手动编辑格式错误。
+
+### Q8：V2.1 比 V2.0 多了什么？我需要做什么升级？
+
+**答**：V2.1 主要升级了四项：
+1. **12 阶段扩展**：多了 UAT、发布、监控三个阶段。你需要在 `config.yaml` 里加上 P6/P7/P8。
+2. **ops/ 目录**：初始化时会自动创建，老项目可以手动补建。
+3. **human_status 字段**：`progress.md` 里多了这一节，首次使用 V2.1 时 AI 会自动加上。
+4. **进度上限锁定**：配置里要给有 Gate 的阶段加上 `gate_progress_cap`。
+
+---
+
+## 7. 快速参考卡
+
+### 7.1 触发口令速查
+
+| 你想做什么 | 这样说 |
+|-----------|--------|
+| 首次初始化 | "初始化项目进度跟踪" |
+| 标记阶段完成 | "标记 P3 详细设计已完成" |
+| 更新任务 | "更新 P4 任务：T-401 完成，T-402 进行中" |
+| 查看进度 | "查看当前进度" / "生成进度报告" |
+| 登记风险 | "登记风险：{描述}，影响 P4，严重度高" |
+| 查询被哪个 Gate 阻塞 | "为什么进度卡住了？" |
+
+### 7.2 阶段与 Gate 对照表
+
+| 阶段 | Gate | 未通过时的进度上限 |
+|------|------|------------------|
+| P1 需求分析 | Gate 1 | 10% |
+| P2 概要设计 | Gate 2.5 | 25% |
+| P3 详细设计 | Gate 2 | 35% |
+| P4~P5 | 无 | 按任务计算 |
+| P6 UAT | Gate 3 | 90% |
+| P7 发布上线 | Gate 3 | 95% |
+| P8 监控运维 | 无 | 按任务计算 |
+
+### 7.3 检查清单
+
+**初始化前**：
+- [ ] `config.yaml` 已创建
+- [ ] `weight` 总和为 100
+- [ ] 每个有 Gate 的阶段都配了 `gate_progress_cap`
+- [ ] `threshold_phase` 已正确设置
+
+**每周例行**：
+- [ ] 更新本周完成的任务状态
+- [ ] 检查是否有新风险需要登记
+- [ ] 查看当前是否被某个 Gate 阻塞
+- [ ] 确认 `progress.md` 已提交到 Git
+
+---
+
+## 8. 版本变更记录
+
+| 版本 | 日期 | 变更内容 |
+|------|------|---------|
+| V2.0 | — | 初始版本，支持 9 阶段 + 双轨制进度 + 风险登记 |
+| **V2.1** | 2026-05-08 | 扩展为 12 阶段（新增 UAT/发布/监控）；新增 `ops/` 目录初始化；新增 `human_status` 字段；新增进度上限锁定规则；新增禁止跳过人工闸门的 Red Flag 规则 |

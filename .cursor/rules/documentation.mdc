@@ -1,5 +1,5 @@
 ---
-description: 技术文档编写与结构优化，支持 README、API 文档、架构决策记录（ADR）等类型。适用于项目文档初始化、现有文档重构和技术写作辅助。
+description: 当用户要求编写README、创建架构决策记录（ADR）、编写操作手册/Runbook/部署指南，或需要重构、优化现有技术文档时触发。不负责需求/设计/接口契约等阶段产出物。
 globs: 
 alwaysApply: false
 ---
@@ -8,12 +8,25 @@ alwaysApply: false
 
 # Documentation
 
+## 本文档 Skill 不负责（请使用对应阶段 Skill）
+
+为避免与 SDLC 阶段 skill 的职责重叠，以下文档类型**不在本 skill 范围内**：
+
+| 文档类型 | 正确 Skill | 说明 |
+|---------|-----------|------|
+| 概要/详细需求文档 | `prd-generation` / `detailed-requirements` | OpenSpec 规范需求 |
+| 概要/详细设计文档 | `high-level-design` / `detailed-design` | 架构与模块级技术设计 |
+| 接口契约 / OpenAPI | `interface-first-dev` | 前后端接口契约与 Mock |
+| 实现计划 / 任务拆解 | `writing-plans` / `task-breakdown` | 开发路线图与可执行任务 |
+| 代码审查报告 | `code-review` / `requesting-code-review` | 代码质量审查 |
+| CHANGELOG / 发布说明 | `finish` / `release-management` | 变更归档与发布 |
+
 ## 适用场景
 - 新项目 README 初始化
-- API 接口文档编写（OpenAPI / Markdown）
 - 架构决策记录（ADR）撰写
-- 操作手册（Runbook）和部署指南
-- 现有文档的结构优化和可读性提升
+- 操作手册（Runbook）和部署指南编写
+- 已有技术文档的结构优化和可读性提升
+- API 消费者文档（含请求/响应示例，面向调用方）编写
 
 ## 核心职责
 1. 根据项目信息生成清晰、完整的技术文档
@@ -35,10 +48,6 @@ alwaysApply: false
 8. 贡献指南（Contributing）
 9. 许可证（License）
 
-### API 文档
-- 每个端点包含：描述、请求方法、URL、参数、请求示例、响应示例、错误码
-- 使用表格呈现参数（名称、类型、必填、说明）
-
 ### ADR（Architecture Decision Record）
 采用轻量级格式：
 - 标题与日期
@@ -46,6 +55,15 @@ alwaysApply: false
 - 决策（Decision）
 - 后果（Consequences）
 - 替代方案（Alternatives Considered）
+
+### Runbook / 部署指南
+标准结构：
+- 环境要求与前置依赖
+- 部署步骤（逐条、可复现）
+- 配置参数说明（表格）
+- 健康检查与验证命令
+- 故障排查（常见问题 + 解决命令）
+- 回滚步骤
 
 ## 写作原则
 
@@ -99,12 +117,16 @@ repo/
 ```
 ```
 
-## 注意事项
+## Gotchas
+
 - 不要替用户编造不存在的功能或参数
 - 如果信息不足，列出需要用户补充的内容清单
 - 保持 Markdown 格式规范（代码块标注语言、表格对齐等）
+- **设计/需求/接口契约文档请走对应阶段 Skill**：本 skill 触发词中的"API 文档"仅指面向调用方的**消费者文档**（含请求/响应示例），而非 `api-spec.md` 或 `openapi.yaml` 等技术规格
+- **ADR 与 HLD 的关系**：`high-level-design` 负责产出架构决策本身，本 skill 仅负责将决策整理为轻量级 ADR 文档格式；若用户处于设计阶段，优先触发 `high-level-design`
 
 ## 变更日志
 
+- 2026-05-12: 重构边界，增加免责声明，明确与阶段 Skill 的职责划分，迁移至 `engineering-foundations` 分类
 - 2026-04-20: 初始版本
 

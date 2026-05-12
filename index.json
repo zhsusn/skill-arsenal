@@ -30,15 +30,6 @@
       }
     },
     {
-      "name": "code-review",
-      "path": "skills/sdlc/code-review",
-      "description": "当用户提交代码审查请求、提到'review'、'代码走读'、'检查代码质量'或重构评估时触发。执行安全性、性能和可维护性审查。",
-      "metadata": {
-        "tags": "development,quality,security",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
       "name": "detailed-requirements",
       "path": "skills/sdlc/detailed-requirements",
       "description": "当用户提到'详细需求'、'按模块拆解'、'批量 feature 规格'或需要基于已冻结概要需求输出标准化模块级详细需求时触发。将 03-functional-structure.md 按模块拆分为 spec/prototype/io-table/logic/interaction-spec 五文件并执行一致性校验。",
@@ -58,7 +49,7 @@
     },
     {
       "name": "documentation",
-      "path": "skills/sdlc/documentation",
+      "path": "skills/engineering-foundations/documentation",
       "description": "当用户要求编写技术文档、重构 README、生成 API 文档或创建架构决策记录（ADR）时触发。支持文档初始化与结构优化。",
       "metadata": {
         "tags": "writing,documentation,communication",
@@ -98,15 +89,6 @@
       "description": "当用户要求'写PRD'、'概要需求'、'系统规划'或从零开始规划新产品时触发。通过四层递进式对话生成OpenSpec五文件概要需求，输出后自动触发 Gate 1 人工冻结提示。",
       "metadata": {
         "tags": "core-deliverables,requirement-analysis,prd,openspec,system-design",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
-      "name": "prd-trace-matrix",
-      "path": "skills/sdlc/prd-trace-matrix",
-      "description": "当用户提到'需求追溯'、'变更影响'、'需求覆盖'或需要维护需求与实现之间的追溯关系时触发。生成并维护 REQ-TRACE 矩阵。",
-      "metadata": {
-        "tags": "core-deliverables,requirement-analysis,prd,traceability",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
@@ -161,6 +143,15 @@
       "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。已融合技术设计文档生成器的八章节模板、ADR 对比矩阵与需求可追溯性机制。",
       "metadata": {
         "tags": "sdlc,design,architecture,hld,openspec,stage-3",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "detailed-design",
+      "path": "skills/sdlc/detailed-design",
+      "description": "当用户提到'详细设计'、'detailed-design'、'按模块输出技术细节'、'生成DDL'、'接口定义'、'状态机细化'或基于已冻结概要设计和详细需求需要进入模块级详细设计阶段时触发。逐模块输出可编码的技术细节，衔接概要架构与编码实现。",
+      "metadata": {
+        "tags": "sdlc,detailed-design,design,openspec,stage-4,ddl,openapi,state-machine",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },
@@ -233,6 +224,33 @@
       "description": "当用户提到'接口驱动'、'定义接口'、'生成API契约'、'OpenAPI'、'前后端并行'、'接口契约'、'mock接口'或需要基于详细设计文档生成标准化前后端接口契约时触发。贯彻'先契约、后编码'原则，输出可冻结的接口基准。",
       "metadata": {
         "tags": "sdlc,api-design,openapi,mock,contract-first,parallel-development,openspec,stage-3.5",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "uat-verification",
+      "path": "skills/sdlc/uat-verification",
+      "description": "当用户提到'UAT'、'用户验收测试'、'验收'、'uat-report'、'业务流程验证'或 Gate 3 人工走查前需要生成检查清单时触发。基于用户故事和集成测试结果生成 UAT 验证方案，辅助人工在预览环境完成端到端业务流程验证，产出结构化 uat-report.md。",
+      "metadata": {
+        "tags": "sdlc,uat,quality-gate,openspec,stage-9.5,gate-3,acceptance-testing",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "release-management",
+      "path": "skills/sdlc/release-management",
+      "description": "当用户提到'发布'、'上线'、'release'、'部署'、'准备发布'或 UAT 通过（Gate 3 签字）后需要进入生产发布阶段时触发。基于 UAT 报告、代码审查报告和回滚方案生成发布清单与发布说明，辅助人工完成最终发布决策。",
+      "metadata": {
+        "tags": "sdlc,release,deployment,openspec,stage-10.5,risk-assessment",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "monitoring-analysis",
+      "path": "skills/sdlc/monitoring-analysis",
+      "description": "当用户提到'监控分析'、'线上健康检查'、'周期性监控'、'feedback-loop'、'运行报告'或归档后进入运维阶段需要评估系统健康度时触发。基于 monitoring-rules.yaml 和运行时数据生成本周健康报告与反馈闭环文档，输入到下一变更的 brainstorming。",
+      "metadata": {
+        "tags": "sdlc,observability,monitoring,feedback-loop,openspec,stage-12,ops",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     }

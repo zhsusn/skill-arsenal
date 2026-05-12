@@ -1,0 +1,12 @@
+{
+  "name": "uat-verification",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "domain": "quality-assurance",
+  "tags": ["sdlc", "uat", "quality-gate", "openspec", "stage-9.5", "gate-3", "acceptance-testing"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"],
+  "dependencies": ["integration-test"],
+  "consumed_by": ["requesting-code-review", "release-management", "human"],
+  "run_once_per_change": true,
+  "language": "zh-CN"
+}

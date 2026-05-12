@@ -91,7 +91,8 @@ description: 当 unit-test 覆盖率 ≥70% 通过后、用户要求'集成测�
 | 衔接点 | 动作 |
 |--------|------|
 | 上游: unit-test | 读取 `coverage-report.md` 作为门控；覆盖率 < 70% 拒绝执行 |
-| 下游: human (Gate 3) | 输出 `user-stories-checklist.md` 供人工 UAT 走查 |
+| 下游: uat-verification | 输出 `user-stories-checklist.md` 供 UAT 验证阶段使用；P0 通过后解锁 uat-verification |
+| 下游: human (Gate 3) | uat-verification 完成后进入 Gate 3 人工签字 |
 | 横向: systematic-debugging | 集成测试失败时可调用进行系统化调试 |
 
 ## Gotchas

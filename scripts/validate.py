@@ -26,6 +26,7 @@ VALID_CATEGORIES = {
     "sdlc",
     "data-engineering",
     "Reverse-Engineering",
+    "engineering-foundations",
 }
 
 # kebab-case 校验（同时禁止连续连字符）

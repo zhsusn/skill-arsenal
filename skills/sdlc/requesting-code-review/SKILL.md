@@ -1,6 +1,6 @@
 ---
 name: requesting-code-review
-description: 当用户提到'代码审查'、'code review'、'审查代码'、'检查实现质量'或在完成任务、实现主要功能、合并前、Gate 3（UAT）通过后验证工作是否符合需求时触发。分派代码审查子代理捕获级联前的问题，并输出结构化 code-review-report.md。
+description: 当用户提到'代码审查'、'code review'、'审查代码'、'检查实现质量'、'review'、'代码走读'或重构评估时触发，或在完成任务、实现主要功能、合并前、Gate 3（UAT）通过后验证工作是否符合需求时触发。分派代码审查子代理执行安全性、性能、可维护性审查，捕获级联前的问题，并输出结构化 code-review-report.md。
 ---
 
 # Requesting Code Review
@@ -37,7 +37,45 @@ HEAD_SHA=$(git rev-parse HEAD)
 - `feature-*/design.md`：详细设计文档（用于设计符合度对比）
 - `uat-report.md`（如有）：UAT 阶段发现的问题清单
 
-**3. Dispatch code reviewer subagent:**
+**3. 执行审查（含通用审查维度）：**
+
+审查子代理在评估代码时，除执行设计符合度对比、任务追溯和 UAT 交叉验证外，还必须按以下通用维度进行扫描：
+
+#### 安全性
+- [ ] 用户输入是否经过校验和转义（防 SQL 注入、XSS、命令注入）
+- [ ] 是否存在硬编码的密钥、Token 或密码
+- [ ] 数据库操作是否使用参数化查询 / ORM 绑定
+- [ ] 文件上传是否限制类型和大小
+- [ ] 敏感操作是否有权限校验与鉴权
+- [ ] 敏感数据是否脱敏或加密存储
+
+#### 性能
+- [ ] 是否存在明显的算法复杂度问题（如 O(n²) 嵌套循环处理大数据）
+- [ ] 数据库查询是否可优化（索引、N+1、JOIN、子查询）
+- [ ] 是否重复计算可缓存的结果
+- [ ] I/O 操作是否可批量处理
+- [ ] 是否存在内存泄漏或资源未释放（连接、句柄、锁）
+
+#### 可维护性
+- [ ] 命名是否清晰表达意图（变量、函数、类）
+- [ ] 函数是否遵循单一职责原则（建议不超过 50 行，圈复杂度可控）
+- [ ] 是否有适当的异常处理和日志记录
+- [ ] 新增代码是否有对应的单元测试或集成测试覆盖
+- [ ] 注释是否解释了「为什么」而非「做了什么」
+- [ ] 是否存在重复代码或可提取的公共逻辑
+
+#### 代码规范与最佳实践
+- [ ] 是否遵循项目编码规范（风格、目录结构、命名约定）
+- [ ] 是否引入不必要的依赖或依赖版本冲突
+- [ ] 类型注解 / 接口定义是否完整
+
+**审查原则**：
+1. **对事不对人**：评论针对代码，不针对作者
+2. **解释原因**：不仅指出问题，还要说明为什么这是个问题
+3. **提供替代方案**：如果可能，给出具体的改进代码示例
+4. **区分阻塞与非阻塞**：阻塞问题必须修复才能合并；建议优化可以后续处理
+
+**4. Dispatch code reviewer subagent:**
 
 Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
 
@@ -194,6 +232,16 @@ You: [Fix progress indicators]
 **Ad-Hoc Development:**
 - Review before merge
 - Review when stuck
+
+## 与上下游衔接
+
+| 衔接点 | 动作 |
+|--------|------|
+| 上游: executing-plans | 编码实现完成后触发；或 Gate 3（UAT）签字后作为发布前最后质量门 |
+| 上游: uat-verification | 消费 `uat-report.md` 进行 UAT 交叉验证 |
+| 下游: release-management | `code-review-report.md` 作为发布清单的前置输入；阻塞性问题清零方可进入发布 |
+| 下游: executing-plans | 不通过时生成 `rework-tasks.md` 返回修复 |
+| 横向: self-check | 审查报告质量校验（结构化、分级、追溯完整性） |
 
 **Project Delivery Workflow (V2.1):**
 - Review after Gate 3 (UAT sign-off) and before release-management

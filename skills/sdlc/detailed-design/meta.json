@@ -1,0 +1,8 @@
+{
+  "name": "detailed-design",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "domain": "sdlc",
+  "tags": ["sdlc", "design", "detailed-design", "openspec", "stage-4", "ddl", "openapi", "state-machine"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}
