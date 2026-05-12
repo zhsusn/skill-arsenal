@@ -23,7 +23,7 @@
 ```
 skill-arsenal/
 ├── README.md                       # 项目说明、快速开始、平台兼容表
-├── LICENSE                         # MIT 许可证
+├── LICENSE                         # Apache 许可证
 ├── AGENTS.md                       # 本文档（AI 助手上下文说明）
 ├── index.json                      # 机器可读的技能索引（供 skill-finder 使用）
 ├── .cursor/

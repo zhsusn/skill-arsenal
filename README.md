@@ -4,7 +4,7 @@
 >
 > *让开发行云流水，让产品超越预期。*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ---
 
@@ -64,7 +64,7 @@ AI 只在需要时加载必要的上下文：
 ```
 skill-arsenal/
 ├── README.md                       # 本文档
-├── LICENSE                         # MIT 许可证
+├── LICENSE                         # Apache 许可证
 ├── AGENTS.md                       # AI 助手上下文说明（面向 Agent）
 ├── index.json                      # 机器可读的技能索引
 ├── .gitignore                      # Git 忽略规则
@@ -438,4 +438,4 @@ python3 scripts/skill-create-pattern.py my-skill "My Skill Description" --patter
 
 ## 许可
 
-[MIT](LICENSE) © 2026 zhsusn
+[Apache-2.0](LICENSE) © 2026 zhsusn
