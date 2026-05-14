@@ -1,0 +1,8 @@
+{
+  "name": "mermaid-diagrams",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": ["visualization", "diagram", "mermaid", "documentation"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"],
+  "homepage": "https://github.com/Agents365-ai/mermaid-skill"
+}

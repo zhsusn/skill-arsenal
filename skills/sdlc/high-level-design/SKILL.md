@@ -66,7 +66,12 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 - **风险**：技术风险、业务风险、AI 模型风险（AI 项目），每项含影响等级（高/中/低）和缓解策略
 
 #### system_architecture
-分层/服务划分、部署拓扑、Mermaid 架构图（支持 C4-Model 分层：Context→Container→Component）。禁止写模块内部类图。
+系统整体分层、服务划分、部署拓扑。产出**双视图架构文档**：
+
+- **技术架构图（默认）**：采用 C4-Model 分层（Context→Container→Component），展示技术组件、通信模式与部署边界
+- **业务功能架构图（可选）**：当模块数 ≥ 4 或存在多业务域时，基于 `03-functional-structure.md` 的模块清单，调用 `functional-architecture-generator` 的分区方法论与颜色编码策略，输出带模块清单的功能架构图
+
+禁止写模块内部类图。
 
 #### tech_stack
 技术项 + 选型理由 + 竞品溯源 + **架构策略对比矩阵 + ADR（Architecture Decision Record）**。

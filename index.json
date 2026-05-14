@@ -253,6 +253,24 @@
         "tags": "sdlc,observability,monitoring,feedback-loop,openspec,stage-12,ops",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
+    },
+    {
+      "name": "mermaid-diagrams",
+      "path": "skills/engineering-foundations/mermaid-diagrams",
+      "description": "当用户提到'画图'、'流程图'、'时序图'、'架构图'、'类图'、'ER图'、'状态机'或需要可视化系统组件关系时触发。生成 Mermaid 语法并导出 PNG/SVG/PDF。",
+      "metadata": {
+        "tags": "visualization,diagram,mermaid,documentation,engineering-foundations",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "functional-architecture-generator",
+      "path": "skills/engineering-foundations/functional-architecture-generator",
+      "description": "当用户要求'画架构图'、'系统功能架构'、'模块划分'、'业务域拆分'或需要基于 PRD/需求文档生成功能架构文档时触发。输出系统功能架构及模块划分文档，含 Mermaid 架构图。",
+      "metadata": {
+        "tags": "architecture,documentation,mermaid,system-design,domain-modeling,engineering-foundations",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     }
   ]
 }

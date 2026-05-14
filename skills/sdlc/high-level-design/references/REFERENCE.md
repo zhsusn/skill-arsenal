@@ -37,6 +37,86 @@ graph TB
     A --> C
 ```
 
+### 业务功能架构图（可选）
+当系统存在多个业务域或模块数 ≥ 4 时，补充业务视角的功能架构图。基于 `03-functional-structure.md` 的模块清单，采用 `functional-architecture-generator` 的分区方法论与颜色编码策略。
+
+```markdown
+### 业务功能架构图
+
+#### 划分视角与分区列表
+- **划分视角**：[用户角色 / 业务域 / 系统层级 / 生命周期]
+- **分区列表**：
+  | 分区名称 | 定位 | 模块数量 | 色系 |
+  |---------|------|---------|------|
+  | [用户域] | 面向终端用户的核心功能 | 4 | 红 #ffcdd2 |
+  | [订单域] | 交易流程与订单管理 | 5 | 黄 #fff9c4 |
+  | [支付域] | 支付渠道与资金结算 | 3 | 蓝 #bbdefb |
+
+#### 业务功能架构总览
+```mermaid
+flowchart TB
+    %% 样式定义
+    classDef user fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#c62828
+    classDef order fill:#fffde7,stroke:#f9a825,stroke-width:2px,color:#f9a825
+    classDef pay fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#1565c0
+
+    %% 用户域
+    subgraph P1 ["用户域"]
+        direction LR
+        subgraph P1_L [" "]
+            direction TB
+            U1[登录注册]:::user
+            U2[个人中心]:::user
+        end
+        subgraph P1_R [" "]
+            direction TB
+            U3[消息通知]:::user
+        end
+    end
+    style P1 fill:#ffcdd2,stroke:#c62828,stroke-width:3px
+
+    %% 订单域
+    subgraph P2 ["订单域"]
+        direction LR
+        subgraph P2_L [" "]
+            direction TB
+            O1[购物车]:::order
+            O2[订单管理]:::order
+        end
+        subgraph P2_R [" "]
+            direction TB
+            O3[物流追踪]:::order
+        end
+    end
+    style P2 fill:#fff9c4,stroke:#f9a825,stroke-width:3px
+
+    %% 支付域
+    subgraph P3 ["支付域"]
+        direction TB
+        P31[支付网关]:::pay
+        P32[对账中心]:::pay
+        P33[退款管理]:::pay
+    end
+    style P3 fill:#bbdefb,stroke:#1565c0,stroke-width:3px
+
+    %% 流向
+    U1 --> O1
+    O2 --> P31
+    P33 -.-> O2
+```
+
+#### 模块清单表
+| 分区 | 模块名称 | 功能职责 | 对应需求章节 | 依赖/被依赖 |
+|------|---------|---------|------------|------------|
+| 用户域 | 登录注册 | 用户身份认证与注册 | 02-REQ-001 | 被订单域依赖 |
+| ... | ... | ... | ... | ... |
+
+#### 关键架构说明
+- **核心中枢**：指出承担规则、调度、编排职责的模块
+- **跨分区交互**：描述 2-3 条典型跨区数据流
+- **外部依赖**：三方系统对接内容说明
+```
+
 ### 边界与 Enforcement 机制
 [如何防止层间违规、循环依赖]
 ```

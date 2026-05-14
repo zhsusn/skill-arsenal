@@ -1,0 +1,7 @@
+{
+  "name": "functional-architecture-generator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": ["architecture", "documentation", "mermaid", "system-design", "domain-modeling"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}
