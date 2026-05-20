@@ -103,7 +103,7 @@ Error 数量 > 0 时阻塞进入下游设计阶段，返回修复。
 5. 埋点事件是否覆盖所有关键操作
 
 确认后执行：/skill:human gate=Gate2.5 action=sign-off
-⚠️ 未获得人工确认前，禁止进入 high-level-design 阶段。
+⚠️ 未获得人工确认前，禁止基于交互规格启动前端编码或进入 detailed-design 阶段。high-level-design 可基于已冻结 PRD 并行推进，不受此闸门阻塞。
 ```
 
 等待人工签字后：
@@ -158,9 +158,9 @@ feature-01-user-auth/
 ### 页面跳转图
 ```mermaid
 graph LR
-    A[/login] -->|登录成功| B[/dashboard]
-    A -->|忘记密码| C[/forgot-password]
-    A -->|注册账号| D[/register]
+    A[/login/] -->|登录成功| B[/dashboard/]
+    A -->|忘记密码| C[/forgot-password/]
+    A -->|注册账号| D[/register/]
 ```
 ```
 

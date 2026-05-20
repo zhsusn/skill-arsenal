@@ -27,6 +27,7 @@ description: 当 executing-plans 完成一个 Batch 后、用户要求'补全单
 | 独立运行 | 不依赖外部服务（数据库、缓存、第三方 API） |
 | 内存数据库 | 使用 SQLite :memory: 或 mock 替代真实 DB |
 | 边界覆盖 | 必须包含错误路径、异常分支、空值/越界输入 |
+| 代码风格 | 测试代码必须遵循对应语言的代码风格（Python → `python-google-style`、Java → `java-alibaba-style`、其他语言使用默认风格） |
 
 ## 执行流程
 

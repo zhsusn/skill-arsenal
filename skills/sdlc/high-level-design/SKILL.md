@@ -100,6 +100,27 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 #### module_responsibilities
 每个模块的输入、输出、核心职责、对外依赖。禁止写内部类图、函数签名、实现细节。
 
+#### project_structure（V2.2 新增）
+
+基于 `system_architecture` 的分层决策和 `tech_stack` 的技术选型，推导项目源码目录结构。
+
+- 目录结构必须与架构分层严格对应（如 DDD → `domain/` / `application/` / `infrastructure/`；MVC → `controllers/` / `services/` / `repositories/` / `models/`）
+- 每个目录标注：对应架构层、允许存放的文件类型、禁止存放的内容
+- 按模块划分子包/子目录，与 `03-functional-structure.md` 中的模块名保持一致（kebab-case）
+- 输出格式：ASCII tree + 目录职责说明表格
+
+```markdown
+src/
+├── domain/              # 领域层：实体、值对象、领域服务
+│   ├── order/           # 订单模块（对应 feature-01-order）
+│   └── user/            # 用户模块（对应 feature-02-user）
+├── application/         # 应用层：用例、DTO、Mapper
+├── infrastructure/      # 基础设施层：Repository 实现、外部服务客户端
+└── interfaces/          # 接口层：Controller、消息队列消费者
+```
+
+禁止写具体类名、文件名、函数签名。只定义目录层级和职责边界。
+
 #### state_machine_global
 跨模块核心实体状态流转（如"剧本：草稿→审核→发布"）。生成 Mermaid 状态图。禁止写单模块内部状态转换规则、触发事件、校验规则。
 
@@ -181,9 +202,12 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 17-decision-records.md          # 可选
 18-governance-rules.md          # 可选
 19-design-considerations.md     # 新增：假设、约束、依赖、风险
+20-project-structure.md         # 新增（V2.2）：源码目录结构规范与目录骨架创建规则
 ```
 
 > **rollback-plan.md 双写规则**：一份保存在变更目录 `design/15-rollback-plan.md`，另一份同步更新项目级 `ops/rollback-plan.md`（若存在）。确保回滚方案与变更绑定，同时项目级 ops 目录保持最新。
+>
+> **project-structure.md 输出规则（V2.2 新增）**：`20-project-structure.md` 作为设计文档的一部分保存到 `design/` 目录。目录骨架的物理创建推迟到 Gate 2 签字之后，避免评审不通过时产生无效目录。
 
 ### Step 7: 触发 self-check
 自动调用 `self-check` skill 校验一致性、完整性、交叉引用有效性、边界合规性。
@@ -203,6 +227,7 @@ self-check 通过后，自动宣读阻塞提示：
 3. 全局状态机是否与详细需求中的模块状态描述兼容
 4. rollback-plan.md 中的回滚步骤是否可操作（特别是数据库回滚）
 5. operations-architecture 中的告警策略是否覆盖核心链路
+6. project-structure.md 中的目录分层是否与 system_architecture 的架构分层一致
 
 确认后执行：/skill:human gate=Gate2 action=sign-off
 ⚠️ 未获得人工确认前，禁止进入 detailed-design 或编码实现阶段。
@@ -211,7 +236,8 @@ self-check 通过后，自动宣读阻塞提示：
 等待人工签字后：
 1. 将设计文件头部状态更新为"已冻结"
 2. 调用 `progress-tracker`，标记阶段 3 为"已完成"
-3. 提示用户可并行启动 `monitoring-setup` 生成监控规则初稿
+3. 读取 `20-project-structure.md`，在项目源码根目录创建对应的空目录骨架（`mkdir -p`）。只创建目录，不创建任何代码文件；若目录已存在，跳过不覆盖。创建完成后输出目录树供用户确认
+4. 提示用户可并行启动 `monitoring-setup` 生成监控规则初稿
 
 ## 阶段切换门控
 
@@ -249,7 +275,7 @@ self-check 通过后，自动宣读阻塞提示：
 
 | 下游 Skill | 消费文档 | 衔接规则 |
 |---|---|---|
-| `detailed-design` | `design/*.md` | 评审通过后按模块逐一下钻 |
+| `detailed-design` | `design/*.md` + `20-project-structure.md` | 基于已有目录骨架按模块逐一下钻，填充类/接口文件 |
 | `task-breakdown` | `design/*.md` + `specs/feature-*/design.md` | 基于架构分层拆解任务 |
 | `monitoring-setup` | `14-operations-architecture.md` | 基于运维架构生成监控规则初稿 |
 | `human` | `design/*.md` + `rollback-plan.md` | Gate 2 人工冻结确认与决策记录 |

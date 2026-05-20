@@ -66,6 +66,7 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 - 核心算法逻辑（伪代码或流程图）
 - 模块依赖图（Mermaid graph TD）
 - 必须遵循概要设计的分层约束，禁止擅自变更技术栈
+- **代码风格传导**：类/函数命名、签名风格必须与项目代码规范一致。Python 项目遵循 `python-google-style`（snake_case、类型注解、Google docstring）；Java 项目遵循 `java-alibaba-style`（UpperCamelCase/lowerCamelCase、包装类型、Javadoc 注释）
 
 #### api-spec.md — 接口定义
 

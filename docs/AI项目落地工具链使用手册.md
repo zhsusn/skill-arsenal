@@ -140,7 +140,7 @@ mkdir -p ops/
 
 ```bash
 # 初始化 OpenSpec 目录结构
-npx @fission-ai/openspec@latest init
+npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 
 # 初始化项目配置（V2.1：增加 ops/ 目录与运维基础设施骨架）
 /skill:progress-tracker 初始化项目目录

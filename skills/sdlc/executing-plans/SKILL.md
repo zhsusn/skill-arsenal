@@ -84,6 +84,7 @@ description: 当用户拥有已编写的 tasks.md 或 plan.md，需要按任务�
 - **Scope Discipline**：不碰相邻文件，发现的重构点记入 `NOTICED BUT NOT TOUCHING`
 - **精确路径**：严格遵循 tasks.md 中指定的文件路径
 - **TDD 门控**：每个任务完成后确认 RED 先写、GREEN 最小、REFACTOR 后测试全绿
+- **代码风格规范**：生成任何源代码时，必须遵循对应语言的代码风格。Python 遵循 `python-google-style` Skill（Google Python Style Guide）；Java 遵循 `java-alibaba-style` Skill（阿里巴巴Java开发手册）；其他语言使用该语言社区默认风格（TypeScript/ESLint、Go/gofmt、Rust/rustfmt 等）
 
 ### Step 4: 强制自测（Self-Check Gate）
 

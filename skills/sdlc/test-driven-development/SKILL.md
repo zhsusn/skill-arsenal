@@ -26,6 +26,13 @@ description: 当用户在 executing-plans 编码阶段、需要为单个开发�
 
 **违反规则的字面含义，就是违反规则的精神。**
 
+## 代码风格规范
+
+生成任何源代码（生产代码与测试代码）时，必须遵循对应语言的代码风格：
+- **Python**：遵循 `python-google-style` Skill（Google Python Style Guide，行宽80、4空格缩进、类型注解、Google风格docstring等）
+- **Java**：遵循 `java-alibaba-style` Skill（阿里巴巴Java开发手册，命名规范、OOP规约、集合处理、异常日志等）
+- **其他语言**：使用该语言社区默认风格（TypeScript/ESLint+Prettier、Go/gofmt、Rust/rustfmt 等）
+
 ## 铁律
 
 ```

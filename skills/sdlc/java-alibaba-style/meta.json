@@ -1,0 +1,7 @@
+{
+  "name": "java-alibaba-style",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": ["java", "style-guide", "alibaba", "coding-standards", "sdlc"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

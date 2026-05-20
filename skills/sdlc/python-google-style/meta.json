@@ -1,0 +1,7 @@
+{
+  "name": "python-google-style",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": ["python", "style-guide", "google", "coding-standards", "sdlc"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

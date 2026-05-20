@@ -27,6 +27,7 @@ description: 当 unit-test 覆盖率 ≥70% 通过后、用户要求'集成测�
 | 接口一致性 | 测试用例必须基于 openapi.yaml 中的契约定义 |
 | 需求追溯 | 每个测试用例标注对应需求编号（如 FR-001） |
 | 环境自治 | 测试环境自动搭建与销毁，测试数据自动准备与清理 |
+| 代码风格 | 测试代码必须遵循对应语言的代码风格（Python → `python-google-style`、Java → `java-alibaba-style`、其他语言使用默认风格） |
 
 ## 执行流程
 
