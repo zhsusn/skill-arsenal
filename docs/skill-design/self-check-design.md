@@ -332,13 +332,13 @@ detailed-requirements:
 implementation:
   checks: [interface_consistency, exception_coverage]
   upstream:
-    - "openspec/changes/{change}/specs/feature-*/api-spec.md"
-    - "openspec/changes/{change}/specs/feature-*/design.md"
+    - "openspec/changes/{change}/detail-design/feature-*/api-spec.md"
+    - "openspec/changes/{change}/detail-design/feature-*/design.md"
 
 unit-test:
   checks: [coverage_threshold, test_validity]
   coverage_threshold: 70
   upstream:
-    - "openspec/changes/{change}/specs/feature-*/test-plan.md"
+    - "openspec/changes/{change}/detail-design/feature-*/test-plan.md"
     - "openspec/changes/{change}/specs/feature-*/logic.md"
 ```

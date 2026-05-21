@@ -253,8 +253,8 @@ EOF
 
 ```bash
 /skill:interface-first-dev 基于详细设计定义前后端接口契约。
-参考：@openspec/changes/{变更名}/specs/feature-*/api-spec.md
-@openspec/changes/{变更名}/specs/feature-*/db-schema.md
+参考：@openspec/changes/{变更名}/detail-design/feature-*/api-spec.md
+@openspec/changes/{变更名}/detail-design/feature-*/db-schema.md
 
 /skill:self-check 接口契约
 ```
@@ -265,7 +265,7 @@ EOF
 
 ```bash
 /skill:writing-plans 基于详细设计和接口契约，生成模块级实现计划。
-参考：@openspec/changes/{变更名}/specs/feature-*/design.md
+参考：@openspec/changes/{变更名}/detail-design/feature-*/design.md
 @openspec/changes/{变更名}/interface-contracts/openapi.yaml
 
 /skill:self-check 实现计划
@@ -293,7 +293,7 @@ EOF
 # 按 Batch（默认 3 任务/批次）执行：
 /skill:executing-plans 按 tasks.md 逐 Batch 执行开发任务。
 参考：@openspec/changes/{变更名}/tasks.md
-@openspec/changes/{变更名}/specs/feature-*/design.md
+@openspec/changes/{变更名}/detail-design/feature-*/design.md
 @openspec/changes/{变更名}/interface-contracts/openapi.yaml
 
 # 每个 Batch 完成后执行 Inline Audit
@@ -313,7 +313,7 @@ EOF
 
 ```bash
 /skill:unit-test 为已完成的模块生成单元测试。
-参考：@openspec/changes/{变更名}/specs/feature-*/test-plan.md
+参考：@openspec/changes/{变更名}/detail-design/feature-*/test-plan.md
 
 pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
@@ -361,7 +361,7 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 ```bash
 /skill:requesting-code-review 对已完成的代码进行审查。
 参考：@openspec/changes/{变更名}/tasks.md
-      @openspec/changes/{变更名}/specs/feature-*/design.md
+      @openspec/changes/{变更名}/detail-design/feature-*/design.md
       @openspec/changes/{变更名}/uat-report.md
 ```
 

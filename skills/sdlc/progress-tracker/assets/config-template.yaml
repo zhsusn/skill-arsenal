@@ -57,9 +57,9 @@ phases:
     name: 详细设计
     weight: 15
     gate_to_next:
-      - artifact: "specs/feature-*/design.md"
+      - artifact: "detail-design/feature-*/design.md"
         check: all_exist
-      - artifact: "specs/feature-*/api-spec.md"
+      - artifact: "detail-design/feature-*/api-spec.md"
         check: all_exist
       - action: user_review
         label: "详细设计评审通过"

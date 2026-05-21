@@ -204,7 +204,7 @@ HEAD_SHA=$(git rev-parse HEAD)
   HEAD_SHA: 3df7661
   UAT_ISSUES: "None"  # or list UAT issues if any
   TASKS_MD: "openspec/changes/{变更名}/tasks.md"
-  DESIGN_MD: "openspec/changes/{变更名}/specs/feature-001/design.md"
+  DESIGN_MD: "openspec/changes/{变更名}/detail-design/feature-001/design.md"
 
 [Subagent returns]:
   Strengths: Clean architecture, real tests

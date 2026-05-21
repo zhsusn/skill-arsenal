@@ -385,7 +385,7 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 
 ```bash
 /skill:writing-plans 基于详细设计和接口契约，生成模块级实现计划。
-参考：@openspec/changes/{变更名}/specs/feature-*/design.md
+参考：@openspec/changes/{变更名}/detail-design/feature-*/design.md
 @openspec/changes/{变更名}/interface-contracts/openapi.yaml
 
 /skill:self-check 实现计划
@@ -437,7 +437,7 @@ Plan 已保存至：@openspec/changes/{变更名}/plan.md
 约束：Batch 大小=3、强制自测、接口校验、Rollback-Friendly Commit
 
 参考：@openspec/changes/{变更名}/tasks.md
-@openspec/changes/{变更名}/specs/feature-*/design.md
+@openspec/changes/{变更名}/detail-design/feature-*/design.md
 @openspec/changes/{变更名}/interface-contracts/openapi.yaml
 ```
 
@@ -532,7 +532,7 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 /skill:requesting-code-review 对已完成的代码进行审查。
 参考：
   - @openspec/changes/{变更名}/tasks.md（任务追溯基准）
-  - @openspec/changes/{变更名}/specs/feature-*/design.md（设计对齐基准）
+  - @openspec/changes/{变更名}/detail-design/feature-*/design.md（设计对齐基准）
   - @openspec/changes/{变更名}/uat-report.md（UAT 交叉验证）
 ```
 

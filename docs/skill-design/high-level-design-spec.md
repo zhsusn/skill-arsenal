@@ -228,7 +228,7 @@ openspec/changes/{变更名}/design/
 | 下游 Skill | 消费文档 | 衔接规则 |
 |------------|----------|----------|
 | `detailed-design` | `design/*.md` | 概要设计评审通过后，按模块逐一下钻 |
-| `task-breakdown` | `design/*.md` + `specs/feature-*/design.md` | 基于架构分层拆解任务 |
+| `task-breakdown` | `design/*.md` + `detail-design/feature-*/design.md` | 基于架构分层拆解任务 |
 
 ---
 

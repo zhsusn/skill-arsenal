@@ -276,7 +276,7 @@ self-check 通过后，自动宣读阻塞提示：
 | 下游 Skill | 消费文档 | 衔接规则 |
 |---|---|---|
 | `detailed-design` | `design/*.md` + `20-project-structure.md` | 基于已有目录骨架按模块逐一下钻，填充类/接口文件 |
-| `task-breakdown` | `design/*.md` + `specs/feature-*/design.md` | 基于架构分层拆解任务 |
+| `task-breakdown` | `design/*.md` + `detail-design/feature-*/design.md` | 基于架构分层拆解任务 |
 | `monitoring-setup` | `14-operations-architecture.md` | 基于运维架构生成监控规则初稿 |
 | `human` | `design/*.md` + `rollback-plan.md` | Gate 2 人工冻结确认与决策记录 |
 
