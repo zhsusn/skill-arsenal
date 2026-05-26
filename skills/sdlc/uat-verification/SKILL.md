@@ -18,8 +18,9 @@ description: 当用户提到'UAT'、'用户验收测试'、'验收'、'uat-repor
 | 依赖项 | 路径 | 门控标准 |
 |--------|------|----------|
 | 集成测试通过 | `tests/integration/report.md` | 全部 P0 用例通过 |
+| 代码审查通过 | `openspec/changes/{变更名}/code-review/review-report.yaml` | overall 为 Approve 或 Comment；blocking 问题已清零 |
 | 用户故事清单 | `tests/integration/user-stories-checklist.md` | 已由 integration-test 生成 |
-| 详细需求 | `openspec/changes/{变更名}/specs/feature-*/user-stories.md` | 存在且可读 |
+| 详细需求 | `openspec/changes/{变更名}/specs/feature-*/spec.md` | 存在且可读 |
 | 预览环境 | staging / preview 部署 | 已部署且可访问 |
 
 **硬性阻断**：若 integration-test P0 用例未全部通过，拒绝执行并提示："请先修复集成测试失败项，P0 用例 100% 通过后方可进入 UAT。"
@@ -127,7 +128,7 @@ description: 当用户提到'UAT'、'用户验收测试'、'验收'、'uat-repor
 
 | 结论 | 动作 |
 |------|------|
-| 通过 | 提示用户执行 `/skill:human gate=Gate3 action=sign-off`，进入 `requesting-code-review` |
+| 通过 | 提示用户执行 `/skill:human gate=Gate3 action=sign-off`，进入 `release-management` |
 | 有条件通过 | 提示用户执行 `/skill:human gate=Gate3 action=conditional result=passed issues="..."`，轻微遗留问题进入下一迭代 |
 | 不通过 | 生成 `rework-tasks.md`，返回 `executing-plans` 修复阻塞性问题，修复后重新申请 Gate 3 |
 
@@ -136,8 +137,9 @@ description: 当用户提到'UAT'、'用户验收测试'、'验收'、'uat-repor
 | 衔接点 | 动作 |
 |--------|------|
 | 上游: integration-test | 消费 `user-stories-checklist.md`；P0 用例未通过则拒绝启动 |
+| 上游: code-review-pipeline | 确认代码审查已通过（blocking 问题清零） |
 | 下游: human (Gate 3) | 输出 `uat-report.md` 供人工签字；阻塞性问题必须清零才能签字 |
-| 下游: requesting-code-review | uat-report.md 作为代码审查的 UAT 交叉验证输入 |
+| 下游: release-management | uat-report.md 作为发布风险评估输入 |
 | 横向: self-check | 执行 UAT 质量检查（检查清单完整性、问题分级合理性） |
 
 ## 输出物清单

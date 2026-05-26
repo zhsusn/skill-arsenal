@@ -4,7 +4,9 @@
 >
 > 当 MCP Server 不可用（网络不通、服务未部署或权限不足）时，按本手册逐条执行命令，完成从需求到发布的全生命周期操作。
 >
-> 版本 V2.4 | 2026年5月
+> 版本 V2.5 | 2026年5月
+>
+> **V2.5 更新**：引入 `code-review-pipeline` 技能族（阶段 9.25），包含 `requesting-code-review`/`code-reviewer`/`receiving-code-review` 三个角色 Skill 与四个通用参考指南（security/performance/architecture/code-quality-universal）。代码审查作为强制性技术门禁插入 integration-test 与 UAT 之间，blocking 问题清零后方可进入 UAT 和发布。产物统一收敛到 `code-review/` 目录（review-request.yaml / review-report.yaml / fix-plan.yaml / decisions.md）。
 >
 > **V2.4 更新**：补齐 `uat-verification`（阶段 9.5）、`release-management`（阶段 10.5）、`monitoring-analysis`（阶段 12）三个 Skill。修复 `integration-test` 下游衔接（改为 `uat-verification`）。
 >
@@ -61,9 +63,9 @@
 | 7    | executing-plans        | 编码实现       | 代码文件                                           | —           |
 | 8    | unit-test              | 单元测试       | tests/unit/                                    | —           |
 | 9    | integration-test       | 集成测试       | tests/integration/ + user-stories-checklist.md | —           |
+| 9.25 | code-review-pipeline   | 代码审查       | code-review/review-request.yaml + review-report.yaml + fix-plan.yaml | —           |
 | 9.5  | uat-verification       | UAT 验证     | uat-report.md                                  | 🚪 Gate 3   |
-| 10   | requesting-code-review | 代码审查       | code-review-report.md（含 design.md 对比、tasks.md 追溯） | —           |
-| 10.5 | release-management     | 上线发布       | release-notes.md                               | 人工最终决策      |
+| 10   | release-management     | 上线发布       | release-notes.md + release-checklist.md        | 人工最终决策      |
 | 11   | finish                 | 归档收尾       | archive/ + CHANGELOG.md + 归档完成确认单       | —           |
 | 12   | monitoring-analysis    | 线上监控（周期性）  | monitoring-dashboard.md                        | —           |
 
@@ -336,12 +338,41 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ---
 
+### 步骤 9.25：代码审查（V2.5 新增）
+
+```bash
+/skill:code-review-pipeline 对已完成的代码执行四阶段×五轴结构化审查。
+参考：
+  - @openspec/changes/{变更名}/tasks.md（任务追溯基准）
+  - @openspec/changes/{变更名}/detail-design/feature-*/design.md（设计对齐基准）
+```
+
+**审查流程：**
+1. **SIZING**：评估变更大小（≤300行直接审查，>300行建议拆分）
+2. **REQUESTING**：生成 `review-request.yaml`
+3. **REVIEWING**：四阶段审查（上下文收集→高层级→逐行分析→总结决策），输出 `review-report.yaml`
+4. **RECEIVING + FIXING**：生成 `fix-plan.yaml`，按优先级修复 blocking > important > nit
+5. **VERIFYING**：复查修改过的文件，确认无回归
+
+**若结论为 Request Changes：**
+```bash
+# 按 fix-plan.yaml 逐项修复，修复后重新触发 code-review-pipeline
+/skill:executing-plans 修复代码审查发现的阻塞性问题
+/skill:code-review-pipeline 复查
+```
+
+产出：`openspec/changes/{变更名}/code-review/review-request.yaml`、`review-report.yaml`、`fix-plan.yaml`、`decisions.md`。
+
+---
+
 ### 步骤 9.5：UAT 验证 + 🚪 Gate 3
 
 ```bash
 /skill:uat-verification 基于用户故事生成 UAT 检查清单。
 参考：@openspec/changes/{变更名}/specs/feature-*/user-stories.md
 ```
+
+**前置检查：** 确认 code-review 已通过（`review-report.yaml` 中 blocking 问题已清零）。
 
 **人工操作（阻塞，必须）：**
 1. 在预览环境按 `user-stories-checklist.md` 逐项操作
@@ -356,33 +387,13 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ---
 
-### 步骤 10：代码审查
-
-```bash
-/skill:requesting-code-review 对已完成的代码进行审查。
-参考：@openspec/changes/{变更名}/tasks.md
-      @openspec/changes/{变更名}/detail-design/feature-*/design.md
-      @openspec/changes/{变更名}/uat-report.md
-```
-
-产出：`code-review-report.md`（含总体结论、阻塞性问题、设计偏差分析、任务追溯矩阵、UAT 交叉验证）。
-
-**若结论为不通过：**
-```bash
-# 生成 rework-tasks.md，返回 executing-plans 修复
-/skill:executing-plans 修复代码审查发现的阻塞性问题
-# 修复完成后重新触发 requesting-code-review
-```
-
----
-
-### 步骤 10.5：上线发布
+### 步骤 10：上线发布（原 10.5）
 
 ```bash
 /skill:release-management 准备发布。
 输入：
+  - code-review/review-report.yaml（overall = Approve/Comment，blocking 清零）
   - uat-report.md（通过）
-  - code-review-report.md（通过/有条件通过）
   - rollback-plan.md（来自阶段 3）
   - 代码分支/commit SHA
 ```

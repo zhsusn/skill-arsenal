@@ -26,7 +26,7 @@ description: 当用户提到'发布'、'上线'、'release'、'部署'、'准备
 | 依赖项 | 路径 | 门控标准 |
 |--------|------|----------|
 | UAT 报告 | `openspec/changes/{变更名}/uat/uat-report.md` | Gate 3 签字通过（无阻塞性问题） |
-| 代码审查报告 | `openspec/changes/{变更名}/code-review-report.md` | 结论为通过或有条件通过（阻塞性问题已清零） |
+| 代码审查报告 | `openspec/changes/{变更名}/code-review/review-report.yaml` | overall 为 Approve 或 Comment；blocking 问题已清零 |
 | 回滚方案 | `openspec/changes/{变更名}/design/rollback-plan.md` | 存在且可读 |
 | 监控规则 | `ops/monitoring-rules.yaml` | 已确认生效（由 monitoring-setup 生成） |
 | 代码分支 | Git 仓库 | commit SHA 已确定 |
@@ -40,9 +40,10 @@ description: 当用户提到'发布'、'上线'、'release'、'部署'、'准备
 1. 读取 `uat-report.md`：
    - 确认总体结论为"通过"或"有条件通过"
    - 提取遗留问题清单（标记为发布后可处理或需纳入发布说明已知问题）
-2. 读取 `code-review-report.md`：
-   - 确认阻塞性问题数 = 0
-   - 提取设计符合度结论和任务追溯矩阵摘要
+2. 读取 `code-review/review-report.yaml`：
+   - 确认 `overall` 为 `Approve` 或 `Comment`
+   - 确认 `issues.blocking` 为空数组
+   - 提取 `assessment` 和 `strengths` 摘要
 3. 读取 `rollback-plan.md`：
    - 确认回滚触发条件、回滚步骤、数据库回滚脚本清单、灰度策略
 4. 读取 `monitoring-rules.yaml`：
@@ -154,7 +155,7 @@ description: 当用户提到'发布'、'上线'、'release'、'部署'、'准备
 ## 关联文档
 
 - UAT 报告：`uat/uat-report.md`
-- 代码审查报告：`code-review-report.md`
+- 代码审查报告：`code-review/review-report.yaml`
 - 设计文档：`specs/`
 ```
 
@@ -184,7 +185,7 @@ release-checklist.md 和 release-notes.md 已生成。
 
 | 衔接点 | 动作 |
 |--------|------|
-| 上游: requesting-code-review | 消费 `code-review-report.md`；阻塞性问题必须清零 |
+| 上游: code-review-pipeline | 消费 `code-review/review-report.yaml`；阻塞性问题必须清零 |
 | 上游: uat-verification | 消费 `uat-report.md`；必须通过 Gate 3 |
 | 上游: high-level-design | 消费 `rollback-plan.md` 作为回滚基准 |
 | 上游: monitoring-setup | 确认 `monitoring-rules.yaml` 已生效 |

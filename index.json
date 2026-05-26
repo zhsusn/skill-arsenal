@@ -1,6 +1,6 @@
 {
-  "version": "0.2.0",
-  "lastUpdated": "2026-05-20",
+  "version": "0.3.0",
+  "lastUpdated": "2026-05-26",
   "skills": [
     {
       "name": "sql-optimization",
@@ -113,9 +113,36 @@
     {
       "name": "requesting-code-review",
       "path": "skills/sdlc/requesting-code-review",
-      "description": "当用户提到'代码审查'、'code review'、'审查代码'、'检查实现质量'或在完成任务、实现主要功能、合并前、Gate 3（UAT）通过后验证工作是否符合需求时触发。分派代码审查子代理捕获级联前的问题，并输出结构化 code-review-report.md。",
+      "description": "当用户提到'提交代码审查'、'request review'、'准备审查材料'、'生成审查请求书'或在任务完成、功能实现后需要触发审查流程时触发。包含变更大小评估、死代码预检、依赖变更检测，并生成结构化审查请求书。",
       "metadata": {
         "tags": "code-review,quality-gate,sdlc,superpowers,stage-10,traceability",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "code-review-pipeline",
+      "path": "skills/sdlc/code-review-pipeline",
+      "description": "当用户提到'启动审查'、'code review'、'审查流程'、'review pipeline'、'开始审查'或代码完成、功能实现、合并前时触发。自动化代码审查编排器，融合四阶段流程与五轴质量评估，管理从代码完成到审查通过的全流程状态机。",
+      "metadata": {
+        "tags": "code-review,quality-gate,sdlc,orchestrator,state-machine,pipeline",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "code-reviewer",
+      "path": "skills/sdlc/code-reviewer",
+      "description": "当用户提交代码审查请求、提到'review'、'代码走读'、'检查这段代码'或需要独立第三方审查时触发。作为独立审查者执行四阶段×五轴结构化审查，支持按需加载语言专项指南和跨领域指南。",
+      "metadata": {
+        "tags": "code-review,quality-gate,sdlc,security,performance,architecture,reviewer",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "receiving-code-review",
+      "path": "skills/sdlc/receiving-code-review",
+      "description": "当用户收到审查意见、需要处理 code review feedback、修复审查发现的问题、或进入复查阶段时触发。技术严谨地处理反馈，生成修复计划，支持状态回写与复查联动。",
+      "metadata": {
+        "tags": "code-review,quality-gate,sdlc,fixing,feedback,receiving",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     },

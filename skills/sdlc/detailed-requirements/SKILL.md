@@ -197,5 +197,5 @@ stateDiagram-v2
 - **原型限制**：`prototype.md` 是文字化交互规格，不包含可视化线框图；如需 UI 设计稿，需人工补充或移交设计阶段
 - **版本冲突**：若模块间检测到字段/状态/交互规格冲突，必须标记 Error 并返回修复，不可静默忽略
 - **interaction-spec.md 不是可选文件**：即使模块无前端页面（如纯后台服务），也必须输出说明"本模块无用户交互界面，交互规格 N/A"
-- **与 prd-feature-detail 区分**：本 skill 面向批量模块拆解和标准化输出；若用户只需为单个模块做深度访谈和穷尽式细节挖掘，应使用 `prd-feature-detail`
+- **与 prd-feature-detail 区分**：本 skill 面向批量模块拆解和标准化输出；若用户只需为单个模块做深度访谈和穷尽式细节挖掘，应使用 `brainstorming` Skill 配合 `requirement-analysis` Skill 进行模块级需求澄清
 - **Gate 2.5 不可跳过**：对 reelforge 等强交互产品，按钮级状态机遗漏是上线后用户体验不一致的主因，必须人工逐页确认

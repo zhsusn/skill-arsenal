@@ -1,0 +1,7 @@
+{
+  "name": "code-review-pipeline",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "tags": ["code-review", "quality-gate", "sdlc", "orchestrator", "state-machine"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

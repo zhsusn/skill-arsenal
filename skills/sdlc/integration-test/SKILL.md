@@ -91,9 +91,13 @@ description: 当 unit-test 覆盖率 ≥70% 通过后、用户要求'集成测�
 
 | 衔接点 | 动作 |
 |--------|------|
-| 上游: unit-test | 读取 `coverage-report.md` 作为门控；覆盖率 < 70% 拒绝执行 |
-| 下游: uat-verification | 输出 `user-stories-checklist.md` 供 UAT 验证阶段使用；P0 通过后解锁 uat-verification |
+| 上游: unit-test | 消费覆盖率报告；覆盖率 < 70% 则拒绝启动 |
+| 上游: executing-plans | 消费实现代码与 openapi.yaml 契约 |
+| 下游: code-review-pipeline | P0 用例全部通过后，触发变更级代码审查（阶段 9.25） |
+| 下游: uat-verification | 生成 `user-stories-checklist.md` 供 Gate 3 人工 UAT 使用；P0 通过后解锁 uat-verification |
 | 下游: human (Gate 3) | uat-verification 完成后进入 Gate 3 人工签字 |
+| 横向: progress-tracker | 阶段 9 完成后更新进度 |
+| 横向: self-check | 执行集成测试质量检查（Green Mirage Audit、契约一致性） |
 | 横向: systematic-debugging | 集成测试失败时可调用进行系统化调试 |
 
 ## Gotchas

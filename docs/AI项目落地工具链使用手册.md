@@ -1,7 +1,9 @@
 # AI项目落地工具链使用手册
 
 > 工具集成方式 + 完全手动方式完整指南
-> 版本 V2.4 | 2026年5月
+> 版本 V2.5 | 2026年5月
+>
+> **V2.5 更新**：引入 `code-review-pipeline` 技能族（阶段 9.25），作为强制性技术门禁插入 integration-test 与 UAT 之间。包含四阶段×五轴结构化审查、三轮角色轮替、六级严重性标记、按需加载参考指南。产物统一为 `code-review/` 目录下的 YAML 文件。修正阶段编号冲突（原 `requesting-code-review` 错误标记为 stage-10，现调整为 stage-9.25）。
 >
 > **V2.4 更新**：`uat-verification`、`release-management`、`monitoring-analysis` 三个 Skill 正式可用。修复 `integration-test` 下游衔接为 `uat-verification`。
 >
@@ -127,9 +129,9 @@ mkdir -p ops/
 17. **编码实现 ——** 调用 `executing-plans` 按 tasks.md 逐 Batch 执行开发任务（含强制自测、接口校验、自动勾选），内部调用 `test-driven-development` 遵循 RED-GREEN-REFACTOR 循环
 18. **单元测试 ——** 调用 `unit-test` 生成并执行单元测试（覆盖率≥70%）
 19. **集成测试 ——** 调用 `integration-test` 生成并执行集成测试（含 `user-stories-checklist.md`）
-20. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
-21. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过，调用 `human gate=Gate3 action=sign-off`
-22. **代码审查 ——** 调用 `requesting-code-review` 输出结构化审查报告（含 design.md 设计偏差分析、tasks.md 任务追溯矩阵、UAT 交叉验证）
+20. **代码审查 ——** 调用 `code-review-pipeline` 执行四阶段×五轴结构化审查，输出 `review-request.yaml` + `review-report.yaml` + `fix-plan.yaml`，blocking 问题清零后方可进入 UAT
+21. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
+22. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过且代码审查 blocking 已清零，调用 `human gate=Gate3 action=sign-off`
 23. **上线发布 ——** 调用 `release-management` 生成发布清单，人工最终确认后上线
 24. **归档收尾 ——** 调用 `finish` 执行八步归档流水线（人工确认 → 分支合并 → OpenSpec 归档 → 规格同步 → 纳入交付后文档 → CHANGELOG → 一致性校验 → 确认单）
 25. **线上监控 ——** 周期性调用 `monitoring-analysis`，输出 `feedback-loop.md` 反哺下一变更
@@ -479,6 +481,40 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ---
 
+#### 阶段 9.25：代码审查（V2.5 新增）
+
+```bash
+# AI 执行四阶段×五轴结构化审查
+/skill:code-review-pipeline 对本次变更执行代码审查。
+参考：
+  - @openspec/changes/{变更名}/tasks.md（任务追溯基准）
+  - @openspec/changes/{变更名}/detail-design/feature-*/design.md（设计对齐基准）
+```
+
+**审查流程（状态机驱动）：**
+1. **SIZING**：统计 diff 行数，>300 行建议拆分
+2. **REQUESTING**：生成 `review-request.yaml`
+3. **REVIEWING**：三轮角色轮替（correctness+architecture → security+performance → readability+summary）
+4. **SUMMARY**：输出 `review-report.yaml`（含 blocking/important/nit/suggestion/learning/praise）
+5. **RECEIVING + FIXING**：生成 `fix-plan.yaml`，按优先级修复
+6. **VERIFYING**：复查修改过的文件，确认无回归
+
+**不通过时的处理：**
+```bash
+# 按 fix-plan.yaml 逐项修复
+/skill:executing-plans 修复代码审查发现的阻塞性问题
+# 修复完成后重新触发 code-review-pipeline 复查
+/skill:code-review-pipeline 复查
+```
+
+产出：
+- `openspec/changes/{变更名}/code-review/review-request.yaml`
+- `openspec/changes/{变更名}/code-review/review-report.yaml`
+- `openspec/changes/{变更名}/code-review/fix-plan.yaml`
+- `openspec/changes/{变更名}/code-review/decisions.md`
+
+---
+
 #### 阶段 9.5：UAT 与业务流程验证（V2.1 新增）
 
 ```bash
@@ -487,6 +523,8 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 验证清单：@openspec/changes/{变更名}/specs/feature-*/user-stories.md
 环境：staging / preview 部署
 ```
+
+**前置检查（V2.5 新增）：** 确认 code-review 已通过（`review-report.yaml` 中 `issues.blocking` 为空）。
 
 **人工操作（必须，不可替代）：**
 1. 打开预览环境地址
@@ -510,7 +548,7 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 🚪 Gate 3: 发布冻结 —— 等待人工走通确认
 ========================================
 请在预览环境按 user-stories-checklist.md 逐个操作。
-确认所有 P0 用户故事已验证通过后，执行：
+确认所有 P0 用户故事已验证通过且代码审查 blocking 已清零后，执行：
 /skill:human gate=Gate3 action=sign-off
 ```
 
@@ -526,38 +564,40 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ---
 
-#### 阶段 10：代码审查
-
-```bash
-/skill:requesting-code-review 对已完成的代码进行审查。
-参考：
-  - @openspec/changes/{变更名}/tasks.md（任务追溯基准）
-  - @openspec/changes/{变更名}/detail-design/feature-*/design.md（设计对齐基准）
-  - @openspec/changes/{变更名}/uat-report.md（UAT 交叉验证）
-```
-
-产出： **`code-review-report.md`（V2.1 增强）** —— 结构化记录：
-- 总体结论（通过 / 有条件通过 / 不通过）
-- 阻塞性问题清单
-- 实现与设计偏差分析（对比 design.md）
-- 任务追溯矩阵（审查意见 ↔ tasks.md 任务编号）
-- UAT 交叉验证结果
-
-**不通过时的处理：**
-- 生成 `rework-tasks.md`
-- 返回 `executing-plans` 修复阻塞性问题
-- 修复完成后重新触发 `requesting-code-review`
-
----
-
-#### 阶段 10.5：上线发布（V2.1 新增）
+#### 阶段 10：上线发布（V2.1 新增）
 
 ```bash
 # AI 辅助生成发布清单
 /skill:release-management 准备上线发布。
 输入：
+  - code-review/review-report.yaml（overall 为 Approve/Comment；blocking 清零）
   - uat-report.md（通过）
-  - code-review-report.md（通过）
+  - rollback-plan.md（来自阶段 3）
+  - 代码分支/commit SHA
+```
+
+**人工最终决策（必须）：**
+- 确认发布窗口
+- 检查回滚方案
+- 人工执行最终发布命令（AI 不自动执行生产发布）
+
+产出：`release-notes.md` + `release-checklist.md` + 生产部署确认单
+
+**关键安全规则：**
+- AI 只负责生成文档和检查项
+- 上线按钮必须由人按
+- 发布窗口、回滚方案确认由人工最终决策
+
+---
+
+#### 阶段 10：上线发布（V2.1 新增）
+
+```bash
+# AI 辅助生成发布清单
+/skill:release-management 准备上线发布。
+输入：
+  - code-review/review-report.yaml（overall 为 Approve/Comment；blocking 清零）
+  - uat-report.md（通过）
   - rollback-plan.md（来自阶段 3）
   - 代码分支/commit SHA
 
@@ -591,18 +631,18 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 2. **临时文件清理**：删除 `.kimi/temp-tests/`、`.kimi/temp-builds/` 等
 3. **OpenSpec 归档**：将全部产物复制到 `openspec/changes/archive/{变更名}/`
 4. **增量规格合并**（`/opsx:sync`）：追加到主规格，保留历史谱系
-5. **纳入交付后文档**：uat-report.md + release-notes.md + human-decisions.md + code-review-report.md
+5. **纳入交付后文档**：uat-report.md + release-notes.md + human-decisions.md + code-review/ 目录
 6. **生成 CHANGELOG.md**：遵循 Keep a Changelog 规范，追加到根目录
 7. **最终一致性校验**（`self-check` 归档版）：8 项检查清单，全过方可继续
 8. **输出归档完成确认单**：记录归档路径、合并 SHA、校验结果
 
-**强制归档的 7 类文档：**
+**强制归档的 8 类文档：**
 - specs/（设计文档）
 - tasks.md（任务清单）
 - uat-report.md（UAT 报告）
 - release-notes.md（发布说明）
 - human-decisions.md（人工决策记录）
-- code-review-report.md（代码审查报告）
+- code-review/ 目录（review-request.yaml、review-report.yaml、fix-plan.yaml、decisions.md）
 - merge-report.md（分支合并报告）
 
 ---
@@ -658,9 +698,9 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 | 7 | executing-plans | 编码实现 | 代码文件 | — |
 | 8 | unit-test | 单元测试 | tests/unit/ | — |
 | 9 | integration-test | 集成测试 | tests/integration/ + checklist.md | — |
+| 9.25 | code-review-pipeline | 代码审查 | code-review/review-request.yaml + review-report.yaml + fix-plan.yaml | — |
 | 9.5 | uat-verification | UAT 验证 | uat-report.md | 🚪 Gate 3 |
-| 10 | requesting-code-review | 代码审查 | code-review-report.md（含 design 对比、任务追溯） | — |
-| 10.5 | release-management | 上线发布 | release-notes.md | 人工最终决策 |
+| 10 | release-management | 上线发布 | release-notes.md + release-checklist.md | 人工最终决策 |
 | 11 | finish | 归档收尾 | archive/ + CHANGELOG.md + 确认单 | — |
 | 12 | monitoring-analysis | 线上监控（周期性） | dashboard.md | — |
 

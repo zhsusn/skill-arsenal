@@ -33,11 +33,14 @@ description: 当 release-management 完成且用户确认上线后触发，或�
 |------|------|------|
 | tasks.md | `openspec/changes/{变更名}/tasks.md` | 任务完成确认 |
 | 代码库 | 项目源码目录 | 分支合并 |
-| uat-report.md | `openspec/changes/{变更名}/uat-report.md` | 归档 |
+| uat-report.md | `openspec/changes/{变更名}/uat/uat-report.md` | 归档 |
 | release-notes.md | `openspec/changes/{变更名}/release-notes.md` | 归档 + CHANGELOG |
 | human-decisions.md | `openspec/changes/{变更名}/human-decisions.md` | 归档 |
 | design.md / specs/ | `openspec/changes/{变更名}/specs/` | 增量规格合并 |
-| code-review-report.md | `openspec/changes/{变更名}/code-review-report.md` | 最终一致性校验 |
+| code-review 目录 | `openspec/changes/{变更名}/code-review/` | 最终一致性校验 |
+| code-review/review-request.yaml | `openspec/changes/{变更名}/code-review/review-request.yaml` | 审查请求书归档 |
+| code-review/review-report.yaml | `openspec/changes/{变更名}/code-review/review-report.yaml` | 审查意见书归档 |
+| code-review/fix-plan.yaml | `openspec/changes/{变更名}/code-review/fix-plan.yaml` | 修复计划归档 |
 
 ## 执行流程
 
@@ -110,7 +113,7 @@ cp -r openspec/changes/{变更名}/* openspec/changes/archive/{变更名}/
 - ✅ uat-report.md（UAT 报告）
 - ✅ release-notes.md（发布说明）
 - ✅ human-decisions.md（人工决策记录）
-- ✅ code-review-report.md（代码审查报告）
+- ✅ code-review/ 目录（审查请求书、意见书、修复计划、决策日志）
 - ✅ 分支合并报告
 - ✅ CHANGELOG.md（生成后纳入）
 
@@ -141,8 +144,8 @@ cp openspec/changes/{变更名}/release-notes.md openspec/changes/archive/{变�
 # 人工决策记录
 cp openspec/changes/{变更名}/human-decisions.md openspec/changes/archive/{变更名}/
 
-# 代码审查报告
-cp openspec/changes/{变更名}/code-review-report.md openspec/changes/archive/{变更名}/
+# 代码审查产物
+cp -r openspec/changes/{变更名}/code-review openspec/changes/archive/{变更名}/
 ```
 
 ### Step 5: 生成 CHANGELOG.md
@@ -179,13 +182,13 @@ cp openspec/changes/{变更名}/code-review-report.md openspec/changes/archive/{
 
 | 检查项 | 标准 | 结果 |
 |--------|------|------|
-| 归档目录完整性 | archive/{变更名}/ 包含全部 7 类文档 | 是 / 否 |
+| 归档目录完整性 | archive/{变更名}/ 包含全部 8 类文档 | 是 / 否 |
 | specs/ 与主规格同步 | 主规格已合并增量内容 | 是 / 否 |
 | CHANGELOG 已更新 | 根目录 CHANGELOG.md 包含本次变更 | 是 / 否 |
 | uat-report 归档 | archive/ 包含 uat-report.md | 是 / 否 |
 | release-notes 归档 | archive/ 包含 release-notes.md | 是 / 否 |
 | human-decisions 归档 | archive/ 包含 human-decisions.md | 是 / 否 |
-| 代码审查报告归档 | archive/ 包含 code-review-report.md | 是 / 否 |
+| 代码审查产物归档 | archive/ 包含 code-review/ 目录 | 是 / 否 |
 | 分支已合并 | main/master 包含合并提交 | 是 / 否 |
 
 **任一检查项为"否" → 暂停归档，报告缺失项，等待修复后重新校验。**
@@ -213,7 +216,7 @@ overall_progress: 100%  # 或按实际规则计算
 | 归档路径 | `openspec/changes/archive/{变更名}/` |
 | 分支合并 | ✅ {CURRENT_BRANCH} → {BASE_BRANCH} @ {MERGE_COMMIT_SHA} |
 | 临时文件清理 | ✅ 已完成 |
-| 规格归档 | ✅ 7 类文档已归档 |
+| 规格归档 | ✅ 8 类文档已归档 |
 | 主规格同步 | ✅ 增量已合并 |
 | CHANGELOG | ✅ 已更新 |
 | 一致性校验 | ✅ 全部通过 |
@@ -264,14 +267,14 @@ release-management 完成（人工确认上线后）
 **Never:**
 - AI 自动执行归档（必须人工确认）
 - 未实际上线就归档
-- 遗漏 uat-report.md / release-notes.md / human-decisions.md
+- 遗漏 uat-report.md / release-notes.md / human-decisions.md / code-review/ 目录
 - 不执行最终一致性校验就直接宣告完成
 - 删除原始变更目录而不保留 archive/ 副本
 - 合并分支前不确认 release-management 完成
 
 **Always:**
 - 等待明确的"确认归档"信号
-- 归档全部 7 类文档
+- 归档全部 8 类文档（含 code-review/ 目录）
 - 执行 self-check 归档版校验
 - 更新 CHANGELOG.md
 - 同步更新 progress-tracker

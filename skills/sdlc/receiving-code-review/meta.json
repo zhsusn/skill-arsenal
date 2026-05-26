@@ -1,0 +1,7 @@
+{
+  "name": "receiving-code-review",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": ["code-review", "quality-gate", "sdlc", "fixing", "feedback"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

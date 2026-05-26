@@ -1,0 +1,7 @@
+{
+  "name": "code-reviewer",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": ["code-review", "quality-gate", "sdlc", "security", "performance", "architecture"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

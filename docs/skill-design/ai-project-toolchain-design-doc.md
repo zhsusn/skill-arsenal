@@ -2,9 +2,11 @@
 
 > Kimi Code + OpenSpec + Superpowers + Human Gate 四工具集成方案
 >
-> 版本 V2.1 | 2026年5月
+> 版本 V2.5 | 2026年5月
 >
-> 本次更新基于 `lifesycle.md` 审查意见，将工具链从"开发完成"扩展为"项目交付"，补充 UAT、发布、监控与四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 作为人工决策的统一载体。
+> **V2.5 更新**：引入 `code-review-pipeline` 技能族作为阶段 9.25 强制性技术门禁，填补 integration-test 与 UAT 之间的质量缺口。包含四阶段×五轴审查框架、三轮角色轮替模拟多模型审查、六级严重性标记体系（blocking/important/nit/suggestion/learning/praise）、四个通用参考指南（security/performance/architecture/code-quality-universal）。统一产物路径为 `openspec/changes/{变更名}/code-review/`。
+>
+> **V2.1 更新**：基于 `lifesycle.md` 审查意见，将工具链从"开发完成"扩展为"项目交付"，补充 UAT、发布、监控与四道人工闸门（Gate 1/2.5/2/3），增加 `human` Skill 作为人工决策的统一载体。
 >
 > **V2.2 更新（2026年5月）**：重构计划与执行阶段，引入 `writing-plans` → `task-breakdown` → `executing-plans` 三级递进工作流。
 > - `writing-plans` 从 Superpowers 原生 micro-step 升级为**模块级实现计划**（plan.md），增加 Self-Review 四检与 Plan → Task 转换建议
@@ -315,11 +317,11 @@ Human Gate 不是独立的第三方工具，而是本方案定义的 Skill（`hu
 | task-breakdown | plan.md + IFD | executing-plans |
 | executing-plans | tasks.md | unit-test, integration-test |
 | unit-test | executing-plans | integration-test |
-| integration-test | unit-test | **uat-verification** |
-| **uat-verification** | integration-test | **human (Gate3)** |
-| **human (Gate3)** | uat-verification | **release-management** |
-| requesting-code-review | executing-plans + design.md + tasks.md | **release-management** / rework-tasks.md |
-| **release-management** | uat + CR + rollback | finish（人工确认后） |
+| integration-test | unit-test | **code-review-pipeline** |
+| **code-review-pipeline** | integration-test | **uat-verification** |
+| **uat-verification** | integration-test + code-review | **human (Gate3)** |
+| **human (Gate3)** | uat-verification + code-review | **release-management** |
+| **release-management** | uat + code-review/review-report.yaml + rollback | finish（人工确认后） |
 | finish | release-management（人工确认信号） | **monitoring-analysis** |
 | **monitoring-analysis** | release-management | brainstorming（下一迭代） |
 | self-check | 贯穿全程 | 各阶段门控 |
@@ -376,11 +378,13 @@ MCP（Model Context Protocol）是 Anthropic 于 2024 年11月开源的协议，
 
 8. **测试阶段——** `unit-test` 和 `integration-test` 生成并执行测试；`integration-test` 额外输出 `user-stories-checklist.md` 供 UAT 使用。
 
-9. **UAT 阶段（V2.1 新增）——** `uat-verification` 生成检查清单，人工在预览环境点击走通业务流程，通过 `human` Skill 触发 **Gate 3** 发布冻结。
+9. **代码审查阶段（V2.5 新增）——** `code-review-pipeline` 执行四阶段×五轴结构化审查，输出 `review-request.yaml` + `review-report.yaml` + `fix-plan.yaml`。分三轮角色轮替模拟多模型审查（correctness+architecture → security+performance → readability+summary）。blocking 问题未清零时禁止进入 UAT 和发布阶段。若结论为 Request Changes，按 fix-plan 逐项修复后重新触发 pipeline 复查。
 
-10. **发布阶段（V2.1 新增）——** `requesting-code-review` 输出结构化审查报告（含 design.md 设计偏差分析、tasks.md 任务追溯矩阵、UAT 交叉验证）。若结论为不通过，生成 `rework-tasks.md` 返回 `executing-plans` 修复。`release-management` 生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
+10. **UAT 阶段（V2.1 新增）——** `uat-verification` 生成检查清单，人工在预览环境点击走通业务流程。前置条件：代码审查已通过（blocking 清零）。通过 `human` Skill 触发 **Gate 3** 发布冻结。
 
-11. **归档阶段——** `finish` 执行八步归档流水线：人工最终确认 → 分支合并与清理 → OpenSpec 归档 → 增量规格合并（`/opsx:sync`，保留历史谱系） → 纳入交付后文档（uat-report + release-notes + human-decisions + code-review-report） → 生成 CHANGELOG.md → 最终一致性校验（8 项检查清单） → 输出归档完成确认单。**严禁 AI 自动执行归档，必须等待人工确认信号。**
+11. **发布阶段（V2.1 新增）——** `release-management` 读取 `code-review/review-report.yaml`（确认 blocking 已清零）和 `uat-report.md`（Gate 3 通过），生成发布清单，人工最终确认后执行上线。**严禁 AI 自动执行生产发布。**
+
+12. **归档阶段——** `finish` 执行八步归档流水线：人工最终确认 → 分支合并与清理 → OpenSpec 归档 → 增量规格合并（`/opsx:sync`，保留历史谱系） → 纳入交付后文档（uat-report + release-notes + human-decisions + code-review/ 目录） → 生成 CHANGELOG.md → 最终一致性校验（8 项检查清单） → 输出归档完成确认单。**严禁 AI 自动执行归档，必须等待人工确认信号。**
 
 12. **监控阶段（V2.1 新增）——** `monitoring-analysis` 周期性运行，输出 `feedback-loop.md` 反哺下一变更的 `brainstorming`，形成闭环。
 

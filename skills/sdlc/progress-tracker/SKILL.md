@@ -63,8 +63,9 @@ description: 贯穿软件全生命周期的进度治理中枢。维护单一可�
 | 7 | 7 | implementation | 编码实现 | 12% | 任务级精粒度 | 序号 5~6 完成 | — |
 | 8 | 8 | unit-test | 单元测试 | 8% | 任务级精粒度 | 序号 7 对应任务完成 | — |
 | 9 | 9 | integration-test | 集成测试 | 4% | 任务级精粒度 | 序号 8 覆盖率门控通过 | — |
-| 9.5 | 9.5 | uat-verification | UAT 验证 | 4% | 粗粒度 | 序号 9 完成 | 🚪 Gate 3 |
-| 10 | 10 | release-management | 上线发布 | 4% | 粗粒度 | 序号 9.5 Gate 3 通过 | 人工最终决策 |
+| 9.25 | 9.25 | code-review | 代码审查 | 0% | 粗粒度 | 序号 9 P0 用例通过 | — |
+| 9.5 | 9.5 | uat-verification | UAT 验证 | 4% | 粗粒度 | 序号 9.25 代码审查通过 | 🚪 Gate 3 |
+| 10 | 10 | release-management | 上线发布 | 4% | 粗粒度 | 序号 9.5 Gate 3 通过 + 序号 9.25 代码审查通过 | 人工最终决策 |
 | 11 | 11 | finish | 收尾归档 | 0% | 粗粒度 | 序号 10 完成 | — |
 | 12 | 12 | monitoring-analysis | 线上监控（周期性） | 0% | 粗粒度 | 序号 11 完成 | — |
 
@@ -78,6 +79,8 @@ description: 贯穿软件全生命周期的进度治理中枢。维护单一可�
 > **编码门禁原则**：序号 7（编码实现）必须等待序号 5（接口驱动开发）和序号 6（任务拆解）完成，不可提前启动（RF-02：禁止无规格编码）。
 >
 > **交付后链路（V2.1 新增）**：序号 9.5（UAT）必须在预览环境由人工走通业务流程；序号 10（发布）必须人工最终确认；序号 12（监控）周期性执行，不占用项目总进度权重。
+>
+> **代码审查门禁（V2.2 新增）**：序号 9.25（代码审查）为强制性技术门禁，不占用进度权重，但阻塞性问题未清零时禁止进入 UAT 和发布阶段。代码审查由 `code-review-pipeline` 驱动，状态写入 `progress.md` 的 `code_review` 字段。
 
 ## 双轨制进度计算规则
 
@@ -109,7 +112,8 @@ description: 贯穿软件全生命周期的进度治理中枢。维护单一可�
    - Gate 2.5 未签字（`human_status.gate2_5 != passed`）：禁止进入**详细设计**阶段
    - Gate 2 未签字（`human_status.gate2 != passed`）：禁止进入详细设计阶段
    - Gate 3 未签字（`human_status.gate3 != passed`）：禁止进入发布阶段
-7. **禁止 AI 自动发布（V2.1 新增）**：`release-management` 阶段必须人工最终确认，AI 不得自动标记为"已完成"
+7. **禁止跳过代码审查（V2.2 新增）**：`code_review.status != passed` 或存在未清零的 blocking 问题时，禁止进入 UAT 和发布阶段
+8. **禁止 AI 自动发布（V2.1 新增）**：`release-management` 阶段必须人工最终确认，AI 不得自动标记为"已完成"
 
 ## 工作流
 
@@ -205,6 +209,7 @@ phases:
   implementation: {status: not_started, weight: 12%}
   unit-test: {status: not_started, weight: 8%}
   integration-test: {status: not_started, weight: 4%}
+  code-review: {status: not_started, weight: 0%}
   uat-verification: {status: not_started, weight: 4%}
   release-management: {status: not_started, weight: 4%}
   finish: {status: not_started, weight: 0%}
