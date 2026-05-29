@@ -17,7 +17,7 @@ description: 当用户要求'生成监控规则'、'monitoring-setup'、'配置�
 
 ## 核心职责
 
-1. **架构推导自动化**：从 `design/*.md` 的"运维架构"章节提取服务列表、中间件、部署形态
+1. **架构推导自动化**：从 `design/05-ops-governance.md` §1（运维架构）和 `01-architecture-core.md` §2（技术栈）提取服务列表、中间件、部署形态
 2. **技术栈模板化**：按识别到的技术栈匹配内置模板（JVM/Node/Python/Go/DB/Redis/MQ/K8s 等）
 3. **输出标准化**：统一输出到 `ops/monitoring-rules.yaml`，兼容 Prometheus/云监控语法结构
 4. **Gate 2 前置**：产出物随 high-level-design 一并进入人工评审
@@ -28,7 +28,7 @@ description: 当用户要求'生成监控规则'、'monitoring-setup'、'配置�
 
 按优先级读取：
 1. `openspec/config.yaml` —— 提取 project_name、技术栈总览
-2. `openspec/changes/{变更名}/design/` 下所有 `.md` 文件 —— 定位"运维架构"、"部署架构"、"技术选型"章节
+2. `openspec/changes/{变更名}/design/05-ops-governance.md` —— 定位"运维架构"、"回滚方案"章节；`01-architecture-core.md` —— 定位"技术选型"章节；`04-quality-attributes.md` —— 定位"部署架构"章节
 3. `openspec/changes/{变更名}/specs/05-non-functional.md` —— 提取性能指标（RT、QPS、可用性）、告警阈值要求
 
 ### Step 2: 解析架构信息
@@ -41,9 +41,10 @@ description: 当用户要求'生成监控规则'、'monitoring-setup'、'配置�
 - **性能基线**：P99 延迟、错误率、CPU/内存上限（文档未明确时使用本 skill 内置默认值）
 
 提取策略：
-- 优先匹配 Markdown 表格（"组件/技术/版本"列）
-- 次优匹配标题层级（如 `## 技术选型`、`### 数据库` 下的列表）
-- 再次匹配 `config.yaml` 中的技术栈关键词
+- 优先读取 `05-ops-governance.md` §1（运维架构）提取监控三支柱、告警分级、SLO/SLA
+- 次优读取 `04-quality-attributes.md` §5（部署架构）提取部署拓扑和 CI/CD 流程
+- 再次读取 `01-architecture-core.md` §2（技术栈）提取服务列表、中间件、部署形态
+- 匹配 Markdown 表格（"组件/技术/版本"列）和标题层级
 
 ### Step 3: 匹配模板与变量填充
 

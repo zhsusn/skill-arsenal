@@ -20,9 +20,10 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 2. **配置驱动**：按 `config.yaml` 的 `artifact_specs.high-level-design.required_sections` 逐项输出
 3. **严格边界**：只输出影响 ≥2 个模块的架构决策，禁止下钻到详细设计
 4. **图表自治**：自动生成 Mermaid 架构图、ER 图、时序图、部署拓扑图
-5. **需求追溯**：每个架构决策必须能追溯到上游需求文档；**每个设计文件末尾必须包含"需求可追溯性"段落**，列出本文件回应的 REQ-XXX 及对应验证方式
-6. **运维架构与回滚方案（V2.1 新增）**：输出运维监控架构、告警策略、可观测性方案，并生成 `rollback-plan.md`
-7. **Gate 2 人工冻结提示（V2.1 新增）**：全部章节输出完成后，自动宣读 🚪 Gate 2 阻塞提示，等待人工签字后方可进入详细设计阶段
+5. **需求追溯**：每个架构决策必须能追溯到上游需求文档；**每个主题文件末尾必须包含"需求可追溯性"段落**，列出本文件回应的 REQ-XXX 及对应验证方式
+6. **运维架构与回滚方案（V2.1）**：输出运维监控架构、告警策略、可观测性方案，并生成 `rollback-plan.md`
+7. **主题文件聚合（V3.0）**：将 20+ 个碎片化文件按人工检查视角合并为 6 个主题文件 + 1 份跨文件一致性自检报告，减少文件切换成本约 70%
+8. **Gate 2 人工冻结提示（V2.1）**：全部主题文件输出完成后，自动宣读 🚪 Gate 2 阻塞提示，等待人工签字后方可进入详细设计阶段
 
 ## 前置依赖
 
@@ -39,7 +40,7 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 
 ### Step 1: 配置加载
 - 读取 `openspec/config.yaml` 中 `artifact_specs.high-level-design`
-- 确认 `required_sections`、`DETAIL_LEVEL`、`FOCUS_ON_EXTENSIBILITY`、`INCLUDES_DECISION_RECORDS`
+- 确认 `required_sections`、`DETAIL_LEVEL`、`FOCUS_ON_EXTENSIBILITY`、`INCLUDES_DECISION_RECORDS`、`INCLUDES_GOVERNANCE`
 - 若配置缺失，使用默认值并发出警告
 
 ### Step 2: 上游文档解析
@@ -49,125 +50,249 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 - 解析 `competitive-analysis.md` 提取技术选型结论
 - 若已存在 `feature-*/spec.md`，解析并汇总功能点（用于可选的覆盖度校验）
 
-### Step 3: 逐项生成（按 required_sections）
+### Step 3: 逐项生成（按主题文件）
 
-#### introduction（新增）
-文档引言，包含：
-- **1.1 目的**：本文档覆盖范围及目标读者
-- **1.2 范围**：系统边界——包含与不包含的内容
-- **1.3 术语与缩写**：统一术语表（与 `specs/02-requirements-list.md` 中的术语保持一致）
-- **1.4 参考资料**：PRD 链接 + 竞品分析报告 + AI 架构决策文档（若存在）
+每个主题文件内部包含多个原子章节，用 `##` / `###` 分隔。各原子章节的**边界红线独立生效**，物理聚合不改变边界规则。
 
-#### design_considerations（新增）
-设计前提与约束，包含：
-- **假设**：业务假设、技术假设、环境假设
-- **约束**：技术约束（如必须兼容的技术栈）、业务约束（如合规要求）、预算约束
-- **依赖**：外部系统、第三方服务、内部模块依赖及版本要求
-- **风险**：技术风险、业务风险、AI 模型风险（AI 项目），每项含影响等级（高/中/低）和缓解策略
+---
 
-#### system_architecture
-系统整体分层、服务划分、部署拓扑。产出**双视图架构文档**：
+#### 主题一：00-design-overview.md
 
-- **技术架构图（默认）**：采用 C4-Model 分层（Context→Container→Component），展示技术组件、通信模式与部署边界
-- **业务功能架构图（可选）**：当模块数 ≥ 4 或存在多业务域时，基于 `03-functional-structure.md` 的模块清单，调用 `functional-architecture-generator` 的分区方法论与颜色编码策略，输出带模块清单的功能架构图
+**合并来源**：原 `00-introduction.md` + `19-design-considerations.md`
 
-禁止写模块内部类图。
-
-#### tech_stack
-技术项 + 选型理由 + 竞品溯源 + **架构策略对比矩阵 + ADR（Architecture Decision Record）**。
-
-每个选型必须：
-- 关联 `competitive-analysis.md` 结论
-- 输出**备选方案对比矩阵**（强制）：
-  | 方案 | 优点 | 缺点 | 决策 | 适用场景 |
-  |------|------|------|------|----------|
-  | [方案 A] | [优点] | [缺点] | 选中 | [理由] |
-  | [方案 B] | [优点] | [缺点] | 放弃 | [理由] |
-- 输出**关键架构决策（ADR 格式）**：
-  - **决策**：[内容]
-  - **背景**：[上下文]
-  - **备选**：[考虑过的方案]
-  - **后果**：[正面/负面影响]
-
-禁止展开框架专属模式（如 Spring DI 配置、React Hook 模式）。
-
-#### data_architecture
-逻辑 ER 图、主数据流向、存储策略选型、分库分表策略、核心表清单。生成 Mermaid ER 图。禁止写字段类型、索引、DDL、ORM 配置。
-
-#### interface_contracts
-模块间/服务间通信模式（REST/gRPC/MCP/消息队列）、数据契约、版本策略。禁止写请求/响应 Schema、Header 定义、字段校验规则、幂等策略。
-
-#### module_responsibilities
-每个模块的输入、输出、核心职责、对外依赖。禁止写内部类图、函数签名、实现细节。
-
-#### project_structure（V2.2 新增）
-
-基于 `system_architecture` 的分层决策和 `tech_stack` 的技术选型，推导项目源码目录结构。
-
-- 目录结构必须与架构分层严格对应（如 DDD → `domain/` / `application/` / `infrastructure/`；MVC → `controllers/` / `services/` / `repositories/` / `models/`）
-- 每个目录标注：对应架构层、允许存放的文件类型、禁止存放的内容
-- 按模块划分子包/子目录，与 `03-functional-structure.md` 中的模块名保持一致（kebab-case）
-- 输出格式：ASCII tree + 目录职责说明表格
+内部结构：
 
 ```markdown
-src/
-├── domain/              # 领域层：实体、值对象、领域服务
-│   ├── order/           # 订单模块（对应 feature-01-order）
-│   └── user/            # 用户模块（对应 feature-02-user）
-├── application/         # 应用层：用例、DTO、Mapper
-├── infrastructure/      # 基础设施层：Repository 实现、外部服务客户端
-└── interfaces/          # 接口层：Controller、消息队列消费者
+# 设计总览
+
+## 1. 引言
+### 1.1 目的
+### 1.2 范围
+### 1.3 术语与缩写（与 specs/02-requirements-list.md 保持一致）
+### 1.4 参考资料
+
+## 2. 设计考量
+### 2.1 假设（业务/技术/环境）
+### 2.2 约束（技术/业务/预算/合规）
+### 2.3 依赖（外部系统、第三方服务、内部模块及版本）
+### 2.4 风险（技术/业务/AI 模型风险，每项含影响等级+缓解策略）
+
+## 3. 设计索引与检查清单
+
+| 主题文件 | 核心决策点 | 风险等级 | 检查状态 |
+|---------|-----------|---------|---------|
+| 01-architecture-core.md | 分层策略、技术选型、目录结构 | 高 | ☐ |
+| 02-data-flow.md | 存储选型、接口模式、模块边界 | 高 | ☐ |
+| 03-runtime-behavior.md | 状态流转、核心链路、错误处理 | 高 | ☐ |
+| 04-quality-attributes.md | 安全方案、性能基线、部署拓扑 | 中 | ☐ |
+| 05-ops-governance.md | 监控覆盖、回滚可操作性 | 高 | ☐ |
+
+## 4. 跨文件一致性重点（源自 self-check-report.md）
+> 此处自动引用自检报告中的 ⚠️ 警告项和 ❌ 阻断项，检查者重点确认。
+
+## 5. Gate 2 评审签字区
+- [ ] 技术选型符合团队能力栈
+- [ ] 数据流与部署架构满足 NFR
+- [ ] 全局状态机与模块职责兼容
+- [ ] 回滚步骤可操作
+- [ ] 告警策略覆盖核心链路
+- [ ] 目录分层与架构分层一致
+
+评审人：________ 日期：________
 ```
 
-禁止写具体类名、文件名、函数签名。只定义目录层级和职责边界。
+**边界红线**：
+- 引言：术语表必须与 `specs/02-requirements-list.md` 严格一致，发现术语冲突时标记 BLOCKER
+- 设计考量：风险项必须标注影响等级（高/中/低），禁止只列风险不列缓解策略
 
-#### state_machine_global
-跨模块核心实体状态流转（如"剧本：草稿→审核→发布"）。生成 Mermaid 状态图。禁止写单模块内部状态转换规则、触发事件、校验规则。
+---
 
-#### sequence_diagrams
-跨模块关键流程时序图（如"用户提交→AI 生成→回调通知"）。生成 Mermaid 时序图。禁止写模块内部 Controller→Service→Repository 调用链。
+#### 主题二：01-architecture-core.md
 
-#### algorithm_selection（AI 项目必选）
-识别需求中的 AI/智能功能，输出模型基座选择、选型理由、输入输出维度约定、与其他模块的耦合方式。禁止写算法流程、参数配置、Prompt 模板、回退策略。
+**合并来源**：原 `01-system-architecture.md` + `02-tech-stack.md` + `20-project-structure.md` + `17-decision-records.md`（若 `INCLUDES_DECISION_RECORDS=true`，作为本文件附录）
 
-#### security_design
-认证授权方案（RBAC/OAuth2）、数据加密策略、网络隔离。参考 `references/section-templates.md` 横切关注点清单。
+**合并理由**：架构分层决定目录结构，目录结构反映技术栈选型，ADR 记录架构选择的上下文。检查者必须对照阅读，故聚合在同一文件。
 
-#### performance_design
-QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁止写缓存 Key 设计、过期策略、连接池配置。
+内部结构：
 
-#### exception_handling_global
-全局错误处理与重试策略。必须包含：
-- **错误分类**：业务错误 / 系统错误 / 网络错误 / AI 模型错误（AI 项目）
-- **处理策略**：降级 / 重试 / 熔断 / 人工介入
-- **重试策略**：指数退避、最大重试次数、死信队列
-- **与 rollback-plan.md 的衔接**：明确哪些错误类别触发回滚，哪些仅触发告警
+```markdown
+# 架构核心
 
-禁止写单接口异常码、补偿事务、日志格式。
+## 1. 系统架构
+### 1.1 技术架构图（C4-Model：Context→Container→Component）
+### 1.2 业务功能架构图（可选，模块≥4时，调用 functional-architecture-generator 方法论）
 
-#### deployment_architecture
-容器化/K8s/Serverless 拓扑、CI/CD 流程。生成 Mermaid 部署拓扑图。
+## 2. 技术栈
+### 2.1 选型清单（类别/选型/版本约束/选型理由/竞品溯源）
+### 2.2 选型矩阵（方案A/B对比：优点/缺点/决策/适用场景）
+### 2.3 关键架构决策（ADR格式：Context/Factors/Decision/Consequences）
 
-#### test_strategy
-测试金字塔、分层策略、自动化覆盖率目标、测试边界定义。禁止写单测用例、Mock 策略、数据构造方案。
+## 3. 项目结构
+### 3.1 目录树（ASCII，与架构分层严格对应）
+### 3.2 目录职责说明表（对应架构层、允许文件类型、禁止内容）
 
-#### extensibility_design（可选，FOCUS_ON_EXTENSIBILITY=true）
-功能添加/修改/集成模式，预留扩展点。参考 `references/section-templates.md` 扩展性框架。
+## 4. 决策记录（可选，INCLUDES_DECISION_RECORDS=true）
+```
 
-#### decision_records（可选，INCLUDES_DECISION_RECORDS=true）
-关键决策正向论证：Context / Factors / Decision / Consequences / Future Flexibility。至少覆盖架构模式选择、技术栈选择、数据存储选型。
+**边界红线（每章独立生效）**：
+- 系统架构：禁止写模块内部类图
+- 技术栈：禁止展开框架专属模式（如 Spring DI、React Hook）
+- 项目结构：禁止写具体类名、函数签名
 
-#### operations_architecture（V2.1 新增）
-运维监控架构、日志/链路追踪/指标三支柱方案、告警分级策略（P0/P1/P2）、SLO/SLA 定义、可观测性数据流。禁止写具体监控项阈值、Dashboard JSON、告警通知人配置。
+---
 
-#### rollback_plan（V2.1 新增，AI 项目必选）
-回滚触发条件（如错误率 > 1%、核心功能不可用）、回滚步骤（代码回滚 → 配置回滚 → 数据回滚）、数据库回滚脚本清单、灰度/金丝雀策略、回滚验证检查点。禁止写具体脚本内容、连接串、密钥。
+#### 主题三：02-data-flow.md
 
-#### governance_rules（可选，INCLUDES_GOVERNANCE=true）
-架构一致性维护规则、自动化检查建议、架构评审流程定义。
+**合并来源**：原 `03-data-architecture.md` + `04-interface-contracts.md` + `05-module-responsibilities.md`
+
+**合并理由**：数据从哪来（模块职责）、怎么走（接口契约）、存哪里（数据架构），是同一检查视角的三面。
+
+内部结构：
+
+```markdown
+# 数据流与模块交互
+
+## 1. 数据架构
+### 1.1 逻辑 ER 图（Mermaid）
+### 1.2 主数据流向
+### 1.3 存储策略与分库分表策略
+### 1.4 核心表清单（无字段类型）
+
+## 2. 接口契约
+### 2.1 通信模式（REST/gRPC/MCP/消息队列）
+### 2.2 数据契约与版本策略
+
+## 3. 模块职责
+### 3.1 各模块输入/输出/核心职责/对外依赖
+```
+
+**边界红线**：
+- 数据架构：禁止写字段类型、索引、DDL、ORM 配置
+- 接口契约：禁止写请求/响应 Schema、Header 定义、字段校验规则
+- 模块职责：禁止写内部类图、函数签名
+
+---
+
+#### 主题四：03-runtime-behavior.md
+
+**合并来源**：原 `06-state-machine-global.md` + `07-sequence-diagrams.md` + `11-exception-handling-global.md` + `08-algorithm-selection.md`（AI 项目必选）
+
+**合并理由**：运行时行为检查：状态怎么转、流程怎么走、错了怎么办、AI 怎么介入。这四者共同描述系统"活起来"的样子。
+
+内部结构：
+
+```markdown
+# 运行时行为
+
+## 1. 全局状态机
+### 1.1 跨模块核心实体状态流转（Mermaid 状态图）
+
+## 2. 关键流程时序图
+### 2.1 跨模块流程（Mermaid 时序图）
+
+## 3. 异常处理全局
+### 3.1 错误分类（业务/系统/网络/AI）
+### 3.2 处理策略（降级/重试/熔断/人工介入）
+### 3.3 重试策略（指数退避、最大次数、死信队列）
+### 3.4 与回滚方案的衔接（哪些错误触发回滚）
+
+## 4. 算法选型（AI 项目必选）
+### 4.1 模型基座选择
+### 4.2 选型理由与输入输出维度
+### 4.3 与其他模块的耦合方式
+```
+
+**边界红线**：
+- 状态机：禁止写单模块内部状态转换规则、触发事件
+- 时序图：禁止写模块内部 Controller→Service→Repository 调用链
+- 异常处理：禁止写单接口异常码、补偿事务、日志格式
+- 算法选型：禁止写算法流程、参数配置、Prompt 模板
+
+---
+
+#### 主题五：04-quality-attributes.md
+
+**合并来源**：原 `09-security-design.md` + `10-performance-design.md` + `16-extensibility-design.md`（可选，`FOCUS_ON_EXTENSIBILITY=true`）+ `13-test-strategy.md` + `12-deployment-architecture.md`
+
+**合并理由**：非功能需求统一检查，避免安全方案与性能/部署方案冲突（如 HTTPS 卸载影响性能、扩展点设计影响测试边界）。
+
+内部结构：
+
+```markdown
+# 质量属性与部署
+
+## 1. 安全设计
+### 1.1 认证授权（RBAC/OAuth2）
+### 1.2 数据加密策略
+### 1.3 网络隔离
+
+## 2. 性能设计
+### 2.1 QPS 预估与容量规划
+### 2.2 缓存策略（Redis/CDN）
+### 2.3 异步化方案
+
+## 3. 扩展性设计（可选，FOCUS_ON_EXTENSIBILITY=true）
+### 3.1 功能添加/修改/集成模式
+### 3.2 预留扩展点
+
+## 4. 测试策略
+### 4.1 测试金字塔与分层策略
+### 4.2 自动化覆盖率目标
+### 4.3 测试边界定义
+
+## 5. 部署架构
+### 5.1 容器化/K8s/Serverless 拓扑（Mermaid 部署图）
+### 5.2 CI/CD 流程
+```
+
+**边界红线**：
+- 性能设计：禁止写缓存 Key 设计、过期策略、连接池配置
+- 测试策略：禁止写单测用例、Mock 策略、数据构造方案
+- 部署架构：禁止写具体 YAML 配置、Ingress 规则
+
+---
+
+#### 主题六：05-ops-governance.md
+
+**合并来源**：原 `14-operations-architecture.md` + `15-rollback-plan.md` + `18-governance-rules.md`（可选，`INCLUDES_GOVERNANCE=true`）
+
+**合并理由**：运维视角统一：怎么监控、怎么回滚、怎么保架构不腐化。回滚方案与运维架构天然绑定（监控告警触发回滚）。
+
+内部结构：
+
+```markdown
+# 运维与治理
+
+## 1. 运维架构
+### 1.1 监控三支柱（日志/链路追踪/指标）
+### 1.2 告警分级策略（P0/P1/P2）
+### 1.3 SLO/SLA 定义
+### 1.4 可观测性数据流
+
+## 2. 回滚方案
+### 2.1 触发条件（错误率>1%、核心功能不可用）
+### 2.2 回滚步骤（代码→配置→数据）
+### 2.3 数据库回滚脚本清单（只列清单，不写脚本）
+### 2.4 灰度/金丝雀策略
+### 2.5 回滚验证检查点
+
+## 3. 治理规则（可选，INCLUDES_GOVERNANCE=true）
+### 3.1 架构一致性维护规则
+### 3.2 自动化检查建议
+### 3.3 架构评审流程定义
+```
+
+**边界红线**：
+- 运维架构：禁止写具体监控项阈值、Dashboard JSON、告警通知人配置
+- 回滚方案：禁止写具体脚本内容、连接串、密钥
+
+**双写规则保留**：
+`05-ops-governance.md` 中的回滚方案同时保存为 `ops/rollback-plan.md`（项目级），确保回滚方案与变更绑定，同时项目级 ops 目录保持最新。
+
+---
 
 ### Step 4: 边界自检
-每生成一章后检查：
+每生成一个主题文件后，检查内部各原子章节是否越界：
 - 是否包含字段级定义（如 `varchar(64)`、`@RequestBody`）
 - 是否包含代码片段（函数签名、类定义、SQL）
 - 是否包含单模块内部实现细节
@@ -180,40 +305,52 @@ QPS 预估、缓存策略（Redis/CDN）、异步化方案、容量规划。禁�
 - 若提供了 `feature-*/spec.md`，校验全局状态机是否与模块状态描述兼容
 
 ### Step 6: 输出与保存
-按命名规范保存到 `openspec/changes/{变更名}/design/`：
+按主题文件结构保存到 `openspec/changes/{变更名}/design/`：
+
 ```
-00-introduction.md              # 新增：引言、范围、术语、参考资料
-01-system-architecture.md
-02-tech-stack.md
-03-data-architecture.md
-04-interface-contracts.md
-05-module-responsibilities.md
-06-state-machine-global.md
-07-sequence-diagrams.md
-08-algorithm-selection.md
-09-security-design.md
-10-performance-design.md
-11-exception-handling-global.md
-12-deployment-architecture.md
-13-test-strategy.md
-14-operations-architecture.md
-15-rollback-plan.md             # 同时生成 ops/rollback-plan.md 副本
-16-extensibility-design.md      # 可选
-17-decision-records.md          # 可选
-18-governance-rules.md          # 可选
-19-design-considerations.md     # 新增：假设、约束、依赖、风险
-20-project-structure.md         # 新增（V2.2）：源码目录结构规范与目录骨架创建规则
+00-design-overview.md          # 索引 + 引言 + 设计考量 + Gate 2 签字区
+01-architecture-core.md        # 系统架构 + 技术栈 + 项目结构 + 决策记录
+02-data-flow.md                # 数据架构 + 接口契约 + 模块职责
+03-runtime-behavior.md         # 全局状态机 + 时序图 + 异常处理 + 算法选型
+04-quality-attributes.md       # 安全 + 性能 + 扩展性 + 测试策略 + 部署架构
+05-ops-governance.md           # 运维架构 + 回滚方案 + 治理规则
 ```
 
-> **rollback-plan.md 双写规则**：一份保存在变更目录 `design/15-rollback-plan.md`，另一份同步更新项目级 `ops/rollback-plan.md`（若存在）。确保回滚方案与变更绑定，同时项目级 ops 目录保持最新。
+> **rollback-plan.md 双写规则**：一份保存在变更目录 `design/05-ops-governance.md`（回滚章节），另一份同步更新项目级 `ops/rollback-plan.md`（若存在）。确保回滚方案与变更绑定，同时项目级 ops 目录保持最新。
 >
-> **project-structure.md 输出规则（V2.2 新增）**：`20-project-structure.md` 作为设计文档的一部分保存到 `design/` 目录。目录骨架的物理创建推迟到 Gate 2 签字之后，避免评审不通过时产生无效目录。
+> **project-structure.md 输出规则（V2.2→V3.0 保留）**：`01-architecture-core.md` 中的"项目结构"章节定义目录层级。物理目录骨架的创建推迟到 Gate 2 签字之后，避免评审不通过时产生无效目录。
 
-### Step 7: 触发 self-check
-自动调用 `self-check` skill 校验一致性、完整性、交叉引用有效性、边界合规性。
+### Step 7: 边界自检与覆盖度校验（不变）
+每生成一个主题文件后，检查内部各原子章节是否越界（字段级、代码级、单模块内部细节）。
 
-### Step 8: 🚪 Gate 2 设计冻结（V2.1 新增）
-self-check 通过后，自动宣读阻塞提示：
+### Step 7.5: 跨文件一致性自检（V3.0 新增）
+在 Step 7 之后、Step 8 之前，自动执行以下检查并生成 `self-check-report.md`：
+
+**检查维度**：
+
+| 检查项 | 涉及主题文件 | 自动检查逻辑 | 结论等级 |
+|--------|-------------|-------------|---------|
+| 技术栈覆盖度 | 01-architecture-core ↔ 02-data-flow | 技术栈中声明的存储组件是否覆盖数据架构中的全部存储需求 | ✅/⚠️/❌ |
+| 架构-目录一致性 | 01-architecture-core（系统架构 vs 项目结构） | 架构分层与目录层级是否一一对应 | ✅/⚠️/❌ |
+| 状态机-模块职责兼容性 | 03-runtime-behavior ↔ 02-data-flow | 全局状态机中的状态是否在模块职责中有对应处理方 | ✅/⚠️/❌ |
+| 异常-回滚联动 | 03-runtime-behavior ↔ 05-ops-governance | 异常处理中标记"触发回滚"的类别是否在回滚方案中有步骤 | ✅/⚠️/❌ |
+| 性能-部署匹配 | 04-quality-attributes（性能 vs 部署） | QPS 预估与部署拓扑的节点数/规格是否匹配 | ✅/⚠️/❌ |
+| 安全-接口契约一致性 | 04-quality-attributes ↔ 02-data-flow | 安全方案要求的认证方式是否与接口契约中的通信模式兼容 | ✅/⚠️/❌ |
+| ADR 溯源 | 01-architecture-core ↔ competitive-analysis.md | 每个 ADR 是否能在竞品分析中找到支撑 | ✅/⚠️/❌ |
+
+**结论等级**：
+- ✅ 通过：机器判定一致，人工可快速跳过
+- ⚠️ 警告：存在潜在不一致，人工必须确认
+- ❌ 阻断：明确冲突，必须修复后才能进入 Gate 2
+
+**与 Gate 2 的衔接**：
+`00-design-overview.md` 的"跨文件一致性重点"章节自动引用本报告中所有 ⚠️ 警告和 ❌ 阻断项。检查者在此文件中即可完成重点确认。
+
+**报告保存路径**：`openspec/changes/{变更名}/design/self-check-report.md`
+
+### Step 8: 🚪 Gate 2 设计冻结（V3.0 修订版）
+
+self-check 与跨文件一致性检查通过后，自动宣读阻塞提示：
 
 ```text
 ========================================
@@ -221,43 +358,51 @@ self-check 通过后，自动宣读阻塞提示：
 ========================================
 产出物已保存至：openspec/changes/{变更名}/design/
 
-请评审以下内容：
-1. 技术选型是否符合团队现有技术债与能力栈
-2. 数据流与部署架构是否满足 NFR 中的性能/安全指标
-3. 全局状态机是否与详细需求中的模块状态描述兼容
-4. rollback-plan.md 中的回滚步骤是否可操作（特别是数据库回滚）
-5. operations-architecture 中的告警策略是否覆盖核心链路
-6. project-structure.md 中的目录分层是否与 system_architecture 的架构分层一致
+请按以下顺序评审：
+1. 打开 00-design-overview.md，确认索引表与检查清单
+2. 对照 self-check-report.md 中的 ⚠️ 警告/❌ 阻断项重点检查
+3. 按需下钻到 01-05 主题文件确认细节
+
+评审焦点：
+- 技术选型是否符合团队现有技术债与能力栈（01-architecture-core.md）
+- 数据流与部署架构是否满足 NFR 中的性能/安全指标（02 + 04）
+- 全局状态机是否与详细需求中的模块状态描述兼容（03-runtime-behavior.md）
+- 回滚步骤是否可操作（05-ops-governance.md）
+- 告警策略是否覆盖核心链路（05-ops-governance.md）
+- 目录分层与架构分层是否一致（01-architecture-core.md）
 
 确认后执行：/skill:human gate=Gate2 action=sign-off
 ⚠️ 未获得人工确认前，禁止进入 detailed-design 或编码实现阶段。
 ```
 
 等待人工签字后：
-1. 将设计文件头部状态更新为"已冻结"
+1. 将 `00-design-overview.md` 头部状态更新为"已冻结"
 2. 调用 `progress-tracker`，标记阶段 3 为"已完成"
-3. 读取 `20-project-structure.md`，在项目源码根目录创建对应的空目录骨架（`mkdir -p`）。只创建目录，不创建任何代码文件；若目录已存在，跳过不覆盖。创建完成后输出目录树供用户确认
+3. 读取 `01-architecture-core.md` 中的项目结构章节，在项目源码根目录创建对应的空目录骨架（`mkdir -p`）。只创建目录，不创建任何代码文件；若目录已存在，跳过不覆盖。创建完成后输出目录树供用户确认
 4. 提示用户可并行启动 `monitoring-setup` 生成监控规则初稿
 
 ## 阶段切换门控
 
 - 概要设计评审通过（用户确认）
 - `self-check` 无 BLOCKER
+- 跨文件一致性自检无 ❌ 阻断
 - **禁止在概要设计评审通过前进入 `detailed-design` 或编码实现**
 
 ## 常见陷阱检查清单
 
-- [ ] 将接口字段校验写入 `interface-contracts` → 应移至 `detailed-design/api-spec.md`
-- [ ] 将数据库字段/索引写入 `data-architecture` → 应移至 `detailed-design/db-schema.md`
-- [ ] 将算法参数写入 `algorithm-selection` → 应移至 `detailed-design/algorithm.md`
-- [ ] 将单模块状态机写入 `state-machine-global` → 应移至 `detailed-design/state-machine.md`
-- [ ] 将类图/函数签名写入任何章节 → 应移至 `detailed-design/design.md`
-- [ ] 将运维监控阈值写入 `operations-architecture` → 应移至 `monitoring-setup/monitoring-rules.yaml`
-- [ ] 将数据库回滚脚本写入 `rollback-plan` → 应移至 ops 目录下的独立脚本文件，plan 中只写脚本清单和触发条件
+| 原陷阱 | 新位置 | 拦截规则 |
+|--------|--------|----------|
+| 接口字段校验写入 interface-contracts | 02-data-flow.md §2 | 应移至 detailed-design/api-spec.md |
+| 数据库字段/索引写入 data-architecture | 02-data-flow.md §1 | 应移至 detailed-design/db-schema.md |
+| 算法参数写入 algorithm-selection | 03-runtime-behavior.md §4 | 应移至 detailed-design/algorithm.md |
+| 单模块状态机写入 state-machine-global | 03-runtime-behavior.md §1 | 应移至 detailed-design/state-machine.md |
+| 类图/函数签名写入任何章节 | 任何主题文件 | 应移至 detailed-design/design.md |
+| 运维监控阈值写入 operations-architecture | 05-ops-governance.md §1 | 应移至 monitoring-setup/monitoring-rules.yaml |
+| 数据库回滚脚本写入 rollback-plan | 05-ops-governance.md §2 | 应移至 ops 目录独立脚本文件，plan 中只写清单 |
 
-## 需求可追溯性格式（每个设计文件末尾强制附加）
+## 需求可追溯性格式（每个主题文件末尾强制附加）
 
-每个设计文件（`00-introduction.md` 至 `19-design-considerations.md`）末尾必须包含以下段落：
+每个主题文件末尾必须包含以下段落，合并后需追溯多个上游需求：
 
 ```markdown
 ### 需求可追溯性
@@ -267,22 +412,23 @@ self-check 通过后，自动宣读阻塞提示：
 | REQ-XXX | [需求原文摘要] | [章节编号/标题] | [评审类型] |
 ```
 
-- 若某文件不直接回应任何需求，标注"本文件为架构支撑文档，不直接映射单一需求"
-- `rollback-plan.md` 必须追溯至 `05-non-functional.md` 中的可靠性/可用性需求
-- `19-design-considerations.md` 的风险项必须追溯至 `brainstorming/requirement-draft.md` 中的风险点
+- 若某主题文件不直接回应需求，标注"本文件为架构支撑文档，不直接映射单一需求"
+- `00-design-overview.md` 中的风险项追溯至 `brainstorming/requirement-draft.md`
+- `05-ops-governance.md` 中的回滚方案追溯至 `05-non-functional.md` 中的可靠性/可用性需求
+- `01-architecture-core.md` 中的技术选型追溯至 `competitive-analysis.md`
 
 ## 下游消费
 
 | 下游 Skill | 消费文档 | 衔接规则 |
 |---|---|---|
-| `detailed-design` | `design/*.md` + `20-project-structure.md` | 基于已有目录骨架按模块逐一下钻，填充类/接口文件 |
-| `task-breakdown` | `design/*.md` + `detail-design/feature-*/design.md` | 基于架构分层拆解任务 |
-| `monitoring-setup` | `14-operations-architecture.md` | 基于运维架构生成监控规则初稿 |
-| `human` | `design/*.md` + `rollback-plan.md` | Gate 2 人工冻结确认与决策记录 |
+| `detailed-design` | `01-05` 主题文件 | 基于 `01-architecture-core.md` 的目录骨架，按模块逐一下钻，填充类/接口文件 |
+| `task-breakdown` | `01-05` 主题文件 + `detail-design/feature-*/design.md` | 基于架构分层与模块职责拆解任务 |
+| `monitoring-setup` | `05-ops-governance.md` §1 | 基于运维架构生成监控规则初稿 |
+| `human` | `00-design-overview.md` + `self-check-report.md` | Gate 2 人工冻结确认与决策记录 |
 
 ## 深度参考
 
-- 各章节详细写作指南与模板见 `references/section-templates.md`
+- 各主题文件详细写作指南与模板见 `references/section-templates.md`
 - 边界红线与变更影响范围判定见 `references/boundary-rules.md`
 
 ## Gotchas
@@ -294,11 +440,13 @@ self-check 通过后，自动宣读阻塞提示：
 - **状态机兼容**：若提供了详细需求（`feature-*/spec.md`），全局状态机应与其各模块状态描述兼容，发现冲突时标记 BLOCKER。
 - **禁止自动下钻**：生成时若 AI 自发输出详细设计内容，必须自我拦截并提升抽象层级，不得直接保存。
 - **设计锁定原则**：用户确认评审通过后，概要设计冻结。变更需重新走架构评审会，禁止偷偷修改已冻结文档。
-- **ADR 流于形式**：若输出决策记录或 `02-tech-stack.md` 中的架构策略，必须包含"备选方案及排除原因"，否则视为不完整
-- **引言不可空泛**：`00-introduction.md` 的术语表必须与 `specs/02-requirements-list.md` 严格一致，发现术语冲突时标记 BLOCKER
-- **设计考量必须量化**：`19-design-considerations.md` 的风险项必须标注影响等级（高/中/低），禁止只列风险不列缓解策略
-- **错误处理与回滚联动**：`11-exception-handling-global.md` 必须明确哪些错误类别触发 `rollback-plan.md` 中的回滚步骤，未明确联动视为 WARNING
+- **ADR 流于形式**：若输出决策记录或 `01-architecture-core.md` 中的架构策略，必须包含"备选方案及排除原因"，否则视为不完整。
+- **引言不可空泛**：`00-design-overview.md` 的术语表必须与 `specs/02-requirements-list.md` 严格一致，发现术语冲突时标记 BLOCKER。
+- **设计考量必须量化**：`00-design-overview.md` 的风险项必须标注影响等级（高/中/低），禁止只列风险不列缓解策略。
+- **错误处理与回滚联动**：`03-runtime-behavior.md` §3.4 必须明确哪些错误类别触发 `05-ops-governance.md` 中的回滚步骤，未明确联动视为 WARNING。
 - **图表一致性**：Mermaid 图表必须从文本架构描述自动生成，禁止图表与文字描述矛盾。
 - **rollback-plan 必须可执行**：回滚步骤不能只写"回滚数据库"，必须明确到"执行 rollback-v1.2.sql → 验证核心表数据行数 → 切换流量"。不可操作的回滚方案 = BLOCKER。
-- **运维架构不是运维手册**：`operations-architecture` 只定义监控三支柱的架构方案（用什么采集、存储、展示），不写具体 Dashboard 配置或告警通知人。
+- **运维架构不是运维手册**：`05-ops-governance.md` §1 只定义监控三支柱的架构方案（用什么采集、存储、展示），不写具体 Dashboard 配置或告警通知人。
 - **Gate 2 必须确认 rollback-plan**：很多技术债的根源是"能上线不能回滚"，人工必须逐条确认回滚步骤的可操作性。
+- **主题文件聚合不改变边界**：物理上将多个章节放入同一文件，不等于可以混淆边界。各原子章节的禁止项仍然独立生效。
+- **自检报告不是形式主义**：跨文件一致性自检中发现的 ❌ 阻断项必须修复后方可进入 Gate 2，禁止人工跳过。

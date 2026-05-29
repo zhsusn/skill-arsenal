@@ -167,7 +167,7 @@
     {
       "name": "high-level-design",
       "path": "skills/sdlc/high-level-design",
-      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。已融合技术设计文档生成器的八章节模板、ADR 对比矩阵与需求可追溯性机制。",
+      "description": "当用户要求'概要设计'、'high-level-design'、'HLD'、'系统架构设计'、'技术选型'或基于已冻结 PRD 进入设计阶段时触发。将 20+ 个碎片化文件按检查主题聚合为 6 个主题文件 + 1 份跨文件一致性自检报告，减少文件切换成本约 70%，严格保留各原子章节边界红线。",
       "metadata": {
         "tags": "sdlc,design,architecture,hld,openspec,stage-3",
         "platforms": "kimi,claude,cursor,codex,gemini"

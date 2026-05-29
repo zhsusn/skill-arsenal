@@ -1,6 +1,6 @@
 {
   "name": "high-level-design",
-  "version": "1.1.0",
+  "version": "3.0.0",
   "pattern": "generator",
   "tags": ["sdlc", "design", "architecture", "hld", "openspec", "stage-3"],
   "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]

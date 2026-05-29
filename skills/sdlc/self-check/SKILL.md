@@ -47,6 +47,7 @@ description: 当用户提到'自查'、'self-check'、'检查产出物'、'阶�
 | 覆盖率/测试有效性 | — | — | ✅ | — | — | — |
 | **交互规格完整性（V2.1 新增）** | — | — | — | ✅ | — | — |
 | **设计文档质量（V2.2 新增）** | — | — | — | — | ✅ | — |
+| **跨文件一致性（V3.0 新增）** | — | — | — | — | ✅ | — |
 | **UAT 报告质量（V2.1 新增）** | — | — | — | — | — | ✅ |
 
 #### 内容一致性
@@ -131,23 +132,42 @@ description: 当用户提到'自查'、'self-check'、'检查产出物'、'阶�
 - 异常分支缺失 > 2 处 → 🟡 WARNING
 - 埋点缺失 > 3 处 → 🟡 WARNING
 
-#### 设计文档质量检查（概要设计阶段，V2.2 新增）
+#### 设计文档质量检查（概要设计阶段，V2.2→V3.0 更新）
 
-检查 `design/` 目录下设计文档的规范性与可追溯性：
-1. **需求可追溯性**：每个 PRD 需求（REQ-XXX）在 `design/` 目录中至少有一个文件回应；`00-introduction.md` 和 `19-design-considerations.md` 也要有追溯段落
-2. **数据模型完整性**：`03-data-architecture.md` 是否含逻辑实体、类型、约束、核心表清单（禁止字段级细节，但逻辑约束必须明确）
-3. **API 契约完整性**：`04-interface-contracts.md` 是否完整定义模块间通信模式、数据契约、版本策略
-4. **错误场景文档化**：`11-exception-handling-global.md` 是否覆盖业务/系统/网络/AI 模型错误分类，及与 `rollback-plan.md` 的联动
-5. **安全考量覆盖**：`09-security-design.md` 是否覆盖认证授权、数据加密、网络隔离
-6. **性能策略对应**：`10-performance-design.md` 是否对 `05-non-functional.md` 中的性能需求有明确策略（缓存、异步、容量）
-7. **依赖版本标注**：`19-design-considerations.md` 中的外部依赖是否标注版本或版本范围
-8. **架构策略对比**：`02-tech-stack.md` 是否包含备选方案对比矩阵（至少 2 个备选）及 ADR 格式决策记录
+检查 `design/` 目录下 6 个主题文件的规范性与可追溯性：
+1. **需求可追溯性**：每个 PRD 需求（REQ-XXX）在 `01-05` 主题文件中至少有一个章节回应；`00-design-overview.md` 也要有追溯段落
+2. **数据模型完整性**：`02-data-flow.md` §1 是否含逻辑实体、类型、约束、核心表清单（禁止字段级细节，但逻辑约束必须明确）
+3. **API 契约完整性**：`02-data-flow.md` §2 是否完整定义模块间通信模式、数据契约、版本策略
+4. **错误场景文档化**：`03-runtime-behavior.md` §3 是否覆盖业务/系统/网络/AI 模型错误分类，及与 `05-ops-governance.md` 回滚章节的联动
+5. **安全考量覆盖**：`04-quality-attributes.md` §1 是否覆盖认证授权、数据加密、网络隔离
+6. **性能策略对应**：`04-quality-attributes.md` §2 是否对 `05-non-functional.md` 中的性能需求有明确策略（缓存、异步、容量）
+7. **依赖版本标注**：`00-design-overview.md` §2.3 中的外部依赖是否标注版本或版本范围
+8. **架构策略对比**：`01-architecture-core.md` §2.2 是否包含备选方案对比矩阵（至少 2 个备选）及 ADR 格式决策记录
+9. **目录-架构一致性**：`01-architecture-core.md` §3 的目录层级是否与 §1 的架构分层一一对应
+10. **回滚可操作性**：`05-ops-governance.md` §2 的回滚步骤是否明确到"执行某脚本→验证→切换流量"级别
 
 评分标准：
 - 需求可追溯性缺失 ≥ 3 处 → 🔴 BLOCKER
-- `02-tech-stack.md` 无备选方案对比 → 🔴 BLOCKER
-- `11-exception-handling-global.md` 未与 `rollback-plan.md` 联动 → 🟡 WARNING
+- `01-architecture-core.md` 无备选方案对比 → 🔴 BLOCKER
+- `03-runtime-behavior.md` 未与 `05-ops-governance.md` 回滚章节联动 → 🟡 WARNING
+- 目录-架构不一致 → 🟡 WARNING
 - 其他单项缺失 → 🟡 WARNING
+
+#### 跨文件一致性检查（概要设计阶段，V3.0 新增）
+
+检查 6 个主题文件之间的交叉一致性，生成 `self-check-report.md`：
+1. **技术栈覆盖度**：`01-architecture-core.md` §2 中的存储组件选型是否覆盖 `02-data-flow.md` §1 中的全部存储需求
+2. **架构-目录一致性**：`01-architecture-core.md` §1 的架构分层与 §3 的目录层级是否一一对应
+3. **状态机-模块职责兼容性**：`03-runtime-behavior.md` §1 中的全局状态是否在 `02-data-flow.md` §3 的模块职责中有对应处理方
+4. **异常-回滚联动**：`03-runtime-behavior.md` §3.4 中标记"触发回滚"的类别是否在 `05-ops-governance.md` §2 中有对应步骤
+5. **性能-部署匹配**：`04-quality-attributes.md` §2 的 QPS 预估与 §5 的部署拓扑节点数/规格是否匹配
+6. **安全-接口契约一致性**：`04-quality-attributes.md` §1 的安全方案要求的认证方式是否与 `02-data-flow.md` §2 的通信模式兼容
+7. **ADR 溯源**：`01-architecture-core.md` §2.3/§4 的每个 ADR 是否能在 `competitive-analysis.md` 中找到支撑
+
+评分标准：
+- ❌ 阻断项 ≥ 1 → 🔴 BLOCKER
+- ⚠️ 警告项 ≥ 3 → 🟡 WARNING
+- 全部 ✅ 通过 → 允许进入 Gate 2
 
 #### UAT 报告质量检查（UAT 阶段，V2.1 新增）
 
@@ -168,9 +188,9 @@ description: 当用户提到'自查'、'self-check'、'检查产出物'、'阶�
 
 检查 `feature-*/` 下 5 个设计文件的规范性与可编码性：
 1. **规格充分性判定（借鉴 reviewing-design-docs）**：对 `api-spec.md` 和 `db-schema.md` 中的每个规格项判定 SPECIFIED / VAGUE / MISSING。检测模糊语言："标准方案"、"按需"、"TBD"、"as needed"。
-2. **数据库与数据架构一致性**：`db-schema.md` 的表清单、实体关系是否与概要设计 `03-data-architecture.md` 一致；字段类型是否与技术选型匹配。
-3. **API 与接口契约一致性**：`api-spec.md` 的通信模式、版本策略是否与概要设计 `04-interface-contracts.md` 一致；URI 设计是否资源导向（禁止动词 URI）。
-4. **状态机兼容性**：`state-machine.md` 的局部状态是否与 `06-state-machine-global.md` 的全局状态兼容，无冲突转换。
+2. **数据库与数据架构一致性**：`db-schema.md` 的表清单、实体关系是否与概要设计 `02-data-flow.md` §1 一致；字段类型是否与技术选型匹配。
+3. **API 与接口契约一致性**：`api-spec.md` 的通信模式、版本策略是否与概要设计 `02-data-flow.md` §2 一致；URI 设计是否资源导向（禁止动词 URI）。
+4. **状态机兼容性**：`state-machine.md` 的局部状态是否与 `03-runtime-behavior.md` §1 的全局状态兼容，无冲突转换。
 5. **类设计覆盖功能点**：`design.md` 是否覆盖 `spec.md` 中的所有功能点与验收标准（AC）。
 6. **测试计划追溯完整性**：`test-plan.md` 的每个测试用例是否至少追溯到一个 AC；Given/When/Then 格式是否规范。
 7. **模块间接口契约审计（借鉴 reviewing-impl-plans）**：当存在 2+ 模块时，检查模块间接口的 request/response/error 格式是否显式定义，数据类型是否兼容。

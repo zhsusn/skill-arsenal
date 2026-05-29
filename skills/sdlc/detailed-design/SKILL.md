@@ -27,7 +27,7 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 
 | 上游 Skill | 产出物 | 用途 | 是否必需 |
 |---|---|---|---|
-| `high-level-design` | `design/*.md`（16 个文件） | 架构约束、技术选型、全局状态机 | **必须** |
+| `high-level-design` | `design/01-05.md`（6 个主题文件） | 架构约束、技术选型、全局状态机 | **必须** |
 | `detailed-requirements` | `feature-*/spec.md` 等 | 功能规格、io-table、logic、prototype | **必须** |
 | `human` | `human-decisions.md` | Gate 2 与 Gate 2.5 签字状态 | **必须** |
 | `competitive-analysis` | `competitive-analysis.md` | 技术选型参考 | 建议 |
@@ -38,7 +38,7 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 
 | 输入来源 | 具体内容 |
 |----------|----------|
-| 概要设计 | `design/*.md`：系统架构、技术选型、数据架构、部署架构等 16 个文件 |
+| 概要设计 | `design/01-05.md`：系统架构、技术选型、数据架构、部署架构等 6 个主题文件 |
 | 详细需求 | `specs/feature-*/spec.md`：功能规格与验收标准 |
 | 详细需求 | `specs/feature-*/io-table.md`：输入输出字段表 |
 | 详细需求 | `specs/feature-*/logic.md`：业务逻辑与状态机 |
@@ -51,7 +51,7 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 
 1. 读取 `openspec/config.yaml` 中 `high-level-design.required_sections` 作为输出模板约束
 2. 自动解析 `03-functional-structure.md` 或扫描 `specs/feature-*/` 目录获取模块清单
-3. 读取 `design/*.md` 提取架构约束：技术栈、安全策略、性能指标、全局状态机
+3. 读取 `design/01-05.md` 提取架构约束：技术栈、安全策略、性能指标、全局状态机
 
 > **Constitution 约束传导（借鉴 developer-kit）**：将概要设计中的技术栈、安全约束、CWE 映射视为不可偏离的"架构 DNA"。详细设计阶段任何偏离均视为 BLOCKER。
 
