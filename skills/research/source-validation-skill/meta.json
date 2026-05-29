@@ -1,0 +1,17 @@
+{
+  "name": "source-validation-skill",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": [
+    "research",
+    "validation",
+    "fact-checking"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

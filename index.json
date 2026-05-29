@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdated": "2026-05-26",
+  "lastUpdated": "2026-05-29",
   "skills": [
     {
       "name": "sql-optimization",
@@ -314,6 +314,231 @@
       "description": "当用户要求编写 Java 代码、审查 Java 代码、格式化 Java 文件，或项目包含 .java / pom.xml / build.gradle 文件时触发。强制遵循《阿里巴巴 Java 开发手册（黄山版）》编写 Java 代码。",
       "metadata": {
         "tags": "java,style-guide,alibaba,coding-standards,sdlc",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "structured-notes-generator",
+      "path": "skills/learning/structured-notes-generator",
+      "description": "当用户提到'整理笔记'、'结构化笔记'、'学习总结'、'提炼概念'或需要将学习材料转化为结构化笔记时触发。适用于提炼概念、定义、例子、关系图和复习问题的学习场景。",
+      "metadata": {
+        "tags": "learning,notes,education",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "exam-prep-generator",
+      "path": "skills/learning/exam-prep-generator",
+      "description": "当用户提到'出题'、'模拟题'、'考试准备'、'复习测验'或需要根据材料生成练习题时触发。适用于复习、自测和培训考核。",
+      "metadata": {
+        "tags": "learning,exam,education",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "learning-roadmap-generator",
+      "path": "skills/learning/learning-roadmap-generator",
+      "description": "当用户提到'学习路线'、'学习计划'、'能力提升'、'技术入门'或需要为学习目标制定路线图时触发。适用于学习新技术、新岗位能力或新业务领域。",
+      "metadata": {
+        "tags": "learning,planning,education",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "complex-concept-explainer",
+      "path": "skills/learning/complex-concept-explainer",
+      "description": "当用户提到'解释概念'、'通俗讲解'、'技术科普'、'跨部门沟通'或需要用不同深度解释复杂概念时触发。适用于技术概念、业务概念、金融概念或跨部门沟通。",
+      "metadata": {
+        "tags": "learning,communication,education",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "academic-paper-drafter",
+      "path": "skills/learning/academic-paper-drafter",
+      "description": "当用户提到'写论文'、'学术写作'、'研究报告'、'论文大纲'或需要组织正式研究写作结构时触发。适用于正式研究写作。",
+      "metadata": {
+        "tags": "learning,writing,academic",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "flashcard-creator",
+      "path": "skills/learning/flashcard-creator",
+      "description": "当用户提到'记忆卡片'、'Anki'、'Quizlet'、'主动回忆'或需要从资料中提取知识点生成问答卡片时触发。适用于内部培训题库和间隔重复学习。",
+      "metadata": {
+        "tags": "learning,memory,education",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "study-session-planner",
+      "path": "skills/learning/study-session-planner",
+      "description": "当用户提到'学习计划'、'备考安排'、'复习日程'、'时间规划'或需要根据考试日期生成学习日程时触发。适用于学生复习、员工培训和证书备考。",
+      "metadata": {
+        "tags": "learning,planning,time-management",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "professional-email-drafter",
+      "path": "skills/office/professional-email-drafter",
+      "description": "当用户提到'写邮件'、'发邮件'、'邮件草稿'、'客户沟通'或需要根据场景撰写专业邮件时触发。适用于请求、跟进、升级、说明、拒绝和客户沟通。",
+      "metadata": {
+        "tags": "office,communication,email",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "meeting-notes-organizer",
+      "path": "skills/office/meeting-notes-organizer",
+      "description": "当用户提到'会议纪要'、'会议整理'、'会议记录'、'行动项'或将零散笔记整理成可执行纪要时触发。适用于项目会、客户会、复盘会和管理例会。",
+      "metadata": {
+        "tags": "office,meeting,communication",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "cv-linkedin-optimizer",
+      "path": "skills/office/cv-linkedin-optimizer",
+      "description": "当用户提到'优化简历'、'LinkedIn'、'领英'、'求职'、'内部转岗'或需要根据目标岗位优化个人资料时触发。适用于求职、内部转岗和人才包装。",
+      "metadata": {
+        "tags": "office,career,hr",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "presentation-prep-skill",
+      "path": "skills/office/presentation-prep-skill",
+      "description": "当用户提到'做PPT'、'演示文稿'、'汇报结构'、'演讲准备'或需要将主题整理成演示结构时触发。适用于高管汇报、融资路演和技术方案评审。",
+      "metadata": {
+        "tags": "office,presentation,communication",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "deep-research-synthesizer",
+      "path": "skills/research/deep-research-synthesizer",
+      "description": "当用户提到'深度研究'、'行业研究'、'竞品调研'、'多源分析'或需要从多份材料中提炼洞察时触发。适用于行业研究、产品研究和战略分析。",
+      "metadata": {
+        "tags": "research,analysis,strategy",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "source-validation-skill",
+      "path": "skills/research/source-validation-skill",
+      "description": "当用户提到'验证来源'、'信息可信度'、'交叉验证'、'事实核查'或需要评估信息来源质量时触发。适用于研究、写作、投研、竞品分析和技术选型。",
+      "metadata": {
+        "tags": "research,validation,fact-checking",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "knowledge-structuring-skill",
+      "path": "skills/research/knowledge-structuring-skill",
+      "description": "当用户提到'知识整理'、'结构化知识'、'知识库'、'资料归档'或需要将非结构化材料整理成框架时触发。适用于知识库、项目资料和研究归档。",
+      "metadata": {
+        "tags": "research,knowledge-management,organization",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "competitive-intelligence-skill",
+      "path": "skills/research/competitive-intelligence-skill",
+      "description": "当用户提到'竞品分析'、'竞争情报'、'市场对比'、'产品定位'或需要比较产品/公司/方案时触发。适用于竞品分析、市场研究和产品战略。",
+      "metadata": {
+        "tags": "research,competitive-analysis,strategy",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "video-script-generator",
+      "path": "skills/content-creation/video-script-generator",
+      "description": "当用户提到'视频脚本'、'短视频'、'口播稿'、'内容传播'或需要为视频生成脚本结构时触发。适用于内容团队和产品传播。",
+      "metadata": {
+        "tags": "content,video,marketing",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "hook-generator",
+      "path": "skills/content-creation/hook-generator",
+      "description": "当用户提到'开场钩子'、'标题'、'吸引读者'、'开篇'或需要为内容生成开场时触发。适用于文章、视频、社交媒体或演示场景。",
+      "metadata": {
+        "tags": "content,writing,marketing",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "flowchart-decision-builder",
+      "path": "skills/content-creation/flowchart-decision-builder",
+      "description": "当用户提到'流程图'、'决策树'、'Mermaid'、'业务流程'、'审批规则'或需要将流程/规则转成可视化结构时触发。适用于业务流程、系统流程和审批规则。",
+      "metadata": {
+        "tags": "content,diagram,process",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "code-documenter",
+      "path": "skills/engineering-foundations/code-documenter",
+      "description": "当用户提到'生成文档'、'代码注释'、'API 文档'、'技术文档'或需要为函数/类/模块生成文档时触发。适用于技术文档补全和知识移交。",
+      "metadata": {
+        "tags": "engineering,documentation,code",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "unit-test-generator",
+      "path": "skills/engineering-foundations/unit-test-generator",
+      "description": "当用户提到'写测试'、'单元测试'、'补测试'、'测试覆盖'或需要为函数/模块生成单元测试时触发。适用于 Jest、Vitest、pytest、JUnit 等测试框架。",
+      "metadata": {
+        "tags": "engineering,testing,quality",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "debug-assistant",
+      "path": "skills/engineering-foundations/debug-assistant",
+      "description": "当用户提到'调试'、'Bug'、'报错'、'堆栈'、'线上问题'或需要根据错误信息定位问题时触发。适用于 bug 排查和线上问题复盘。",
+      "metadata": {
+        "tags": "engineering,debugging,troubleshooting",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "regex-builder-explainer",
+      "path": "skills/engineering-foundations/regex-builder-explainer",
+      "description": "当用户提到'正则表达式'、'regex'、'匹配规则'、'提取文本'或需要根据自然语言需求生成正则时触发。适用于文本解析和数据提取。",
+      "metadata": {
+        "tags": "engineering,regex,text-processing",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "conventional-commit-generator",
+      "path": "skills/engineering-foundations/conventional-commit-generator",
+      "description": "当用户提到'提交信息'、'commit message'、'Conventional Commits'、'变更说明'或需要根据 diff 生成规范提交信息时触发。适用于代码提交和变更归档。",
+      "metadata": {
+        "tags": "engineering,git,workflow",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "code-review-skill",
+      "path": "skills/engineering-foundations/code-review-skill",
+      "description": "当用户提到'代码审查'、'PR Review'、'Review'、'走查'或需要审查代码变更时触发。适用于 PR Review 和交付前检查。",
+      "metadata": {
+        "tags": "engineering,code-review,quality",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "workflow-automation-agent",
+      "path": "skills/engineering-foundations/workflow-automation-agent",
+      "description": "当用户提到'工作流'、'自动化'、'流程编排'、'Agent 任务'或需要将复杂目标拆成可执行流程时触发。适用于流程自动化和 Agent 任务编排。",
+      "metadata": {
+        "tags": "engineering,workflow,automation,agent",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     }

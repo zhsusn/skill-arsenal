@@ -1,0 +1,17 @@
+{
+  "name": "presentation-prep-skill",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "office",
+    "presentation",
+    "communication"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

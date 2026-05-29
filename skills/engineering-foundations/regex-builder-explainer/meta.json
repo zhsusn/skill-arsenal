@@ -1,0 +1,17 @@
+{
+  "name": "regex-builder-explainer",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": [
+    "engineering",
+    "regex",
+    "text-processing"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

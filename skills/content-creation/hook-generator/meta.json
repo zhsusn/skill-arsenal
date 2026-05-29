@@ -1,0 +1,17 @@
+{
+  "name": "hook-generator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "content",
+    "writing",
+    "marketing"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

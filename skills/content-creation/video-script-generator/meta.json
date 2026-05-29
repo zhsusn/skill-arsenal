@@ -1,0 +1,17 @@
+{
+  "name": "video-script-generator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "content",
+    "video",
+    "marketing"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

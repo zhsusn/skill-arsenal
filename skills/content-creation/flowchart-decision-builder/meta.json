@@ -1,0 +1,17 @@
+{
+  "name": "flowchart-decision-builder",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "content",
+    "diagram",
+    "process"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

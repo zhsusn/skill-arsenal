@@ -27,6 +27,10 @@ VALID_CATEGORIES = {
     "data-engineering",
     "Reverse-Engineering",
     "engineering-foundations",
+    "learning",
+    "office",
+    "research",
+    "content-creation",
 }
 
 # kebab-case 校验（同时禁止连续连字符）

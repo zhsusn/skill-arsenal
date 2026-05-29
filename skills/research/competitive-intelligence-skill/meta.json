@@ -1,0 +1,17 @@
+{
+  "name": "competitive-intelligence-skill",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "research",
+    "competitive-analysis",
+    "strategy"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

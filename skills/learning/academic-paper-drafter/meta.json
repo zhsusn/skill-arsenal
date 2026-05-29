@@ -1,0 +1,17 @@
+{
+  "name": "academic-paper-drafter",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "learning",
+    "writing",
+    "academic"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

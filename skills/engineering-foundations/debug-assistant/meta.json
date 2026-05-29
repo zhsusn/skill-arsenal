@@ -1,0 +1,17 @@
+{
+  "name": "debug-assistant",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": [
+    "engineering",
+    "debugging",
+    "troubleshooting"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

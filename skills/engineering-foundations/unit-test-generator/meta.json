@@ -1,0 +1,17 @@
+{
+  "name": "unit-test-generator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "engineering",
+    "testing",
+    "quality"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

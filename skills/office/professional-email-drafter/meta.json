@@ -1,0 +1,17 @@
+{
+  "name": "professional-email-drafter",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "office",
+    "communication",
+    "email"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

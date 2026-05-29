@@ -1,0 +1,17 @@
+{
+  "name": "meeting-notes-organizer",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "office",
+    "meeting",
+    "communication"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

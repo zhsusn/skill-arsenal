@@ -82,6 +82,11 @@ skill-arsenal/
 - **`sdlc/`**：**软件全生命周期（Software Development Life Cycle）**主目录。收敛需求、架构、设计、开发、测试、部署、运维等所有与软件交付过程直接相关的 skill。任何在 SDLC 某一阶段被调用的技能均应归入此类，确保生命周期内技能统一入口、可检索、可迭代。
 - **`data-engineering/`**：数据工程专用分类，存放与数据管道、SQL 优化、数据建模等相关的 skill。
 - **`Reverse-Engineering/`**：存放元技能与项目规则治理类 skill（如将项目规则重构为 skill-based architecture），不参与具体软件交付过程。
+- **`engineering-foundations/`**：工程基础能力分类，存放代码文档、单元测试、调试、正则表达式、提交规范、代码审查、工作流自动化等通用工程技能。
+- **`learning/`**：学习知识分类，存放结构化笔记、考试准备、学习路线、概念解释、论文写作、记忆卡片、学习规划等与知识获取相关的 skill。
+- **`office/`**：办公沟通分类，存放专业邮件、会议纪要、简历优化、演示文稿准备等职场沟通相关的 skill。
+- **`research/`**：研究决策分类，存放深度研究合成、来源验证、知识结构化、竞争情报分析等研究与分析相关的 skill。
+- **`content-creation/`**：内容表达分类，存放视频脚本、开场钩子、流程图构建等内容创作相关的 skill。
 - **其他预留分类**：未来可按领域横向扩展（如 `devops/`、`security/` 等），但同一 skill 不得跨分类重复存放。
 
 ### 非 Skill 的参考文件
@@ -192,7 +197,7 @@ description: 当用户提交代码审查请求、提到'review'、'代码走读'
 ## 开发规范
 
 ### 命名与分类
-- Skill 按领域分目录存放。当前校验脚本认可的有效分类为：`sdlc`、`data-engineering`、`Reverse-Engineering`。
+- Skill 按领域分目录存放。当前校验脚本认可的有效分类为：`sdlc`、`data-engineering`、`Reverse-Engineering`、`engineering-foundations`、`learning`、`office`、`research`、`content-creation`。
 - 每个 skill 目录名使用小写英文字母，单词间用连字符 `-` 分隔（kebab-case），**禁止连续连字符 `--`**。
 - 每个 skill 必须包含 `SKILL.md`，且文件名全大写。
 

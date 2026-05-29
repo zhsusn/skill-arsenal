@@ -1,0 +1,17 @@
+{
+  "name": "knowledge-structuring-skill",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "research",
+    "knowledge-management",
+    "organization"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

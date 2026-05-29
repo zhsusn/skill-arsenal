@@ -1,0 +1,17 @@
+{
+  "name": "code-review-skill",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": [
+    "engineering",
+    "code-review",
+    "quality"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

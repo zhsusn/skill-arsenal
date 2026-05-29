@@ -1,0 +1,17 @@
+{
+  "name": "cv-linkedin-optimizer",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "office",
+    "career",
+    "hr"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

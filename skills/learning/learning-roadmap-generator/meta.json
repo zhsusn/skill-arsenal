@@ -1,0 +1,17 @@
+{
+  "name": "learning-roadmap-generator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "learning",
+    "planning",
+    "education"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

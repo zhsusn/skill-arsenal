@@ -1,0 +1,17 @@
+{
+  "name": "structured-notes-generator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "learning",
+    "notes",
+    "education"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

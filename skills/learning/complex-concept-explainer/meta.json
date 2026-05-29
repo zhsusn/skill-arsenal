@@ -1,0 +1,17 @@
+{
+  "name": "complex-concept-explainer",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "learning",
+    "communication",
+    "education"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

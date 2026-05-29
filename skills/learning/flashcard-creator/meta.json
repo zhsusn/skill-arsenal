@@ -1,0 +1,17 @@
+{
+  "name": "flashcard-creator",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "learning",
+    "memory",
+    "education"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "deep-research-synthesizer",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "research",
+    "analysis",
+    "strategy"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}
