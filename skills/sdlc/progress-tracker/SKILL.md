@@ -30,7 +30,7 @@ description: 贯穿软件全生命周期的进度治理中枢。维护单一可�
   - `openspec/config.yaml`：阶段定义、门控规则、产出物规格
   - `openspec/changes/{变更名}/progress.md`：当前进度 SSOT
   - `openspec/changes/{变更名}/tasks.md`：任务清单（Checkbox + verified_by）
-  - `openspec/changes/{变更名}/specs/`：各阶段产出物目录
+  - `openspec/changes/{变更名}/high-level-requirements/`、`detailed-requirements/`、`high-level-design/`、`detailed-design/`：各阶段产出物目录
   - `openspec/changes/{变更名}/human-decisions.md`：人工决策审计日志（V2.1 新增）
 
 ### 可选推断源（用于自动填充上下文）
@@ -103,7 +103,7 @@ description: 贯穿软件全生命周期的进度治理中枢。维护单一可�
 ## Red Flag 规则（进度异常拦截）
 
 1. **禁止跳过前置依赖阶段**：某阶段的**前置依赖阶段**未标记"已完成"时，不允许该阶段进入"进行中"。
-2. **禁止无规格编码**：若 `specs/` 目录为空，开发阶段进度强制为 0%
+2. **禁止无规格编码**：若 `high-level-requirements/` 和 `high-level-design/` 目录为空，开发阶段进度强制为 0%
 3. **禁止未自测算完成**：`tasks.md` 中勾选但未通过自测的任务，视为"进行中"
 4. **禁止未经评审的需求变更**：概要需求变更若未走评审流程，进度回滚至序号 1
 5. **禁止无测试宣告完成**：未通过单元测试覆盖率门控（≥70%）不得进入集成测试阶段
@@ -146,7 +146,7 @@ Skill 自动执行：
 ```
 Skill 自动执行：
 - 读取 `config.yaml` 中当前阶段的 `gate_to_next` 规则
-- 校验产出物完整性（`specs/` 目录是否包含 `required_sections`）
+- 校验产出物完整性（`high-level-requirements/` 和 `high-level-design/` 目录是否包含 `required_sections`）
 - **检查人工闸门状态（V2.1 新增）**：读取 `human-decisions.md`，确认当前阶段对应 Gate 为 `passed`
   - Gate 1 → 阶段 1（概要需求）
   - Gate 2.5 → 阶段 2.5（详细需求）
@@ -263,7 +263,7 @@ last_updated: {ISO8601}
 **阶段完成：**
 ```text
 【阶段 1 完成 | Skill：progress-tracker】
-概要需求阶段已完成，产出物已保存到 specs/ 目录，请更新进度。
+概要需求阶段已完成，产出物已保存到 high-level-requirements/ 目录，请更新进度。
 ```
 
 ## Gotchas

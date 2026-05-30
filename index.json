@@ -32,7 +32,7 @@
     {
       "name": "detailed-requirements",
       "path": "skills/sdlc/detailed-requirements",
-      "description": "当用户提到'详细需求'、'按模块拆解'、'批量 feature 规格'或需要基于已冻结概要需求输出标准化模块级详细需求时触发。将 03-functional-structure.md 按模块拆分为 spec/prototype/io-table/logic/interaction-spec 五文件并执行一致性校验。",
+      "description": "当用户提到'详细需求'、'按模块拆解'、'批量 feature 规格'或需要基于已冻结概要需求输出标准化模块级详细需求时触发。将功能结构按模块拆分为 detailed-requirements/feature-*/ 下的 module-requirements.md（聚合 5 个原子章节）并执行一致性校验。",
       "metadata": {
         "tags": "sdlc,requirements,specification,module,openspec,stage-2",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -86,7 +86,7 @@
     {
       "name": "prd-generation",
       "path": "skills/sdlc/prd-generation",
-      "description": "当用户要求'写PRD'、'概要需求'、'系统规划'或从零开始规划新产品时触发。通过四层递进式对话生成OpenSpec五文件概要需求，输出后自动触发 Gate 1 人工冻结提示。",
+      "description": "当用户要求'写PRD'、'概要需求'、'系统规划'或从零开始规划新产品时触发。通过四层递进式对话生成 3 个主题文件输出到 high-level-requirements/，将 5 个原子文件按检查视角聚合，输出后自动触发 Gate 1 人工冻结提示。",
       "metadata": {
         "tags": "core-deliverables,requirement-analysis,prd,openspec,system-design",
         "platforms": "kimi,claude,cursor,codex,gemini"
@@ -176,7 +176,7 @@
     {
       "name": "detailed-design",
       "path": "skills/sdlc/detailed-design",
-      "description": "当用户提到'详细设计'、'detailed-design'、'按模块输出技术细节'、'生成DDL'、'接口定义'、'状态机细化'或基于已冻结概要设计和详细需求需要进入模块级详细设计阶段时触发。逐模块输出可编码的技术细节，衔接概要架构与编码实现。",
+      "description": "当用户提到'详细设计'、'detailed-design'、'按模块输出技术细节'、'生成DDL'、'接口定义'、'状态机细化'或基于已冻结概要设计和详细需求需要进入模块级详细设计阶段时触发。逐模块输出 module-design.md（聚合 5 个原子章节）到 detailed-design/feature-*/，衔接概要架构与编码实现。",
       "metadata": {
         "tags": "sdlc,detailed-design,design,openspec,stage-4,ddl,openapi,state-machine",
         "platforms": "kimi,claude,cursor,codex,gemini"

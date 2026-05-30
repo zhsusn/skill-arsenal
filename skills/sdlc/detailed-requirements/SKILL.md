@@ -20,32 +20,32 @@ description: 当用户提到'详细需求'、'按模块拆解'、'批量 feature
 
 ## 输入依赖
 执行前必须确认以下上游产物已就绪：
-- `01-product-overview.md` — 产品全景
-- `02-requirements-list.md` — 功能/非功能需求清单
-- `03-functional-structure.md` — 功能结构模块列表（核心输入，决定拆分粒度）
-- `04-business-rules.md` — 全局业务规则
-- `05-non-functional.md` — 非功能性约束
+- `high-level-requirements/00-requirements-overview.md` — 产品全景、NFR、里程碑
+- `high-level-requirements/01-requirements-list.md` — 功能/非功能需求清单
+- `high-level-requirements/02-functional-requirements.md` — 功能结构模块列表 + 全局业务规则（核心输入，决定拆分粒度）
 - **🚪 Gate 1 签字状态** — `human-decisions.md` 中 Gate1 为 `passed`（硬性前置，未通过禁止启动）
 
 ## 处理逻辑
 
 ### Phase 1：模块识别
-读取 `03-functional-structure.md`，按 `##` 标题层级提取模块，编号格式：
+读取 `high-level-requirements/02-functional-requirements.md`，按 `##` 标题层级提取模块，编号格式：
 ```
 feature-{NN}-{kebab-case-name}
 ```
 优先级映射：P0 → 01-09 / P1 → 10-19 / P2 → 20+
 
 ### Phase 2：逐模块生成（串行）
-每模块必须包含 5 个文件：
+每模块输出 1 个主题文件 `module-requirements.md`，内部包含 5 个原子章节（按检查视角聚合）：
 
-| 文件 | 核心内容 |
-|------|----------|
-| `spec.md` | 需求追溯、功能范围（IN/OUT）、验收标准（AC Taxonomy）、假设注册表 |
-| `prototype.md` | 页面/入口清单、文字化布局结构、交互流程、Mermaid 页面跳转图 |
-| `io-table.md` | 用户输入/系统输入/页面回显/接口响应字段表、数据流转 Mermaid |
-| `logic.md` | 核心业务流程 Mermaid、业务规则映射、状态机（stateDiagram-v2）、异常处理 |
-| `interaction-spec.md` | **按钮级交互状态机**（V2.1 新增）：每个可交互元素的触发方式、前置条件、立即反馈、成功结果、失败结果、异常分支、埋点事件 |
+| 章节 | 核心内容 | 原独立文件 |
+|------|----------|-----------|
+| `## 1. 需求追溯与验收标准` | 需求追溯、功能范围（IN/OUT）、验收标准（AC Taxonomy）、假设注册表 | `spec.md` |
+| `## 2. 原型与页面结构` | 页面/入口清单、文字化布局结构、交互流程、Mermaid 页面跳转图 | `prototype.md` |
+| `## 3. 输入输出字段` | 用户输入/系统输入/页面回显/接口响应字段表、数据流转 Mermaid | `io-table.md` |
+| `## 4. 业务逻辑与状态机` | 核心业务流程 Mermaid、业务规则映射、状态机（stateDiagram-v2）、异常处理 | `logic.md` |
+| `## 5. 交互规格` | **按钮级交互状态机**（V2.1 新增）：每个可交互元素的触发方式、前置条件、立即反馈、成功结果、失败结果、异常分支、埋点事件 | `interaction-spec.md` |
+
+> **主题文件聚合不改变边界**：各原子章节的红线独立生效。`module-requirements.md` 禁止包含代码片段、数据库表结构、技术栈决策。
 
 **interaction-spec.md 强制规则（V2.1 新增）**：
 - 每个页面必须列出所有可交互元素（按钮、输入框、下拉框、链接、开关）
@@ -93,7 +93,7 @@ Error 数量 > 0 时阻塞进入下游设计阶段，返回修复。
 ========================================
 🚪 Gate 2.5: 原型冻结 —— 等待人工逐页确认
 ========================================
-产出物已保存至：openspec/changes/{变更名}/specs/feature-*/interaction-spec.md
+产出物已保存至：openspec/changes/{变更名}/detailed-requirements/feature-*/module-requirements.md
 
 请按以下清单逐页检查每个模块：
 1. 每个可交互元素的说明是否完整（按钮、输入框、下拉框）
@@ -113,14 +113,9 @@ Error 数量 > 0 时阻塞进入下游设计阶段，返回修复。
 
 ## 输出路径
 ```
-openspec/changes/{变更名}/specs/
+openspec/changes/{变更名}/detailed-requirements/
 ├── feature-XX-{模块A}/
-│   ├── _index.md
-│   ├── spec.md
-│   ├── prototype.md
-│   ├── io-table.md
-│   ├── logic.md
-│   └── interaction-spec.md          # V2.1 新增
+│   └── module-requirements.md       # 合并 spec + prototype + io-table + logic + interaction-spec
 ├── feature-XX-{模块B}/
 │   └── ...
 ├── _modules-index.md
@@ -131,13 +126,8 @@ openspec/changes/{变更名}/specs/
 
 ### 模块目录示例
 ```
-feature-01-user-auth/
-├── _index.md
-├── spec.md
-├── prototype.md
-├── io-table.md
-├── logic.md
-└── interaction-spec.md
+detailed-requirements/feature-01-user-auth/
+└── module-requirements.md
 ```
 
 ### interaction-spec.md 片段（V2.1 新增）
@@ -189,7 +179,7 @@ stateDiagram-v2
 ```
 
 ## Gotchas
-- **触发前提**：必须等待 `prd-generation` 产出冻结、🚪 Gate 1 签字通过且 `03-functional-structure.md` 已确认，不可跳过概要需求直接写详细需求
+- **触发前提**：必须等待 `prd-generation` 产出冻结、🚪 Gate 1 签字通过且 `high-level-requirements/02-functional-requirements.md` 已确认，不可跳过概要需求直接写详细需求
 - **串行生成**：逐个模块输出，禁止批量并行生成，防止上下文丢失和编号混乱
 - **模块边界**：严格遵循 `03-functional-structure.md` 的模块划分，不得擅自合并或拆分模块；若发现粒度不均，反馈用户调整概要而非自行处理
 - **需求覆盖**：生成完毕后必须执行一致性校验，未覆盖的上游需求需用户确认是遗漏还是延期

@@ -256,7 +256,7 @@ description: 当用户说'评审通过'、'确认了'、'可以发版'、'驳回
 ========================================
 
 请阅读以下产出物：
-  • openspec/changes/{变更名}/specs/feature-*/interaction-spec.md
+  • openspec/changes/{变更名}/detailed-requirements/feature-*/module-requirements.md
 
 然后执行以下任一方式确认：
   /skill:human 原型确认了

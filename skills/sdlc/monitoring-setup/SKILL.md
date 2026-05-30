@@ -28,8 +28,8 @@ description: 当用户要求'生成监控规则'、'monitoring-setup'、'配置�
 
 按优先级读取：
 1. `openspec/config.yaml` —— 提取 project_name、技术栈总览
-2. `openspec/changes/{变更名}/design/05-ops-governance.md` —— 定位"运维架构"、"回滚方案"章节；`01-architecture-core.md` —— 定位"技术选型"章节；`04-quality-attributes.md` —— 定位"部署架构"章节
-3. `openspec/changes/{变更名}/specs/05-non-functional.md` —— 提取性能指标（RT、QPS、可用性）、告警阈值要求
+2. `openspec/changes/{变更名}/high-level-design/05-ops-governance.md` —— 定位"运维架构"、"回滚方案"章节；`01-architecture-core.md` —— 定位"技术选型"章节；`04-quality-attributes.md` —— 定位"部署架构"章节
+3. `openspec/changes/{变更名}/high-level-requirements/00-requirements-overview.md` —— 提取性能指标（RT、QPS、可用性）、告警阈值要求
 
 ### Step 2: 解析架构信息
 

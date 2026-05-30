@@ -25,7 +25,7 @@
 [系统边界——包含与不包含的内容]
 
 ### 1.3 术语与缩写
-[统一术语表，与 `specs/02-requirements-list.md` 保持一致]
+[统一术语表，与 `high-level-requirements/01-requirements-list.md` 保持一致]
 
 ### 1.4 参考资料
 [PRD 链接 + 竞品分析报告 + AI 架构决策文档]
@@ -75,7 +75,7 @@
 ```
 
 ### 边界红线
-- 术语表必须与 `specs/02-requirements-list.md` 严格一致，冲突 = BLOCKER
+- 术语表必须与 `high-level-requirements/01-requirements-list.md` 严格一致，冲突 = BLOCKER
 - 风险项必须标注影响等级，禁止只列风险不列缓解策略
 
 ---

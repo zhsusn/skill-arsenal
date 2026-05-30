@@ -27,7 +27,7 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 
 | 上游 Skill | 产出物 | 用途 | 是否必需 |
 |---|---|---|---|
-| `high-level-design` | `design/01-05.md`（6 个主题文件） | 架构约束、技术选型、全局状态机 | **必须** |
+| `high-level-design` | `high-level-design/01-05.md`（6 个主题文件） | 架构约束、技术选型、全局状态机 | **必须** |
 | `detailed-requirements` | `feature-*/spec.md` 等 | 功能规格、io-table、logic、prototype | **必须** |
 | `human` | `human-decisions.md` | Gate 2 与 Gate 2.5 签字状态 | **必须** |
 | `competitive-analysis` | `competitive-analysis.md` | 技术选型参考 | 建议 |
@@ -38,11 +38,8 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 
 | 输入来源 | 具体内容 |
 |----------|----------|
-| 概要设计 | `design/01-05.md`：系统架构、技术选型、数据架构、部署架构等 6 个主题文件 |
-| 详细需求 | `specs/feature-*/spec.md`：功能规格与验收标准 |
-| 详细需求 | `specs/feature-*/io-table.md`：输入输出字段表 |
-| 详细需求 | `specs/feature-*/logic.md`：业务逻辑与状态机 |
-| 详细需求 | `specs/feature-*/prototype.md`：页面原型文字化布局 |
+| 概要设计 | `high-level-design/01-05.md`：系统架构、技术选型、数据架构、部署架构等 6 个主题文件 |
+| 详细需求 | `detailed-requirements/feature-*/module-requirements.md`：功能规格与验收标准、输入输出字段、业务逻辑、交互规格 |
 | 配置 | `openspec/config.yaml`：`high-level-design.required_sections` |
 
 ## 处理逻辑
@@ -50,16 +47,16 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 ### Step 1：约束加载与模块识别
 
 1. 读取 `openspec/config.yaml` 中 `high-level-design.required_sections` 作为输出模板约束
-2. 自动解析 `03-functional-structure.md` 或扫描 `specs/feature-*/` 目录获取模块清单
-3. 读取 `design/01-05.md` 提取架构约束：技术栈、安全策略、性能指标、全局状态机
+2. 自动解析 `high-level-requirements/02-functional-requirements.md` 或扫描 `detailed-requirements/feature-*/` 目录获取模块清单
+3. 读取 `high-level-design/01-05.md` 提取架构约束：技术栈、安全策略、性能指标、全局状态机
 
 > **Constitution 约束传导（借鉴 developer-kit）**：将概要设计中的技术栈、安全约束、CWE 映射视为不可偏离的"架构 DNA"。详细设计阶段任何偏离均视为 BLOCKER。
 
 ### Step 2：逐模块生成（串行）
 
-对每个 `feature-XX-{模块名}` 独立生成 5 个文件：
+对每个 `feature-XX-{模块名}` 独立生成 1 个主题文件 `module-design.md`，内部包含 5 个原子章节：
 
-#### design.md — 模块内部架构与组件设计
+#### ## 1. 模块架构与组件设计（原 design.md）
 
 - 模块内部分层（Controller / Service / Repository / Domain）
 - 类 / 函数设计（签名、职责、依赖关系）
@@ -69,7 +66,7 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 - **代码风格传导**：类/函数命名、签名风格必须与项目代码规范一致。Python 项目遵循 `python-google-style`（snake_case、类型注解、Google docstring）；Java 项目遵循 `java-alibaba-style`（UpperCamelCase/lowerCamelCase、包装类型、Javadoc 注释）
 - **公共组件引用**：若模块依赖 `shared/design.md` 中的公共算法/基类/工具类，在"依赖公共组件"章节列出：组件名、引用路径（`../shared/design.md#组件名`）、使用场景。禁止在模块目录内重复定义公共组件
 
-#### api-spec.md — 接口定义
+#### ## 2. 接口定义（原 api-spec.md）
 
 - RESTful / gRPC / MCP / 消息队列端点清单（方法、路径、Content-Type）
 - 请求 / 响应字段表（字段名、类型、必填、约束、示例）
@@ -79,21 +76,21 @@ description: 当用户提到'详细设计'、'detailed-design'、'按模块输�
 - 输出标准 OpenAPI 3.1 YAML 片段，确保与 `interface-first-dev` 零摩擦衔接
 - **公共接口引用**：若模块调用 `shared/api-spec.md` 中的公共接口（如通用文件上传、全局搜索），在"依赖公共接口"章节列出：接口名、引用路径（`../shared/api-spec.md#接口名`）、调用场景。模块级 `api-spec.md` 只定义**本模块对外暴露**的接口，禁止将公共接口重复收录到模块目录
 
-#### db-schema.md — 数据表结构
+#### ## 3. 数据表结构（原 db-schema.md）
 
 - **本模块独占表**：DDL 语句（CREATE TABLE / INDEX / CONSTRAINT）、字段类型映射、索引策略、缓存 Key 设计、连接池配置建议
 - **公共表引用**：若模块使用 `shared/db-schema.md` 中的公共表（如用户表、权限表），在"依赖公共表"章节列出：表名、引用路径（`../shared/db-schema.md#表名`）、使用方式（读/写/关联查询）、本模块对该表的扩展字段（如有）
 - **禁止重复定义**：公共表的完整 DDL 必须且只能存在于 `shared/db-schema.md` 中，模块级 `db-schema.md` 禁止重复书写公共表的 CREATE TABLE 语句
 - 禁止硬编码连接串、密码
 
-#### state-machine.md — 模块内部状态机
+#### ## 4. 模块状态机（原 state-machine.md）
 
 - 将概要设计的全局状态机拆解到模块内部状态流转
 - Mermaid `stateDiagram-v2` 语法
 - 每个状态转换标注：触发条件、校验规则、异常分支
 - 与全局状态机的映射关系（哪个局部状态对应哪个全局状态）
 
-#### test-plan.md — 测试策略
+#### ## 5. 测试策略（原 test-plan.md）
 
 - 单元测试用例（Given/When/Then 格式）
 - 集成测试场景（模块间交互、外部服务 Mock 策略）
@@ -152,21 +149,26 @@ Error 数量 > 0 时阻塞进入下游阶段，返回修复。
 
 ### Step 7：保存与触发下游
 
-按模块保存到 `openspec/changes/{变更名}/detail-design/feature-XX-{模块名}/`
+按模块保存到 `openspec/changes/{变更名}/detailed-design/feature-XX-{模块名}/`
 
-同时保存以下两类全局文件到 `openspec/changes/{变更名}/detail-design/` 根目录：
+每个模块只生成 1 个文件：
+- **`module-design.md`**：合并 design + api-spec + db-schema + state-machine + test-plan
+
+同时保存以下两类全局文件到 `openspec/changes/{变更名}/detailed-design/` 根目录：
 
 - **`_design-index.md`**：全局模块索引，记录各模块状态、设计版本、追溯关系、变更历史
 - **`shared/` 目录**：跨模块公共技术能力，包含被 ≥2 个 feature 共用的数据表、接口、算法/组件
 
 **`shared/` 目录结构**：
 ```
-detail-design/shared/
+detailed-design/shared/
 ├── _index.md              # 公共能力目录索引
 ├── design.md              # 公共算法、公共组件、基类、工具类设计
 ├── api-spec.md            # 公共接口定义（通用查询、文件上传、认证鉴权等）
 └── db-schema.md           # 公共数据表（用户表、权限表、配置表、日志表等）
 ```
+
+> **合并边界**：`module-design.md` 内的 5 个原子章节红线独立生效。禁止在章节间混入不相关内容。
 
 **公共内容判定标准**：
 - 被 ≥2 个 feature 的模块设计直接依赖
@@ -182,11 +184,7 @@ detail-design/shared/
 
 | 产出物 | 内容说明 | 保存路径 |
 |--------|----------|----------|
-| `design.md` | 模块内部架构、组件划分、类/函数设计、算法逻辑 | `detail-design/feature-XX-{模块名}/` |
-| `api-spec.md` | 接口定义（方法/路径/字段/错误码/权限） | `detail-design/feature-XX-{模块名}/` |
-| `db-schema.md` | DDL、索引、缓存策略、连接池配置 | `detail-design/feature-XX-{模块名}/` |
-| `state-machine.md` | 模块内部状态流转 Mermaid 图、转换条件、异常分支 | `detail-design/feature-XX-{模块名}/` |
-| `test-plan.md` | 单测用例、集成场景、边界覆盖、Mock 策略 | `detail-design/feature-XX-{模块名}/` |
+| `module-design.md` | 模块内部架构、接口定义、数据表结构、状态机、测试策略 | `detailed-design/feature-XX-{模块名}/` |
 | `_design-index.md` | 全局模块索引（状态、版本、追溯关系、变更历史） | `detail-design/` |
 | `shared/design.md` | 公共算法、公共组件、基类、工具类设计 | `detail-design/shared/` |
 | `shared/api-spec.md` | 公共接口定义（通用查询、文件上传、认证鉴权等） | `detail-design/shared/` |
@@ -207,7 +205,7 @@ detail-design/shared/
 ## 增量更新支持（借鉴 CodeArchDoc Smart Diff）
 
 当需求发生变更时，支持局部重生成：
-1. 对比变更前后的 `specs/feature-*/spec.md` / `specs/feature-*/io-table.md`，识别受影响模块
+1. 对比变更前后的 `detailed-requirements/feature-*/module-requirements.md`，识别受影响模块
 2. 仅重新生成受影响模块的 5 个文件
 3. 未受影响模块保持原设计冻结状态
 4. 重生成后重新执行 Cross-Module Audit 和质量门控

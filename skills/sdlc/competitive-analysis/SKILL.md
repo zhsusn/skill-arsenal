@@ -26,7 +26,7 @@ description: 当用户要求'竞品分析'、'对比开源项目'、'技术选�
 - **已知竞品**：可选，如 Midjourney、ComfyUI、D-ID
 - **参考文档**：
   - `positioning`：`@openspec/changes/{变更名}/brainstorming/requirement-draft.md`
-  - `technical`：`@openspec/changes/{变更名}/specs/01-product-overview.md`
+  - `technical`：`@openspec/changes/{变更名}/high-level-requirements/00-requirements-overview.md`
 - **问题类型**：`market_entry` / `competitive_response` / `moat_assessment` / `positioning` / `build_buy_partner`
 
 ## 执行流程（按 mode 分支）

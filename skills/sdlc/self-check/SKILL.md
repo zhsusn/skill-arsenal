@@ -87,7 +87,7 @@ description: 当用户提到'自查'、'self-check'、'检查产出物'、'阶�
 
 当用户明确提出"修改某功能/需求/设计，会影响哪些模块/文档"时触发：
 1. 定位变更涉及的上游需求 ID 或设计章节
-2. 遍历当前变更目录下的所有下游文档（`specs/`、`design/`、`plan.md`、`tasks.md`）
+2. 遍历当前变更目录下的所有下游文档（`high-level-requirements/`、`detailed-requirements/`、`high-level-design/`、`detailed-design/`、`plan.md`、`tasks.md`）
 3. 识别直接关联：继承该需求/设计的下游文档
 4. 识别间接关联：接口耦合、数据依赖、状态机引用、模块间字段共用
 5. 输出受影响清单，按影响程度分级：

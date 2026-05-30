@@ -19,7 +19,7 @@ description: 当用户提到'任务拆解'、'拆成具体任务'、'tasks.md'�
 ### Step 1: 读取输入文档
 
 读取以下文档作为拆解依据：
-- `design/01-05.md` 或 `feature-*/design.md`（概要设计主题文件 + 详细设计文档）
+- `high-level-design/01-05.md` 或 `detailed-design/feature-*/module-design.md`（概要设计主题文件 / 详细设计文档）
 - `feature-*/api-spec.md` 或 `interface-contracts/openapi.yaml`（接口契约）
 - `parallel-dev-plan.md`（前后端并行计划，如存在）
 - `openspec/changes/{变更名}/plan.md`（writing-plans 的输出，如存在）

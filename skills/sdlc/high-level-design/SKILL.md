@@ -5,7 +5,7 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 
 # High-Level Design（概要设计）
 
-基于已冻结的产品需求文档（PRD-000，即 `specs/01-05.md`），正向生成系统概要设计文档。严格限定为架构层（影响 ≥2 个模块），禁止输出接口字段、类图、DDL、算法参数等详细设计内容。
+基于已冻结的产品需求文档（PRD-000，即 `high-level-requirements/00-02.md`），正向生成系统概要设计文档。严格限定为架构层（影响 ≥2 个模块），禁止输出接口字段、类图、DDL、算法参数等详细设计内容。
 
 ## 适用场景
 
@@ -29,9 +29,9 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 
 | 上游 Skill | 产出物 | 用途 | 是否必需 |
 |---|---|---|---|
-| `prd-generation` | `specs/01-05.md` | 产品范围、模块清单、需求边界、非功能指标 | **必须** |
+| `prd-generation` | `high-level-requirements/00-02.md` | 产品范围、模块清单、需求边界、非功能指标 | **必须** |
 | `competitive-analysis` | `design/competitive-analysis.md` | 技术选型论证支撑 | **必须** |
-| `detailed-requirements` | `specs/feature-*/spec.md` | 模块功能细节，用于覆盖度校验与状态机兼容性核对 | 建议参考 |
+| `detailed-requirements` | `detailed-requirements/feature-*/module-requirements.md` | 模块功能细节，用于覆盖度校验与状态机兼容性核对 | 建议参考 |
 | `human` | `human-decisions.md` | Gate 2 签字状态，未通过禁止进入详细设计 | **必须** |
 
 > 概要设计的**核心输入**是 `prd-generation` 产出的概要需求。`detailed-requirements` 仅作为可选的校验基准，**不阻塞**概要设计启动。Gate 2 人工签字是硬性前置条件。
@@ -44,9 +44,9 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 - 若配置缺失，使用默认值并发出警告
 
 ### Step 2: 上游文档解析
-- 解析 `03-functional-structure.md` 提取模块清单（名称、职责、优先级）
-- 解析 `02-requirements-list.md` 锁定 P0/P1/P2 范围
-- 解析 `05-non-functional.md` 提取性能/安全/可靠性指标
+- 解析 `high-level-requirements/02-functional-requirements.md` 提取模块清单（名称、职责、优先级）
+- 解析 `high-level-requirements/01-requirements-list.md` 锁定 P0/P1/P2 范围
+- 解析 `high-level-requirements/00-requirements-overview.md` 提取性能/安全/可靠性指标
 - 解析 `competitive-analysis.md` 提取技术选型结论
 - 若已存在 `feature-*/spec.md`，解析并汇总功能点（用于可选的覆盖度校验）
 
@@ -305,7 +305,7 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 - 若提供了 `feature-*/spec.md`，校验全局状态机是否与模块状态描述兼容
 
 ### Step 6: 输出与保存
-按主题文件结构保存到 `openspec/changes/{变更名}/design/`：
+按主题文件结构保存到 `openspec/changes/{变更名}/high-level-design/`：
 
 ```
 00-design-overview.md          # 索引 + 引言 + 设计考量 + Gate 2 签字区
@@ -346,7 +346,7 @@ description: 当用户要求'概要设计'、'high-level-design'、'HLD'、'系�
 **与 Gate 2 的衔接**：
 `00-design-overview.md` 的"跨文件一致性重点"章节自动引用本报告中所有 ⚠️ 警告和 ❌ 阻断项。检查者在此文件中即可完成重点确认。
 
-**报告保存路径**：`openspec/changes/{变更名}/design/self-check-report.md`
+**报告保存路径**：`openspec/changes/{变更名}/high-level-design/self-check-report.md`
 
 ### Step 8: 🚪 Gate 2 设计冻结（V3.0 修订版）
 
@@ -356,7 +356,7 @@ self-check 与跨文件一致性检查通过后，自动宣读阻塞提示：
 ========================================
 🚪 Gate 2: 设计冻结 —— 等待人工评审
 ========================================
-产出物已保存至：openspec/changes/{变更名}/design/
+产出物已保存至：openspec/changes/{变更名}/high-level-design/
 
 请按以下顺序评审：
 1. 打开 00-design-overview.md，确认索引表与检查清单
@@ -407,14 +407,14 @@ self-check 与跨文件一致性检查通过后，自动宣读阻塞提示：
 ```markdown
 ### 需求可追溯性
 
-| 需求编号 | 需求描述（来自 `specs/02-requirements-list.md`） | 本文件对应章节 | 验证方式 |
+| 需求编号 | 需求描述（来自 `high-level-requirements/01-requirements-list.md`） | 本文件对应章节 | 验证方式 |
 |---------|---------------------------------------------|-------------|---------|
 | REQ-XXX | [需求原文摘要] | [章节编号/标题] | [评审类型] |
 ```
 
 - 若某主题文件不直接回应需求，标注"本文件为架构支撑文档，不直接映射单一需求"
 - `00-design-overview.md` 中的风险项追溯至 `brainstorming/requirement-draft.md`
-- `05-ops-governance.md` 中的回滚方案追溯至 `05-non-functional.md` 中的可靠性/可用性需求
+- `05-ops-governance.md` 中的回滚方案追溯至 `high-level-requirements/00-requirements-overview.md` 中的可靠性/可用性需求
 - `01-architecture-core.md` 中的技术选型追溯至 `competitive-analysis.md`
 
 ## 下游消费
@@ -441,7 +441,7 @@ self-check 与跨文件一致性检查通过后，自动宣读阻塞提示：
 - **禁止自动下钻**：生成时若 AI 自发输出详细设计内容，必须自我拦截并提升抽象层级，不得直接保存。
 - **设计锁定原则**：用户确认评审通过后，概要设计冻结。变更需重新走架构评审会，禁止偷偷修改已冻结文档。
 - **ADR 流于形式**：若输出决策记录或 `01-architecture-core.md` 中的架构策略，必须包含"备选方案及排除原因"，否则视为不完整。
-- **引言不可空泛**：`00-design-overview.md` 的术语表必须与 `specs/02-requirements-list.md` 严格一致，发现术语冲突时标记 BLOCKER。
+- **引言不可空泛**：`00-design-overview.md` 的术语表必须与 `high-level-requirements/01-requirements-list.md` 严格一致，发现术语冲突时标记 BLOCKER。
 - **设计考量必须量化**：`00-design-overview.md` 的风险项必须标注影响等级（高/中/低），禁止只列风险不列缓解策略。
 - **错误处理与回滚联动**：`03-runtime-behavior.md` §3.4 必须明确哪些错误类别触发 `05-ops-governance.md` 中的回滚步骤，未明确联动视为 WARNING。
 - **图表一致性**：Mermaid 图表必须从文本架构描述自动生成，禁止图表与文字描述矛盾。

@@ -20,7 +20,7 @@ description: 当用户提到'UAT'、'用户验收测试'、'验收'、'uat-repor
 | 集成测试通过 | `tests/integration/report.md` | 全部 P0 用例通过 |
 | 代码审查通过 | `openspec/changes/{变更名}/code-review/review-report.yaml` | overall 为 Approve 或 Comment；blocking 问题已清零 |
 | 用户故事清单 | `tests/integration/user-stories-checklist.md` | 已由 integration-test 生成 |
-| 详细需求 | `openspec/changes/{变更名}/specs/feature-*/spec.md` | 存在且可读 |
+| 详细需求 | `openspec/changes/{变更名}/detailed-requirements/feature-*/module-requirements.md` | 存在且可读 |
 | 预览环境 | staging / preview 部署 | 已部署且可访问 |
 
 **硬性阻断**：若 integration-test P0 用例未全部通过，拒绝执行并提示："请先修复集成测试失败项，P0 用例 100% 通过后方可进入 UAT。"
@@ -30,7 +30,7 @@ description: 当用户提到'UAT'、'用户验收测试'、'验收'、'uat-repor
 ### Phase 1: 读取输入与生成验证清单
 
 1. 读取 `tests/integration/user-stories-checklist.md`，获取用户故事列表与集成测试状态
-2. 读取 `specs/feature-*/user-stories.md`，补充业务上下文、验收标准、异常分支
+2. 读取 `detailed-requirements/feature-*/module-requirements.md` §1（需求追溯与验收标准），补充业务上下文、验收标准、异常分支
 3. **生成/增强 `user-stories-checklist.md`**：
    - 为每个用户故事补充**操作步骤**（具体到按钮、输入、页面跳转）
    - 为每个用户故事补充**异常分支检查项**（权限不足、数据为空、网络中断恢复）

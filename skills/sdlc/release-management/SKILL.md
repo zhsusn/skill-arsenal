@@ -27,7 +27,7 @@ description: 当用户提到'发布'、'上线'、'release'、'部署'、'准备
 |--------|------|----------|
 | UAT 报告 | `openspec/changes/{变更名}/uat/uat-report.md` | Gate 3 签字通过（无阻塞性问题） |
 | 代码审查报告 | `openspec/changes/{变更名}/code-review/review-report.yaml` | overall 为 Approve 或 Comment；blocking 问题已清零 |
-| 回滚方案 | `openspec/changes/{变更名}/design/rollback-plan.md` | 存在且可读 |
+| 回滚方案 | `openspec/changes/{变更名}/high-level-design/05-ops-governance.md` §2（回滚方案） | 存在且可读 |
 | 监控规则 | `ops/monitoring-rules.yaml` | 已确认生效（由 monitoring-setup 生成） |
 | 代码分支 | Git 仓库 | commit SHA 已确定 |
 
@@ -145,7 +145,7 @@ description: 当用户提到'发布'、'上线'、'release'、'部署'、'准备
 
 ## 回滚方案
 
-参见 `design/rollback-plan.md`。
+参见 `high-level-design/05-ops-governance.md` §2。
 
 ## 监控与告警
 
@@ -156,7 +156,7 @@ description: 当用户提到'发布'、'上线'、'release'、'部署'、'准备
 
 - UAT 报告：`uat/uat-report.md`
 - 代码审查报告：`code-review/review-report.yaml`
-- 设计文档：`specs/`
+- 设计文档：`high-level-requirements/`、`detailed-requirements/`、`high-level-design/`、`detailed-design/`
 ```
 
 ### Phase 4: 人工最终决策

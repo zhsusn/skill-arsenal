@@ -36,7 +36,7 @@ description: 当 release-management 完成且用户确认上线后触发，或�
 | uat-report.md | `openspec/changes/{变更名}/uat/uat-report.md` | 归档 |
 | release-notes.md | `openspec/changes/{变更名}/release-notes.md` | 归档 + CHANGELOG |
 | human-decisions.md | `openspec/changes/{变更名}/human-decisions.md` | 归档 |
-| design.md / specs/ | `openspec/changes/{变更名}/specs/` | 增量规格合并 |
+| 需求与设计文档 | `openspec/changes/{变更名}/high-level-requirements/`、`detailed-requirements/`、`high-level-design/`、`detailed-design/` | 增量规格合并 |
 | code-review 目录 | `openspec/changes/{变更名}/code-review/` | 最终一致性校验 |
 | code-review/review-request.yaml | `openspec/changes/{变更名}/code-review/review-request.yaml` | 审查请求书归档 |
 | code-review/review-report.yaml | `openspec/changes/{变更名}/code-review/review-report.yaml` | 审查意见书归档 |
@@ -108,7 +108,7 @@ cp -r openspec/changes/{变更名}/* openspec/changes/archive/{变更名}/
 ```
 
 **归档范围（V2.1 扩展）**：
-- ✅ specs/ 目录（全部设计文档）
+- ✅ high-level-requirements/、detailed-requirements/、high-level-design/、detailed-design/ 目录（全部需求与设计文档）
 - ✅ tasks.md（任务清单）
 - ✅ uat-report.md（UAT 报告）
 - ✅ release-notes.md（发布说明）
@@ -121,7 +121,7 @@ cp -r openspec/changes/{变更名}/* openspec/changes/archive/{变更名}/
 
 将本次变更的增量规格合并到项目主规格：
 
-1. 读取 `openspec/changes/{变更名}/specs/` 下的所有规格文件
+1. 读取 `openspec/changes/{变更名}/high-level-requirements/`、`detailed-requirements/`、`high-level-design/`、`detailed-design/` 下的所有规格文件
 2. 对比项目主规格目录（如 `docs/specs/` 或 `openspec/specs/`）
 3. 合并新增或修改的规格章节
 4. 在合并位置添加变更溯源标记：
@@ -183,7 +183,7 @@ cp -r openspec/changes/{变更名}/code-review openspec/changes/archive/{变更�
 | 检查项 | 标准 | 结果 |
 |--------|------|------|
 | 归档目录完整性 | archive/{变更名}/ 包含全部 8 类文档 | 是 / 否 |
-| specs/ 与主规格同步 | 主规格已合并增量内容 | 是 / 否 |
+| 需求/设计文档与主规格同步 | 主规格已合并增量内容 | 是 / 否 |
 | CHANGELOG 已更新 | 根目录 CHANGELOG.md 包含本次变更 | 是 / 否 |
 | uat-report 归档 | archive/ 包含 uat-report.md | 是 / 否 |
 | release-notes 归档 | archive/ 包含 release-notes.md | 是 / 否 |
@@ -223,7 +223,7 @@ overall_progress: 100%  # 或按实际规则计算
 
 ## 归档清单
 
-- [x] specs/（设计文档）
+- [x] high-level-requirements/、detailed-requirements/、high-level-design/、detailed-design/（全部需求与设计文档）
 - [x] tasks.md
 - [x] uat-report.md
 - [x] release-notes.md

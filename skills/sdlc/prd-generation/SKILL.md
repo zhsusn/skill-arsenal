@@ -16,7 +16,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 2. **红绿灯评分机制**：每层结束后调用 `references/completeness-scoring.md` 进行量化评分
 3. **强制一致性校验**：Layer 4 调用 `references/consistency-checklist.md`，未通过不得输出
 4. **基线冻结**：用户确认后，Scope、NFR、核心实体在详细阶段不可推翻
-5. **五文件输出**：按 OpenSpec 规范输出 5 个 Markdown 文件到 `openspec/changes/{变更名}/specs/`
+5. **三主题文件输出**：按 OpenSpec 规范输出 3 个主题 Markdown 文件到 `openspec/changes/{变更名}/high-level-requirements/`，将 5 个原子文件按检查视角聚合，减少文件切换
 6. **JTBD 框架**：在需求表达中融入 Jobs-to-be-Done 格式，确保从"为什么"出发
 7. **多渠道资料收集**：自动调用 `web_search` 收集竞品资料，读取 `@路径` 本地文档
 8. **Gate 1 人工冻结提示**：五文件输出完成后，自动宣读 🚪 Gate 1 阻塞提示，等待人工签字后方可进入详细需求阶段
@@ -41,7 +41,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 ### Step 0: 初始化
 - 读取 `openspec/config.yaml` 获取 `artifact_specs.high-level-requirements` 模板
 - 检查当前是否已有进行中的变更目录；若无则提示用户先创建变更提案
-- 确认 `openspec/changes/{变更名}/specs/` 存在，否则自动创建
+- 确认 `openspec/changes/{变更名}/high-level-requirements/` 存在，否则自动创建
 - 读取用户提供的本地资料（`@路径`）和 brainstorming 结果
 
 ### Step 1: Layer 1 — 问题界定（Problem Framing）
@@ -58,7 +58,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 目标：确定"系统做什么、不做什么、由哪些模块构成"。
 
 1. 基于 Layer 1 成果，按 `references/questioning-guide.md`「第二层提问集」访谈。
-2. 识别系统功能模块，输出 Component Inventory（组件清单），直接映射到后续 `feature-XX-{模块}/` 目录。
+2. 识别系统功能模块，输出 Component Inventory（组件清单），直接映射到后续 `detailed-requirements/feature-XX-{模块}/` 目录。
 3. 明确 In-Scope / Out-of-Scope（**Out-of-Scope 必须明确列出**）。
 4. 定义核心实体（名称 + 主键 + 关系）。
 5. 初步确定技术方案。若存在 `market-positioning.md`，引用其中的 Blue Ocean 差异化结论和战略建议，避免在需求阶段过度预设技术细节。
@@ -100,22 +100,21 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 5. 若使用了语义等价标题但未精确匹配 config.yaml 的字面要求，标记为 🟡 提示，写入 05-non-functional.md 的「待决策项」。
 
 ### Step 5: 输出与冻结
-1. 按 `references/system-outline-template.md` 和 OpenSpec 五文件规范输出：
-   - `01-product-overview.md`：产品概述、目标用户、核心价值、JTBD 列表
-   - `02-requirements-list.md`：需求清单（P0/P1/P2）、用户故事（US-XXX）、业务术语表
-   - `03-functional-structure.md`：功能结构（模块-功能点树状图）、Component Inventory、模块到 feature 目录的映射
-   - `04-business-rules.md`：全局业务规则、权限矩阵、业务流程图（Mermaid）
-   - `05-non-functional.md`：性能/安全/可靠性 NFR、原型草图、技术栈建议
-2. 自动保存到 `openspec/changes/{变更名}/specs/`
-3. 在 `03-functional-structure.md` 末尾附加「详细 PRD 清单」，列出 PRD-001~PRD-00N 的模块映射：
+1. 按 OpenSpec 规范输出 3 个主题文件（由 5 个原子文件聚合）：
+   - `00-requirements-overview.md`：产品概述、目标用户、核心价值、JTBD 列表、NFR、里程碑、技术约束（聚合原 01 + 05）
+   - `01-requirements-list.md`：需求清单（P0/P1/P2）、用户故事（US-XXX）、业务术语表（原 02）
+   - `02-functional-requirements.md`：功能结构（模块-功能点树状图）、Component Inventory、全局业务规则、权限矩阵、业务流程图（Mermaid）（聚合原 03 + 04）
+   - 各原子章节边界红线独立生效，物理聚合不改变禁止项
+2. 自动保存到 `openspec/changes/{变更名}/high-level-requirements/`
+3. 在 `02-functional-requirements.md` 末尾附加「详细需求清单」，列出各模块的映射：
    | 编号 | 模块名称 | 对应目录 | 状态 |
-   | PRD-001 | {模块A} | `feature-01-{模块A}/` | 待编写 |
+   | DR-001 | {模块A} | `detailed-requirements/feature-01-{模块A}/` | 待编写 |
 4. 向用户宣读冻结规则与 🚪 Gate 1 阻塞提示，等待人工回复：
    ```text
    ========================================
    🚪 Gate 1: 需求冻结 —— 等待人工评审
    ========================================
-   产出物已保存至：openspec/changes/{变更名}/specs/
+   产出物已保存至：openspec/changes/{变更名}/high-level-requirements/
    请执行以下操作：
    1. 阅读 5 个 spec 文件（01-product-overview 至 05-non-functional）
    2. 重点检查：Scope 是否覆盖业务闭环、P0 需求是否可测试、核心实体是否完整
@@ -133,15 +132,18 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 
 ## 输出格式
 
-### 五文件结构（OpenSpec 规范）
+### 三主题文件结构（OpenSpec 规范 V3.0）
 
-| 文件 | 对应章节 | 核心内容 | 下游影响 |
-|------|----------|----------|----------|
-| `01-product-overview.md` | 项目背景与目标、竞品分析 | 痛点、北极星指标、JTBD、竞品对标 | 全局上下文 |
-| `02-requirements-list.md` | 需求清单、业务术语、用户故事 | P0/P1/P2 需求、US-XXX 用户故事、术语表 | 测试追溯基准 |
-| `03-functional-structure.md` | 功能架构、Component Inventory | 模块树、组件清单、模块→目录映射 | **决定详细需求拆分粒度** |
-| `04-business-rules.md` | 业务流程、权限矩阵、业务规则 | Mermaid 流程图、RBAC 矩阵、状态机 | 详细设计输入 |
-| `05-non-functional.md` | NFR、原型草图、技术约束 | 性能/安全/并发指标、技术栈、里程碑 | 架构约束 |
+| 主题文件 | 合并来源 | 对应章节 | 核心内容 | 下游影响 |
+|---------|---------|----------|----------|----------|
+| `00-requirements-overview.md` | 原 01 + 05 | 项目背景、竞品、NFR、里程碑 | 痛点、北极星指标、JTBD、竞品对标、性能/安全/并发指标、技术约束 | 全局上下文 + 架构约束 |
+| `01-requirements-list.md` | 原 02 | 需求清单、业务术语、用户故事 | P0/P1/P2 需求、US-XXX 用户故事、术语表 | 测试追溯基准 |
+| `02-functional-requirements.md` | 原 03 + 04 | 功能架构、Component Inventory、业务规则 | 模块树、组件清单、RBAC 矩阵、Mermaid 流程图、状态机 | **决定详细需求拆分粒度**、详细设计输入 |
+
+**边界红线（每章独立生效）**：
+- 需求清单：禁止写技术方案、实现细节、字段类型
+- 功能结构：禁止写 UI 像素级设计、数据库表结构
+- 业务规则：禁止写代码逻辑、算法流程、API 端点
 
 ### 优先级标记
 - **P0**：必须交付，缺一则系统不可用
@@ -149,7 +151,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 - **P2**：优化项，可延后
 
 ### 模块命名约束
-`03-functional-structure.md` 中的模块名必须与 `feature-XX-{模块名}/` 目录名保持一致（kebab-case），直接影响 `detailed-requirements` Skill 的目录拆分。
+`02-functional-requirements.md` 中的模块名必须与 `detailed-requirements/feature-XX-{模块名}/` 目录名保持一致（kebab-case），直接影响 `detailed-requirements` Skill 的目录拆分。
 
 ## 协作接口
 
@@ -160,7 +162,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 | 上游 | `requirement-analysis` | 提供结构化需求输入 |
 | 下游 | `competitive-analysis` | 读取 01-product-overview.md 进行深度竞品分析 |
 | 下游 | `high-level-design` | 读取 04/05 进行概要设计 |
-| 下游 | `detailed-requirements` | 读取 03 的模块清单按 feature-XX-{模块}/ 拆分 |
+| 下游 | `detailed-requirements` | 读取 02 的模块清单按 detailed-requirements/feature-XX-{模块}/ 拆分 |
 | 贯穿 | `progress-tracker` | 每完成一层更新进度 |
 | 贯穿 | `self-check` | Layer 4 后自动触发最终自查 |
 | 贯穿 | `human` | Gate 1 人工冻结确认与决策记录 |
@@ -174,7 +176,7 @@ description: 当用户要求'写PRD'、'概要需求'、'系统规划'或从零�
 - **核心实体一旦定义，不可在详细 PRD 中擅自新增**。如果详细阶段发现需要新实体，必须回溯修改 PRD-000 并升版。
 - **P0 需求必须可测试**。每个 P0 需求应对应至少一个用户故事的验收标准。
 - **Component Inventory 不是 UI 设计稿**。它是功能模块的组件级拆解，供后续 AI 编码工具快速读取，不包含像素级设计细节。
-- **模块名一旦确定，详细阶段不可改**。修改模块名会导致 `feature-XX-{模块}/` 目录重命名，影响所有下游 Skill。
+- **模块名一旦确定，详细阶段不可改**。修改模块名会导致 `detailed-requirements/feature-XX-{模块}/` 目录重命名，影响所有下游 Skill。
 - **Gate 1 是阻塞性闸门，不可跳过**。即使五文件内容看似完整，也必须获得人工签字确认后才能冻结基线。AI 不得因"看起来没问题"而自动确认。
 - **基线冻结后变更需升版**。若冻结后发现 Scope 遗漏或 NFR 错误，必须通过 `human` Skill 记录变更决策，升版至 v1.1+ 并通知所有下游 Skill 重新校验。
 
