@@ -1,0 +1,7 @@
+{
+  "name": "project-size-estimate",
+  "version": "1.0.0",
+  "pattern": "analyzer",
+  "tags": ["sdlc", "estimation", "planning", "sizing", "project-management", "openspec"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

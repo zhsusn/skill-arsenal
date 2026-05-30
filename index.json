@@ -541,6 +541,15 @@
         "tags": "engineering,workflow,automation,agent",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
+    },
+    {
+      "name": "project-size-estimate",
+      "path": "skills/sdlc/project-size-estimate",
+      "description": "当用户提到'估算项目规模'、'size-estimate'、'工作量评估'、'项目多大'、'开发周期预估'或需要量化项目复杂度时触发。基于模块、接口、页面、复杂度与风险五维度输出乐观/预期/保守三档得分与流程裁剪建议。",
+      "metadata": {
+        "tags": "sdlc,estimation,planning,sizing,project-management,openspec",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
     }
   ]
 }
