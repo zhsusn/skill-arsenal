@@ -1,0 +1,7 @@
+{
+  "name": "doc-quality-gate",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": ["sdlc", "quality-gate", "documentation", "consistency", "verification"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

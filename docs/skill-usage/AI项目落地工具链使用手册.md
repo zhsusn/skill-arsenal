@@ -1,7 +1,9 @@
 # AI项目落地工具链使用手册
 
 > 工具集成方式 + 完全手动方式完整指南
-> 版本 V2.5 | 2026年5月
+> 版本 V2.6 | 2026年5月
+>
+> **V2.6 更新**：引入 `doc-quality-gate` 强制性文档质量门禁。所有 AI 生成的文档产出物（specs、design、plan、release-notes 等）在人工审核前必须通过 `doc-quality-gate` 检查：执行单文档完整性、跨文档一致性、规范合规性三层九项检查，🔴 阻断级问题清零并输出修复日志后方可进入人工 Gate。应用点：概要需求、详细需求、概要设计、详细设计、接口契约、实现计划、UAT 报告、发布文档。
 >
 > **V2.5 更新**：引入 `code-review-pipeline` 技能族（阶段 9.25），作为强制性技术门禁插入 integration-test 与 UAT 之间。包含四阶段×五轴结构化审查、三轮角色轮替、六级严重性标记、按需加载参考指南。产物统一为 `code-review/` 目录下的 YAML 文件。修正阶段编号冲突（原 `requesting-code-review` 错误标记为 stage-10，现调整为 stage-9.25）。
 >
@@ -115,25 +117,33 @@ mkdir -p ops/
 3. **需求探索 ——** 调用 `brainstorming` 进行需求探索
 4. **市场定位（可选）——** 调用 `competitive-analysis mode=positioning` 执行市场定位与差异化分析
 5. **概要需求 ——** 调用 `prd-generation` 生成概要需求文档
-6. **🚪 Gate 1：需求冻结 ——** 人工评审签字，调用 `human gate=Gate1 action=sign-off`
-7. **详细需求 ——** 调用 `detailed-requirements` 生成模块化详细需求（含 `interaction-spec.md`）
-8. **🚪 Gate 2.5：原型冻结 ——** 人工逐页确认按钮交互，调用 `human gate=Gate2.5 action=sign-off`
+6. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查 specs/ 目录文档质量（🔴 阻断级问题清零）
+7. **🚪 Gate 1：需求冻结 ——** 人工评审签字，调用 `human gate=Gate1 action=sign-off`
+8. **详细需求 ——** 调用 `detailed-requirements` 生成模块化详细需求（含 `interaction-spec.md`）
+9. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查详细需求文档质量（跨模块术语/数值/状态一致性）
+10. **🚪 Gate 2.5：原型冻结 ——** 人工逐页确认按钮交互，调用 `human gate=Gate2.5 action=sign-off`
 9. **技术竞品分析 ——** 调用 `competitive-analysis mode=technical` 执行技术深度对比
-10. **概要设计 ——** 调用 `high-level-design` 生成系统架构设计（含 `rollback-plan.md`）
-11. **监控初始化 ——** 调用 `monitoring-setup` 生成监控规则初稿（一次性）
-12. **🚪 Gate 2：设计冻结 ——** 人工评审架构，调用 `human gate=Gate2 action=sign-off`
-13. **详细设计 ——** 调用 `detailed-design` 按模块输出详细设计
-14. **接口驱动 ——** 调用 `interface-first-dev` 定义前后端接口契约
-15. **编写实现计划 ——** 调用 `writing-plans` 生成模块级实现计划（plan.md）
-16. **任务拆解 ——** 调用 `task-breakdown` 基于 plan.md 和接口契约，将工作拆解为≤30分钟/任务的开发清单（tasks.md）
+12. **概要设计 ——** 调用 `high-level-design` 生成系统架构设计（含 `rollback-plan.md`）
+13. **监控初始化 ——** 调用 `monitoring-setup` 生成监控规则初稿（一次性）
+14. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查 design/ 目录文档质量（设计-需求一致性、引用完整性）
+15. **🚪 Gate 2：设计冻结 ——** 人工评审架构，调用 `human gate=Gate2 action=sign-off`
+16. **详细设计 ——** 调用 `detailed-design` 按模块输出详细设计
+17. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查详细设计文档质量（跨模块接口/状态机/术语一致性）
+18. **接口驱动 ——** 调用 `interface-first-dev` 定义前后端接口契约
+19. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查接口契约文档质量（字段一致性、格式规范）
+20. **编写实现计划 ——** 调用 `writing-plans` 生成模块级实现计划（plan.md）
+21. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查 plan.md 质量（任务覆盖一致性、术语统一）
+22. **任务拆解 ——** 调用 `task-breakdown` 基于 plan.md 和接口契约，将工作拆解为≤30分钟/任务的开发清单（tasks.md）
 17. **编码实现 ——** 调用 `executing-plans` 按 tasks.md 逐 Batch 执行开发任务（含强制自测、接口校验、自动勾选），内部调用 `test-driven-development` 遵循 RED-GREEN-REFACTOR 循环
 18. **单元测试 ——** 调用 `unit-test` 生成并执行单元测试（覆盖率≥70%）
 19. **集成测试 ——** 调用 `integration-test` 生成并执行集成测试（含 `user-stories-checklist.md`）
 20. **代码审查 ——** 调用 `code-review-pipeline` 执行四阶段×五轴结构化审查，输出 `review-request.yaml` + `review-report.yaml` + `fix-plan.yaml`，blocking 问题清零后方可进入 UAT
-21. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
-22. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过且代码审查 blocking 已清零，调用 `human gate=Gate3 action=sign-off`
-23. **上线发布 ——** 调用 `release-management` 生成发布清单，人工最终确认后上线
-24. **归档收尾 ——** 调用 `finish` 执行八步归档流水线（人工确认 → 分支合并 → OpenSpec 归档 → 规格同步 → 纳入交付后文档 → CHANGELOG → 一致性校验 → 确认单）
+24. **UAT 验证 ——** 调用 `uat-verification` + 人工在预览环境走通业务流程
+25. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查 UAT 报告质量（UAT-用户故事一致性、缺陷完整性）
+26. **🚪 Gate 3：发布冻结 ——** 人工确认 UAT 通过且代码审查 blocking 已清零，调用 `human gate=Gate3 action=sign-off`
+27. **上线发布 ——** 调用 `release-management` 生成发布清单，人工最终确认后上线
+28. **文档质量门禁 ——** 调用 `doc-quality-gate` 检查发布文档质量（发布-审查-UAT 一致性、版本连续性）
+29. **归档收尾 ——** 调用 `finish` 执行八步归档流水线（人工确认 → 分支合并 → OpenSpec 归档 → 规格同步 → 纳入交付后文档 → CHANGELOG → 一致性校验 → 确认单）
 25. **线上监控 ——** 周期性调用 `monitoring-analysis`，输出 `feedback-loop.md` 反哺下一变更
 
 ### 3.3 各阶段操作指令
@@ -198,6 +208,13 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 
 产出：`specs/` 目录下的 5 个 Markdown 文件：`01-product-overview.md`、`02-requirements-list.md`、`03-functional-structure.md`、`04-business-rules.md`、`05-non-functional.md`
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 specs/ 目录下所有文档质量。
+参考文档：@openspec/changes/{变更名}/specs/
+```
+重点检查：结构完整性、数据计算一致性、术语一致性。阻断级问题清零后方可进入人工 Gate。
+
 **末尾 AI 提示语（V2.1 新增）：**
 ```text
 ========================================
@@ -246,6 +263,13 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 - `io-table.md` — 输入输出字段表
 - `logic.md` — 业务逻辑与状态机
 - **`interaction-spec.md`（V2.1 新增）** — 按钮级交互规格（触发方式、前置条件、立即反馈、成功/失败结果、异常分支、埋点事件）
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查详细需求文档质量。
+参考文档：@openspec/changes/{变更名}/specs/feature-*/
+```
+重点检查：跨模块术语一致性、数值一致性、状态标记规范性、引用完整性。阻断级问题清零后方可进入人工 Gate。
 
 **末尾 AI 提示语（V2.1 新增）：**
 ```text
@@ -303,6 +327,13 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 
 产出：`design/` 目录下的 16 个 Markdown 文件 + **`rollback-plan.md`（V2.1 新增）** + `monitoring-rules.yaml`
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 design/ 目录下所有文档质量。
+参考文档：@openspec/changes/{变更名}/specs/ @openspec/changes/{变更名}/design/
+```
+重点检查：设计与需求的一致性（数值、术语、规则）、引用完整性、假设登记册单一事实来源。阻断级问题清零后方可进入人工 Gate。
+
 **末尾 AI 提示语（V2.1 新增）：**
 ```text
 ========================================
@@ -340,6 +371,13 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 
 /skill:self-check 详细设计
 ```
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查详细设计文档质量。
+参考文档：@openspec/changes/{变更名}/detail-design/feature-*/ @openspec/changes/{变更名}/specs/feature-*/
+```
+重点检查：跨模块接口一致性、状态机与全局状态机兼容性、数值/术语一致性、编号连续性。
 
 **产出（每个模块 5 个文件）：**
 
@@ -381,6 +419,14 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 
 产出：`interface-contracts/` 目录下的 `openapi.yaml`、`mock-data.json`、`mock-server-config.md`、`parallel-dev-plan.md`
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查接口契约文档质量。
+参考文档：@openspec/changes/{变更名}/interface-contracts/
+@openspec/changes/{变更名}/detail-design/feature-*/
+```
+重点检查：接口字段与详细设计一致性、版本号连续性、OpenAPI YAML 格式规范。
+
 ---
 
 #### 阶段 5.5：编写实现计划（新增）
@@ -394,6 +440,14 @@ npx @fission-ai/openspec@latest init      # openspec 当前不支持kimi code
 ```
 
 产出：`openspec/changes/{变更名}/plan.md`
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 plan.md 质量。
+参考文档：@openspec/changes/{变更名}/plan.md
+@openspec/changes/{变更名}/detail-design/feature-*/design.md
+```
+重点检查：plan 与设计文档的任务覆盖一致性、术语统一、引用完整性。
 
 **plan.md 核心内容：**
 - Goal + Architecture + Tech Stack
@@ -542,6 +596,14 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 产出：`openspec/changes/{变更名}/uat/uat-report.md`（通过/不通过/遗留问题/严重级别）
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 UAT 报告质量。
+参考文档：@openspec/changes/{变更名}/uat/uat-report.md
+@openspec/changes/{变更名}/specs/feature-*/user-stories.md
+```
+重点检查：UAT 结果与用户故事的一致性、缺陷描述完整性、版本号连续性。
+
 **末尾 AI 提示语：**
 ```text
 ========================================
@@ -583,6 +645,15 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 产出：`release-notes.md` + `release-checklist.md` + 生产部署确认单
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查发布文档质量。
+参考文档：@openspec/changes/{变更名}/release-notes.md
+@openspec/changes/{变更名}/release-checklist.md
+@openspec/changes/{变更名}/rollback-plan.md
+```
+重点检查：发布文档与代码审查报告、UAT 报告的一致性，版本号连续性。
+
 **关键安全规则：**
 - AI 只负责生成文档和检查项
 - 上线按钮必须由人按
@@ -606,6 +677,15 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 ```
 
 产出：`release-notes.md` + `release-checklist.md` + 生产部署确认单
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查发布文档质量。
+参考文档：@openspec/changes/{变更名}/release-notes.md
+@openspec/changes/{变更名}/release-checklist.md
+@openspec/changes/{变更名}/rollback-plan.md
+```
+重点检查：发布文档与代码审查报告、UAT 报告的一致性，版本号连续性。
 
 **关键安全规则：**
 - AI 只负责生成文档和检查项
@@ -676,6 +756,7 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 **核心原则**：
 - 每个命令按固定顺序执行，不能跳过或并行
 - 每个命令的输出作为下一个命令的输入
+- **每个文档产出后必须通过 `doc-quality-gate` 检查（V2.6 新增），🔴 阻断级问题清零后方可进入人工 Gate**
 - **每个 Gate 完成后需要人工确认签字后才能进入下一阶段**
 - 自查环节必不可少，确保产出物质量
 
@@ -686,21 +767,29 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 | 0 | progress-tracker | 初始化目录结构 | config.yaml + ops/ | — |
 | 1 | /opsx:propose + brainstorming | 创建提案 + 需求探索 | proposal.md + 探索记录 | — |
 | 1.5 | competitive-analysis | 市场定位分析（可选） | market-positioning.md | — |
-| 2 | prd-generation | 生成概要需求 | 01-05.md | 🚪 Gate 1 |
-| 2.5 | detailed-requirements | 生成详细需求 | feature-*/ | 🚪 Gate 2.5 |
+| 2 | prd-generation | 生成概要需求 | 01-05.md | — |
+| 2.1 | doc-quality-gate | 概要需求文档质量门禁（V2.6 新增） | 质量报告 + 修复日志 | 🚪 Gate 1 |
+| 2.5 | detailed-requirements | 生成详细需求 | feature-*/ | — |
+| 2.6 | doc-quality-gate | 详细需求文档质量门禁（V2.6 新增） | 质量报告 + 修复日志 | 🚪 Gate 2.5 |
 | 3 前置 | competitive-analysis | 技术竞品分析 | CA.md + design-input.md | — |
-| 3 | high-level-design | 概要设计 | design/*.md + rollback-plan.md | 🚪 Gate 2 |
+| 3 | high-level-design | 概要设计 | design/*.md + rollback-plan.md | — |
+| 3.1 | doc-quality-gate | 概要设计文档质量门禁（V2.6 新增） | 质量报告 + 修复日志 | 🚪 Gate 2 |
 | 3.5 | monitoring-setup | 监控初始化（一次性） | monitoring-rules.yaml | — |
 | 4 | detailed-design | 详细设计 | feature-*/design.md 等 5 文件 | — |
+| 4.1 | doc-quality-gate | 详细设计文档质量门禁（V2.6 新增） | 质量报告 + 修复日志 | — |
 | 5 | interface-first-dev | 接口驱动 | openapi.yaml | — |
+| 5.1 | doc-quality-gate | 接口契约质量门禁（V2.6 新增） | 质量报告 + 修复日志 | — |
 | 5.5 | writing-plans | 编写实现计划 | plan.md | — |
+| 5.6 | doc-quality-gate | 实现计划质量门禁（V2.6 新增） | 质量报告 + 修复日志 | — |
 | 6 | task-breakdown | 任务拆解 | tasks.md | — |
 | 7 | executing-plans | 编码实现 | 代码文件 | — |
 | 8 | unit-test | 单元测试 | tests/unit/ | — |
 | 9 | integration-test | 集成测试 | tests/integration/ + checklist.md | — |
 | 9.25 | code-review-pipeline | 代码审查 | code-review/review-request.yaml + review-report.yaml + fix-plan.yaml | — |
-| 9.5 | uat-verification | UAT 验证 | uat-report.md | 🚪 Gate 3 |
-| 10 | release-management | 上线发布 | release-notes.md + release-checklist.md | 人工最终决策 |
+| 9.5 | uat-verification | UAT 验证 | uat-report.md | — |
+| 9.6 | doc-quality-gate | UAT 报告质量门禁（V2.6 新增） | 质量报告 + 修复日志 | 🚪 Gate 3 |
+| 10 | release-management | 上线发布 | release-notes.md + release-checklist.md | — |
+| 10.1 | doc-quality-gate | 发布文档质量门禁（V2.6 新增） | 质量报告 + 修复日志 | 人工最终决策 |
 | 11 | finish | 归档收尾 | archive/ + CHANGELOG.md + 确认单 | — |
 | 12 | monitoring-analysis | 线上监控（周期性） | dashboard.md | — |
 

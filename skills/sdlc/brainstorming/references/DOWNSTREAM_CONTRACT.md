@@ -20,6 +20,8 @@ Brainstorming 完成后，必须衔接 `prd-generation`（概要需求生成）�
 | `brainstorming-log.md` | 文件路径 | 完整问答日志，用于追溯决策依据 |
 | `clarification_score` | float | 澄清度评分（0-1），必须 ≥ 0.8 |
 | `red_flags` | string[] | 未解决的风险点和待确认项 |
+| `key_metrics` | object | 关键数值口径清单，必须包含：Skill 数量、用户规模、性能基线、容量上限。格式见下。 |
+| `data_calibration` | string | 数据口径声明文件路径（`requirement-draft.md` 中的 `## 数据口径声明` 章节） |
 
 ### 可选项
 
@@ -40,6 +42,15 @@ handover_package:
   red_flags:
     - "GPU 实时预览与现有 CPU 批处理架构冲突，需确认双模式策略"
     - "企业客户兼容性问题尚未完全澄清"
+  key_metrics:
+    skill_count_sdlc: 25
+    skill_count_total: 41
+    skill_count_source: "skill-arsenal/skills/sdlc 目录扫描"
+    skill_count_rationale: "MVP 聚焦 SDLC 阶段，仅使用 sdlc 子目录下的 25 个核心 Skill；平台架构支持扩展至 41 个"
+    skill_count_conflict_status: "已声明"  # 新增：冲突是否已显式声明
+    concurrent_users_mvp: 10
+    concurrent_users_source: "团队规模估算"
+  data_calibration: "openspec/changes/{变更名}/brainstorming/requirement-draft.md#数据口径声明"
   knowledge_graph_tags:
     - "模块:渲染中心"
     - "技术:FFmpeg"

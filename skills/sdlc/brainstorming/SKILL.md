@@ -64,7 +64,7 @@ digraph brainstorming {
 **混合模式冲突规则**：本地文档优先；发现冲突时向用户追加提问确认。
 
 ### Step 3: 苏格拉底式提问
-基于资料池，从 6 个维度生成追问，**每次只问 1 个问题**：
+基于资料池，从 7 个维度生成追问，**每次只问 1 个问题**：
 
 1. **用户价值**：解决谁的什么问题？不做的代价？
 2. **边界范围**：哪些明确不在本次范围？需兼容的历史功能？
@@ -72,6 +72,9 @@ digraph brainstorming {
 4. **数据假设**：核心实体字段？现有数据源？
 5. **竞品差异**：与搜索到的竞品相比，差异化点？
 6. **集成依赖**：是否对接现有模块？接口契约是否已存在？
+7. **数据口径验证**：关键数值的数据来源是什么？是否存在冲突口径？（见 `references/SOCRATIC_TEMPLATES.md` 维度 7）
+
+**多方案漏斗（P2 要求）**：在 Step 3 中穿插"多方案对比"环节，要求用户至少提供 2 个替代方案（含"现状维持"），简要对比优缺点。若用户只提供一个方案，AI 主动补充 1-2 个替代方案供用户评估。
 
 详细模板与示例见 `references/SOCRATIC_TEMPLATES.md`。
 
@@ -82,18 +85,19 @@ digraph brainstorming {
 - 若检测到意图漂移（回答与原始变更描述方向偏离），提示用户确认范围
 
 ### Step 5: 生成结构化摘要
-当澄清度 ≥ 0.8 或达到最大轮次时，生成 `requirement-draft.md`：
+当澄清度 ≥ 0.8 或达到最大轮次时，生成以下文件：
 
-```markdown
-# Requirement Draft - {变更名}
+1. `requirement-draft.md`：按 `references/OUTPUT_SPEC.md` 格式，必须包含：
+   - **客户叙事**（Customer Narrative）：用 JTBD 格式描述客户、痛点、业务结果
+   - **数据口径声明**（Data Calibration）：锁定关键数值，防止下游覆盖
+   - **假设登记册**（Assumption Register）：统一登记所有假设，含置信度和推翻条件
+   - **对抗性自我批判**（Adversarial Critique）：强制列出 3 个弱点及缓解措施
+   - **外部 FAQ + 内部 FAQ**：覆盖客户和团队视角的关键问题
 
-## 核心问题
-## 边界范围
-## 业务假设
-## 模块初分
-## 风险点
-## 待确认项
-```
+   > **新增**：若用户未提供客户叙事，Skill 必须基于 JTBD 访谈结果自动生成初稿，供用户确认。
+
+2. `ai-architecture-decision.md`（AI 原生项目）：...
+3. `market-positioning.md`（可选）：...
 
 完整格式规范见 `references/OUTPUT_SPEC.md`。
 
@@ -145,13 +149,37 @@ digraph brainstorming {
 - 若用户明确说"不做竞品分析"或"市场已经很清楚"，可跳过此步骤
 - 此步骤的产出将直接作为 `prd-generation` Layer 1 和 Layer 4 的竞品输入，替代 AI 自行搜索的碎片化信息
 
-### Step 6: 自检查验 (Self-Check)
-执行以下检查，未通过则返回修正：
+> **单一事实来源原则**：`market-positioning.md` 中的假设登记册、数据口径声明必须与 `requirement-draft.md` 保持一致。禁止在 `market-positioning.md` 中独立定义假设或数据口径。若需补充市场定位特有的假设，应在 `requirement-draft.md` 的假设登记册中统一登记，或在 `market-positioning.md` 中显式引用：`"假设登记册见 requirement-draft.md，此处仅补充市场定位视角的分析。"`
 
-- [ ] **内容一致性**：摘要与资料池、用户回答无矛盾
-- [ ] **内容完整性**：6 个提问维度是否都有覆盖
-- [ ] **无内部矛盾**：用户回答间无逻辑冲突
-- [ ] **范围可控**：聚焦单一变更，无过度蔓延
+### Step 6: 自检查验与评审准备 (Self-Check & Review Prep)
+
+执行以下检查：
+
+**内容一致性**：
+- [ ] 摘要与资料池、用户回答无矛盾
+- [ ] 数据口径声明中的数值与用户回答一致，**所有冲突口径已显式声明采用理由**
+- [ ] 假设登记册与业务假设、关键决策无冲突，**假设登记册仅在 requirement-draft.md 中定义，其他文档已引用**
+- [ ] **术语拼写一致性**：产品名、模块名、角色名在全文档中拼写一致（如 `skill-arsenal` 而非 `skill-arsenal` / `skill_arsenal` 混用）
+
+**内容完整性**：
+- [ ] 7 个提问维度（含数据口径验证）是否都有覆盖
+- [ ] 客户叙事是否完整（When / I want to / so I can）
+- [ ] 对抗性自我批判是否列出至少 3 个弱点
+
+**评审准备**：
+- [ ] 生成 `review-prep.md`，包含：
+  - 评审者清单（建议角色：PM、Tech Lead、Designer）
+  - 静默阅读指南（15 分钟阅读 + 批注）
+  - 问答议程（40 分钟，按客户叙事→假设→风险→模块顺序）
+
+**无内部矛盾**：
+- [ ] 用户回答间无逻辑冲突
+- [ ] 范围可控：聚焦单一变更，无过度蔓延
+
+**数据口径专项校验**：
+- [ ] 关键数值（Skill 数量、用户规模、性能指标）是否有唯一口径？
+- [ ] 若存在冲突口径（如 25 vs 41），是否已在 requirement-draft.md 中显式声明冲突及采用理由？
+- [ ] 数据口径声明中的"确认状态"是否为"锁定"？若为"预计"或"待验证"，是否已列入待确认项并分配责任人？
 
 ### Step 7: 保存与衔接
 自动保存以下文件到 `openspec/changes/{变更名}/brainstorming/`：
@@ -161,15 +189,24 @@ digraph brainstorming {
 | `brainstorming-log.md` | 完整问答日志 |
 | `research-report.md` | 资料收集报告（含来源 URL/文件、引用摘要） |
 | `requirement-draft.md` | 结构化需求摘要 |
+| `review-prep.md` | 评审准备材料（评审者清单、静默阅读指南、问答议程） |
 | `ai-architecture-decision.md` | AI 架构原语选型决策（AI 原生项目） |
+
+**衔接前强制校验**：
+- [ ] `key_metrics` 对象已包含所有关键数值口径
+- [ ] `data_calibration` 路径有效，且指向的章节包含完整的冲突说明
+- [ ] 若 `key_metrics` 中的数值与 `requirement-draft.md` 中的数据口径声明不一致，阻塞衔接，返回修正
 
 **衔接 prd-generation 时传递**：
 - `requirement-draft.md` 路径
 - `research-report.md` 路径
 - `ai-architecture-decision.md` 路径（若已执行 Step 5.5）
 - `market-positioning.md` 路径（若已执行 Step 5.6）
+- `review-prep.md` 路径
 - 澄清度评分
 - 未解决风险点列表
+- **key_metrics** 对象（Skill 数量、用户规模、性能基线、容量上限），必须包含 `*_conflict_status` 字段声明冲突是否已显式处理
+- **data_calibration** 路径（数据口径声明章节）
 
 详细契约见 `references/DOWNSTREAM_CONTRACT.md`。
 
@@ -211,3 +248,4 @@ digraph brainstorming {
 - 每次只问 1 个问题，禁止一次抛出多个追问
 - 若检测到意图漂移（回答与原始变更描述方向偏离），必须暂停并确认范围
 - 本地文档与网络资料冲突时，默认以本地文档为准，不得擅自裁决
+- **正式输出 Emoji 禁令**：Skill 在生成正式 brainstorming 文档（requirement-draft.md、research-report.md、review-prep.md 等）时，不得在 Markdown 内容中使用任何 Emoji（包括 ⬜、🟡、🟢、🔴、⏸、🚀 等）作为状态标识或视觉符号。正式交付物中的状态必须使用文本标签：`NOT_STARTED / IN_PROGRESS / COMPLETED / BLOCKED / GATE_PENDING / PENDING / APPROVED`

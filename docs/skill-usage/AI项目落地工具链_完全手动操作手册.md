@@ -4,7 +4,9 @@
 >
 > 当 MCP Server 不可用（网络不通、服务未部署或权限不足）时，按本手册逐条执行命令，完成从需求到发布的全生命周期操作。
 >
-> 版本 V2.5 | 2026年5月
+> 版本 V2.6 | 2026年5月
+>
+> **V2.6 更新**：引入 `doc-quality-gate` 强制性文档质量门禁。所有 AI 生成的文档产出物（specs、design、plan、release-notes 等）在人工审核前必须通过 `doc-quality-gate` 检查：执行单文档完整性、跨文档一致性、规范合规性三层九项检查，🔴 阻断级问题清零并输出修复日志后方可进入人工 Gate。
 >
 > **V2.5 更新**：引入 `code-review-pipeline` 技能族（阶段 9.25），包含 `requesting-code-review`/`code-reviewer`/`receiving-code-review` 三个角色 Skill 与四个通用参考指南（security/performance/architecture/code-quality-universal）。代码审查作为强制性技术门禁插入 integration-test 与 UAT 之间，blocking 问题清零后方可进入 UAT 和发布。产物统一收敛到 `code-review/` 目录（review-request.yaml / review-report.yaml / fix-plan.yaml / decisions.md）。
 >
@@ -147,6 +149,13 @@ EOF
 /skill:self-check 概要需求
 ```
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 specs/ 目录下所有文档质量。
+参考文档：@openspec/changes/{变更名}/specs/
+```
+阻断级问题清零后方可进入人工 Gate。
+
 **人工操作（阻塞）：**
 ```bash
 # 阅读 5 个 spec 文件后
@@ -166,6 +175,13 @@ EOF
 ```
 
 产出：每个模块包含 `spec.md`、`prototype.md`、`io-table.md`、`logic.md`、`interaction-spec.md`。
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查详细需求文档质量。
+参考文档：@openspec/changes/{变更名}/specs/feature-*/
+```
+重点检查：跨模块术语一致性、数值一致性、状态标记规范性。阻断级问题清零后方可进入人工 Gate。
 
 **人工操作（阻塞）：**
 ```bash
@@ -201,6 +217,13 @@ EOF
 
 产出：`design/` 目录下的 16 个 Markdown 文件 + `rollback-plan.md`。
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 design/ 目录下所有文档质量。
+参考文档：@openspec/changes/{变更名}/specs/ @openspec/changes/{变更名}/design/
+```
+重点检查：设计与需求的一致性（数值、术语、规则）、引用完整性。阻断级问题清零后方可进入人工 Gate。
+
 **人工操作（阻塞）：**
 ```bash
 # 评审架构 + 确认 rollback-plan.md
@@ -234,6 +257,13 @@ EOF
 /skill:self-check 详细设计
 ```
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查详细设计文档质量。
+参考文档：@openspec/changes/{变更名}/detail-design/feature-*/ @openspec/changes/{变更名}/specs/feature-*/
+```
+重点检查：跨模块接口一致性、状态机与全局状态机兼容性、数值/术语一致性。
+
 **产出（每个模块 5 文件）：**
 | 文件 | 内容 |
 |------|------|
@@ -261,6 +291,14 @@ EOF
 /skill:self-check 接口契约
 ```
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查接口契约文档质量。
+参考文档：@openspec/changes/{变更名}/interface-contracts/
+@openspec/changes/{变更名}/detail-design/feature-*/
+```
+重点检查：接口字段与详细设计一致性、版本号连续性、OpenAPI YAML 格式规范。
+
 ---
 
 ### 步骤 5.5：编写实现计划
@@ -272,6 +310,14 @@ EOF
 
 /skill:self-check 实现计划
 ```
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 plan.md 质量。
+参考文档：@openspec/changes/{变更名}/plan.md
+@openspec/changes/{变更名}/detail-design/feature-*/design.md
+```
+重点检查：plan 与设计文档的任务覆盖一致性、术语统一、引用完整性。
 
 产出：`openspec/changes/{变更名}/plan.md`。
 
@@ -385,6 +431,14 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 产出：`uat-report.md`。
 
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查 UAT 报告质量。
+参考文档：@openspec/changes/{变更名}/uat/uat-report.md
+@openspec/changes/{变更名}/specs/feature-*/user-stories.md
+```
+重点检查：UAT 结果与用户故事的一致性、缺陷描述完整性、版本号连续性。
+
 ---
 
 ### 步骤 10：上线发布（原 10.5）
@@ -397,6 +451,15 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
   - rollback-plan.md（来自阶段 3）
   - 代码分支/commit SHA
 ```
+
+**文档质量门禁（V2.6 新增，阻塞）：**
+```bash
+/skill:doc-quality-gate 检查发布文档质量。
+参考文档：@openspec/changes/{变更名}/release-notes.md
+@openspec/changes/{变更名}/release-checklist.md
+@openspec/changes/{变更名}/rollback-plan.md
+```
+重点检查：发布文档与代码审查报告、UAT 报告的一致性，版本号连续性。
 
 **人工操作（阻塞，最终决策）：**
 - 确认发布窗口
@@ -487,9 +550,9 @@ A：不需要。detailed-design 支持增量更新：对比新旧 spec.md / io-t
 **速查卡**
 
 ```text
-原则：顺序执行、不跳过、Gate 后人工确认、必自查
-流程：0 初始化 → 1 提案/探索 → 2 概要需求(Gate1) → 2.5 详细需求(Gate2.5)
-       → 3 概要设计(Gate2) → 4 详细设计 → 5 接口驱动 → 5.5 编写计划
+原则：顺序执行、不跳过、Gate 后人工确认、必自查、必 doc-check
+流程：0 初始化 → 1 提案/探索 → 2 概要需求(doc-check)→(Gate1) → 2.5 详细需求(doc-check)→(Gate2.5)
+       → 3 概要设计(doc-check)→(Gate2) → 4 详细设计(doc-check) → 5 接口驱动(doc-check) → 5.5 编写计划(doc-check)
        → 6 任务拆解 → 7 编码实现 → 8 单元测试 → 9 集成测试
-       → 9.5 UAT(Gate3) → 10 代码审查 → 10.5 发布 → 11 归档 → 12 监控
+       → 9.25 代码审查 → 9.5 UAT(doc-check)→(Gate3) → 10 发布(doc-check) → 11 归档 → 12 监控
 ```

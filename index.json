@@ -21,6 +21,15 @@
       }
     },
     {
+      "name": "doc-quality-gate",
+      "path": "skills/sdlc/doc-quality-gate",
+      "description": "当用户提到'检查文档质量'、'文档一致性'、'修复文档问题'、'doc-check'、'quality-gate'、'检查文档'或需要对多份 AI 生成文档进行质量门禁时触发。执行单文档完整性、跨文档一致性、规范合规性检查与自动修复。",
+      "metadata": {
+        "tags": "sdlc,quality-gate,documentation,consistency,verification",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
       "name": "brainstorming",
       "path": "skills/sdlc/brainstorming",
       "description": "当用户提到'新功能'、'变更需求'、'想法探索'、'帮我理清思路'、'需求不清晰'或任何模糊的产品/技术需求时触发。已融合 AI 架构原语选型能力（AI 原生项目专用）。",

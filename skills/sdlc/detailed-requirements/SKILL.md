@@ -57,8 +57,9 @@ feature-{NN}-{kebab-case-name}
   - **失败结果**：错误提示位置、文案、重试机制
   - **异常分支**：网络中断、权限不足、数据为空、超时
   - **埋点事件**：事件名、触发时机、携带参数
-- 页面间跳转关系用 Mermaid `graph LR` 表示
+- 页面间跳转关系用 Mermaid `flowchart LR` 表示（v11 推荐 `flowchart`，不再使用 `graph`）
 - 禁止只写"点击提交按钮"而无状态机细节
+- **Mermaid 工程规范**：页面跳转图的节点 ID 使用 `Pg_` 前缀（如 `Pg_Login`、`Pg_Dashboard`）；跳转路径复杂时（>10 节点）使用 `subgraph` 按业务域分组；回流线（如"返回上一页"）使用 `-.->` 虚线；平行边合并；换行符用 `<br>`；禁止节点文本直接写 URL
 
 **验收标准（AC）强制规则**：
 - 5 类 AC 必须覆盖：Behavioral、Non-behavioral、Negative、Edge case、Dependency
@@ -183,7 +184,8 @@ stateDiagram-v2
 - **串行生成**：逐个模块输出，禁止批量并行生成，防止上下文丢失和编号混乱
 - **模块边界**：严格遵循 `03-functional-structure.md` 的模块划分，不得擅自合并或拆分模块；若发现粒度不均，反馈用户调整概要而非自行处理
 - **需求覆盖**：生成完毕后必须执行一致性校验，未覆盖的上游需求需用户确认是遗漏还是延期
-- **状态机规范**：`logic.md` 中的状态流转必须使用 Mermaid `stateDiagram-v2` 语法，禁止纯文字描述
+- **状态机规范**：`logic.md` 中的状态流转必须使用 Mermaid `stateDiagram-v2` 语法，禁止纯文字描述。状态图必须遵循 `mermaid-diagrams` skill 的跨平台兼容性规则：节点文本含 `{}` 时必须加双引号、换行符用 `<br>`、禁止 `<br/>`、子图（`state X { ... }`）必须闭合。
+- **Mermaid 通用规范**：所有 `prototype.md`、`io-table.md`、`interaction-spec.md` 中生成的 Mermaid 图表必须通过 `mermaid-diagrams` skill 的质量检查清单自检，重点关注：特殊字符引号包裹、样式集中声明、节点 ID 语义化、回流虚线、平行边合并。
 - **原型限制**：`prototype.md` 是文字化交互规格，不包含可视化线框图；如需 UI 设计稿，需人工补充或移交设计阶段
 - **版本冲突**：若模块间检测到字段/状态/交互规格冲突，必须标记 Error 并返回修复，不可静默忽略
 - **interaction-spec.md 不是可选文件**：即使模块无前端页面（如纯后台服务），也必须输出说明"本模块无用户交互界面，交互规格 N/A"
