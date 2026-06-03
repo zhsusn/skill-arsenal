@@ -1,6 +1,6 @@
 ---
 name: task-breakdown
-description: 当用户提到'任务拆解'、'拆成具体任务'、'tasks.md'、'开发任务清单'或在 detailed-design / interface-first-dev 完成后需要生成可执行开发任务时触发。将设计文档按 ≤30 分钟/任务粒度拆解为 Phase 组织的 tasks.md。
+description: 当用户提到'任务拆解'、'拆成具体任务'、'tasks.md'、'开发任务清单'或在 writing-plans 生成 plan.md 后、detailed-design / interface-first-dev 完成后需要生成可执行开发任务时触发。将设计文档按 ≤30 分钟/任务粒度拆解为 Phase 组织的 tasks.md。
 ---
 
 # Task Breakdown

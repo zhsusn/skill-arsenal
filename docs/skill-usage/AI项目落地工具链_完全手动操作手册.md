@@ -386,7 +386,13 @@ pytest tests/unit/ -v --cov={模块路径} --cov-report=term-missing
 
 ### 步骤 9.25：代码审查（V2.5 新增）
 
+**触发方式：**
+- **自动触发（默认）**：`executing-plans` 阶段全部 Batch 完成后，自动调用 `code-review-pipeline` 进入 SIZING → REQUESTING → REVIEWING 流程。
+- **手动触发（补审/按需）**：用户可随时输入 `/skill:code-review-pipeline` 或 `/review` 对指定范围执行审查，不受自动触发限制。
+
 ```bash
+# 自动触发：executing-plans 完成后无需手动输入，AI 自动进入 code-review-pipeline
+# 手动补审示例：
 /skill:code-review-pipeline 对已完成的代码执行四阶段×五轴结构化审查。
 参考：
   - @openspec/changes/{变更名}/tasks.md（任务追溯基准）

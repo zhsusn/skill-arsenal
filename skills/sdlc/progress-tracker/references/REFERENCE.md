@@ -202,6 +202,15 @@ phases:
         check: sections_match
       - action: user_review
         label: "概要需求评审通过"
+
+  - id: code-review
+    gate_to_next:
+      - artifact: code-review/review-report.yaml
+        check: exists
+      - artifact: code-review/review-report.yaml
+        check: blocking_count == 0
+      - action: self_check
+        label: "代码审查通过，无阻塞性问题"
 ```
 
 ### 3.2 校验类型

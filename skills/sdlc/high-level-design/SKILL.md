@@ -422,7 +422,6 @@ self-check 与跨文件一致性检查通过后，自动宣读阻塞提示：
 | 下游 Skill | 消费文档 | 衔接规则 |
 |---|---|---|
 | `detailed-design` | `01-05` 主题文件 | 基于 `01-architecture-core.md` 的目录骨架，按模块逐一下钻，填充类/接口文件 |
-| `task-breakdown` | `01-05` 主题文件 + `detail-design/feature-*/design.md` | 基于架构分层与模块职责拆解任务 |
 | `monitoring-setup` | `05-ops-governance.md` §1 | 基于运维架构生成监控规则初稿 |
 | `human` | `00-design-overview.md` + `self-check-report.md` | Gate 2 人工冻结确认与决策记录 |
 

@@ -150,7 +150,7 @@ review_request:
 
 | 衔接点 | 动作 |
 |--------|------|
-| 上游: executing-plans / writing-plans | 编码实现完成后触发 |
+| 上游: executing-plans / implementation | 编码实现完成后触发 |
 | 下游: code-reviewer | 生成审查请求书后自动调用 |
 | 上游: code-review-pipeline | 由 pipeline 在 SIZING 通过后调用，进入 REQUESTING 阶段 |
 

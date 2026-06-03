@@ -111,6 +111,35 @@ phases:
       - action: self_check
         label: "端到端主链路测试通过"
 
+  - id: code-review
+    name: 代码审查
+    weight: 0
+    gate_to_next:
+      - artifact: code-review/review-report.yaml
+        check: exists
+      - artifact: code-review/review-report.yaml
+        check: blocking_count == 0
+      - action: self_check
+        label: "代码审查通过，无阻塞性问题"
+
+  - id: uat-verification
+    name: UAT验证
+    weight: 4
+    gate_to_next:
+      - artifact: uat/uat-report.md
+        check: exists
+      - action: user_review
+        label: "UAT 验证通过（业务方签字）"
+
+  - id: release-management
+    name: 上线发布
+    weight: 4
+    gate_to_next:
+      - artifact: release-notes.md
+        check: exists
+      - action: user_review
+        label: "上线发布人工最终确认"
+
   - id: finish
     name: 收尾归档
     weight: 0
@@ -132,6 +161,11 @@ red_flags:
     description: "禁止未自测的代码进入测试阶段"
     severity: blocker
     check: "unit-test.status == in_progress && tasks[verified_by != passed].count > 0"
+
+  - id: skip_code_review
+    description: "禁止跳过代码审查直接进入 UAT 或发布阶段"
+    severity: blocker
+    check: "(uat-verification.status == in_progress || release-management.status == in_progress || finish.status == in_progress) && code-review.status != completed"
 
   - id: hl_requirement_change
     description: "概要需求变更走正式变更流程（需评审会）"

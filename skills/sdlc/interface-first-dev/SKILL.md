@@ -197,7 +197,8 @@ interface-contracts/
 ## 与上下游衔接
 
 - **上游**：`detailed-design`（必须完成后方可启动）
-- **下游**：`task-breakdown`（基于 `parallel-dev-plan.md` 的后端任务边界拆解任务）
+- **横向并行**：`writing-plans`（与接口驱动开发并行，基于同一套 design.md 生成实现计划 plan.md）
+- **下游**：`task-breakdown`（基于 `parallel-dev-plan.md` 的后端任务边界 + `plan.md` 拆解任务）
 - **横向**：
   - `self-check`：执行完毕后自动触发接口契约质量检查
   - `human` Gate 2.5：契约冻结前需人工 sign-off
@@ -219,6 +220,10 @@ interface-contracts/
 4. 确认无误后执行：/skill:human gate=Gate2.5 action=sign-off
 
 ⚠️ 未获得人工确认前，禁止进入 task-breakdown 阶段。
+
+> **流程纪律**：`interface-first-dev` 与 `writing-plans` 并行启动，均依赖 `detailed-design` 完成。
+> 若 `writing-plans` 尚未执行，请先执行 `/skill:writing-plans` 生成 plan.md，再进入 `task-breakdown`。
+> 顺序：`detailed-design` → [`interface-first-dev` ∥ `writing-plans`] → `task-breakdown`
 ```
 
 ## Gotchas

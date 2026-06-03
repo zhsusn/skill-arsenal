@@ -186,7 +186,10 @@ detailed-design/shared/
 全部模块保存后：
 1. 调用 `self-check` skill 执行阶段 4 详细设计自查
 2. 调用 `progress-tracker` 更新阶段 4 为"已完成"
-3. 提示用户可并行启动 `interface-first-dev` 或 `writing-plans`
+3. 提示用户：
+   - 先执行 `writing-plans` 生成实现计划（plan.md），再由 `writing-plans` 引导进入 `task-breakdown`
+   - 同时可并行启动 `interface-first-dev` 生成接口契约
+   - **顺序纪律**：`detailed-design` → `writing-plans` → `task-breakdown`，禁止从详细设计直接跳入任务拆解
 
 ## 输出数据
 
@@ -205,8 +208,8 @@ detailed-design/shared/
 | 下游 Skill | 消费文档 | 衔接规则 |
 |---|---|---|
 | `interface-first-dev` | `api-spec.md` + `db-schema.md` | 生成 OpenAPI / Swagger 契约 |
-| `writing-plans` | `design.md` + `api-spec.md` + `db-schema.md` | 编写实现计划 |
-| `task-breakdown` | `design.md` + `api-spec.md` + `state-machine.md` | 拆解开发任务 |
+| `writing-plans` | `design.md` + `api-spec.md` + `db-schema.md` | 编写实现计划（plan.md）；**必须先于 task-breakdown 执行** |
+| `task-breakdown` | `design.md` + `api-spec.md` + `state-machine.md` + `plan.md` | 基于 plan.md 拆解开发任务（tasks.md） |
 | `executing-plans` | `design.md` + `api-spec.md` + `test-plan.md` | 编码与 TDD 依据 |
 | `unit-test` | `test-plan.md` | 补全单测与覆盖率验证 |
 
