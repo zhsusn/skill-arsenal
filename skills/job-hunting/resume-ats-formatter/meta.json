@@ -1,0 +1,17 @@
+{
+  "name": "resume-ats-formatter",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": [
+    "career",
+    "ats",
+    "resume"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

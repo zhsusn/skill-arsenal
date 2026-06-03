@@ -1,0 +1,15 @@
+{
+  "name": "interview-prep",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "tags": [
+    "interview"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

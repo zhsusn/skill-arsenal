@@ -1,0 +1,39 @@
+{
+  "name": "social-article-creator",
+  "version": "1.0.0",
+  "pattern": "pipeline",
+  "domain": "content-creation",
+  "tags": [
+    "writing",
+    "social-media",
+    "zhihu",
+    "xiaohongshu",
+    "toutiao",
+    "wechat",
+    "humanizer",
+    "content-strategy"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ],
+  "capabilities": {
+    "research": "optional",
+    "multi_platform": [
+      "zhihu",
+      "toutiao",
+      "xiaohongshu",
+      "wechat"
+    ],
+    "humanizer": true,
+    "image_guidance": true
+  },
+  "references": [
+    "CONTENT_STRATEGY.md",
+    "PLATFORM_GUIDE.md",
+    "ANTI_AI_PATTERNS.md"
+  ]
+}

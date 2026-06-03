@@ -155,6 +155,15 @@ digraph brainstorming {
 
 执行以下检查：
 
+**输入覆盖检查（阶段 4 覆盖验证）**：
+- [ ] **来源回溯**：对照用户原始变更描述、资料池（网络摘要 + 本地文档摘要）和每轮苏格拉底式提问的用户回答，确认以下关键条目均已映射到 `requirement-draft.md`：
+  - 用户明确提出的功能点 / 需求点
+  - 用户提到的业务规则、约束、边界
+  - 资料池中的关键数据、竞品结论、技术约束
+  - 本地文档（`@路径`）中引用的核心条款
+- [ ] **遗漏清单**：若发现来源条目未进入 `requirement-draft.md`，生成 `omission-report.md`，列出：遗漏条目、来源位置、建议插入章节、阻塞级别（BLOCKER / WARNING）
+- [ ] **幻觉检测**：`requirement-draft.md` 中的每个事实性声明（数据、竞品信息、技术约束）必须标注来源；无法溯源的内容标记为 `[待验证]`，并在假设登记册中登记
+
 **内容一致性**：
 - [ ] 摘要与资料池、用户回答无矛盾
 - [ ] 数据口径声明中的数值与用户回答一致，**所有冲突口径已显式声明采用理由**
@@ -192,10 +201,12 @@ digraph brainstorming {
 | `review-prep.md` | 评审准备材料（评审者清单、静默阅读指南、问答议程） |
 | `ai-architecture-decision.md` | AI 架构原语选型决策（AI 原生项目） |
 
-**衔接前强制校验**：
+**衔接前强制校验（Gate Out）**：
 - [ ] `key_metrics` 对象已包含所有关键数值口径
 - [ ] `data_calibration` 路径有效，且指向的章节包含完整的冲突说明
 - [ ] 若 `key_metrics` 中的数值与 `requirement-draft.md` 中的数据口径声明不一致，阻塞衔接，返回修正
+- [ ] **输入覆盖验证通过**：`omission-report.md` 中不存在 BLOCKER 级遗漏；WARNING 级遗漏已明确记录并告知用户
+- [ ] **幻觉清零**：`requirement-draft.md` 中不存在未标记来源的事实性声明；所有 `[待验证]` 内容已列入澄清问题清单
 
 **衔接 prd-generation 时传递**：
 - `requirement-draft.md` 路径

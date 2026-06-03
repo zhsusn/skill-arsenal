@@ -184,8 +184,8 @@ stateDiagram-v2
 - **串行生成**：逐个模块输出，禁止批量并行生成，防止上下文丢失和编号混乱
 - **模块边界**：严格遵循 `03-functional-structure.md` 的模块划分，不得擅自合并或拆分模块；若发现粒度不均，反馈用户调整概要而非自行处理
 - **需求覆盖**：生成完毕后必须执行一致性校验，未覆盖的上游需求需用户确认是遗漏还是延期
-- **状态机规范**：`logic.md` 中的状态流转必须使用 Mermaid `stateDiagram-v2` 语法，禁止纯文字描述。状态图必须遵循 `mermaid-diagrams` skill 的跨平台兼容性规则：节点文本含 `{}` 时必须加双引号、换行符用 `<br>`、禁止 `<br/>`、子图（`state X { ... }`）必须闭合。
-- **Mermaid 通用规范**：所有 `prototype.md`、`io-table.md`、`interaction-spec.md` 中生成的 Mermaid 图表必须通过 `mermaid-diagrams` skill 的质量检查清单自检，重点关注：特殊字符引号包裹、样式集中声明、节点 ID 语义化、回流虚线、平行边合并。
+- **状态机规范**：`logic.md` 中的状态流转必须使用 Mermaid `stateDiagram-v2` 语法，禁止纯文字描述。状态图必须调用 `mermaid-diagrams` skill 绘制，并遵循其跨平台兼容性规则：节点文本含 `{}` 时必须加双引号、换行符用 `<br>`、禁止 `<br/>`、子图（`state X { ... }`）必须闭合。
+- **Mermaid 通用规范**：所有 `prototype.md`、`io-table.md`、`interaction-spec.md` 中生成的 Mermaid 图表必须调用 `mermaid-diagrams` skill 绘制并执行其质量检查清单自检，重点关注：特殊字符引号包裹、样式集中声明、节点 ID 语义化、回流虚线、平行边合并。
 - **原型限制**：`prototype.md` 是文字化交互规格，不包含可视化线框图；如需 UI 设计稿，需人工补充或移交设计阶段
 - **版本冲突**：若模块间检测到字段/状态/交互规格冲突，必须标记 Error 并返回修复，不可静默忽略
 - **interaction-spec.md 不是可选文件**：即使模块无前端页面（如纯后台服务），也必须输出说明"本模块无用户交互界面，交互规格 N/A"

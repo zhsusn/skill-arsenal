@@ -1,11 +1,9 @@
 {
-  "name": "cv-linkedin-optimizer",
+  "name": "resume-executive-resume-writer",
   "version": "1.0.0",
   "pattern": "generator",
   "tags": [
-    "office",
-    "career",
-    "hr"
+    "career"
   ],
   "platforms": [
     "kimi",

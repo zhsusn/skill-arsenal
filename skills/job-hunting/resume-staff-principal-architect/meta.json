@@ -1,0 +1,7 @@
+{
+  "name": "resume-staff-principal-architect",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": ["career", "job-search", "resume", "staff-engineer", "principal-engineer", "architect", "ats"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

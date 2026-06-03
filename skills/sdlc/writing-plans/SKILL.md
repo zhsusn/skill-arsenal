@@ -97,7 +97,7 @@ graph LR
 
 ### 任务依赖总图
 
-在文档末尾输出全局 Mermaid 依赖图：
+在文档末尾调用 `mermaid-diagrams` skill 绘制全局 Mermaid 依赖图：
 
 ```markdown
 ## 任务依赖总图
@@ -197,3 +197,4 @@ plan.md 保存后，提示用户下一步：
 - **多子系统时拆 plan**：若设计覆盖多个独立子系统，必须拆分为多个 plan.md，每个子系统独立交付
 - **plan 保存后原则上不直接修改**：若设计变更，应重新执行 writing-plans 而非手动 patch
 - **与 OpenSpec 集成**：plan.md 保存路径遵循 `openspec/changes/{变更名}/plan.md`，与 changes 目录联动
+- **Mermaid 图表规范**：plan.md 中生成的所有 Mermaid 依赖图必须调用 `mermaid-diagrams` skill 绘制，并遵循其工程化规范规则（节点 ID 语义化、回流虚线、平行边合并、换行符标准化等）。

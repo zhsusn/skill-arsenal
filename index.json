@@ -1,6 +1,6 @@
 {
   "version": "0.3.0",
-  "lastUpdated": "2026-05-29",
+  "lastUpdated": "2026-06-03",
   "skills": [
     {
       "name": "sql-optimization",
@@ -408,15 +408,6 @@
       }
     },
     {
-      "name": "cv-linkedin-optimizer",
-      "path": "skills/office/cv-linkedin-optimizer",
-      "description": "当用户提到'优化简历'、'LinkedIn'、'领英'、'求职'、'内部转岗'或需要根据目标岗位优化个人资料时触发。适用于求职、内部转岗和人才包装。",
-      "metadata": {
-        "tags": "office,career,hr",
-        "platforms": "kimi,claude,cursor,codex,gemini"
-      }
-    },
-    {
       "name": "presentation-prep-skill",
       "path": "skills/office/presentation-prep-skill",
       "description": "当用户提到'做PPT'、'演示文稿'、'汇报结构'、'演讲准备'或需要将主题整理成演示结构时触发。适用于高管汇报、融资路演和技术方案评审。",
@@ -557,6 +548,231 @@
       "description": "当用户提到'估算项目规模'、'size-estimate'、'工作量评估'、'项目多大'、'开发周期预估'或需要量化项目复杂度时触发。基于模块、接口、页面、复杂度与风险五维度输出乐观/预期/保守三档得分与流程裁剪建议。",
       "metadata": {
         "tags": "sdlc,estimation,planning,sizing,project-management,openspec",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "social-article-creator",
+      "path": "skills/content-creation/social-article-creator",
+      "description": "当用户提到'写文章'、'写小红书/知乎/头条/公众号'、'内容创作'、'爆款文案'、'去AI化润色'或需要将同一内容适配多平台时触发。协调研究、构思、写作、去AI化、平台转换全流程，产出可直接发布的结构化内容。",
+      "metadata": {
+        "tags": "content-creation,writing,social-media,zhihu,xiaohongshu,toutiao,wechat,humanizer",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-academic-cv-builder",
+      "path": "skills/job-hunting/resume-academic-cv-builder",
+      "description": "Format CVs for academic positions with publications, grants, and teaching",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-career-changer-translator",
+      "path": "skills/job-hunting/resume-career-changer-translator",
+      "description": "Translate skills from one industry to another, identify transferable skills",
+      "metadata": {
+        "tags": "job-search",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "career-ops",
+      "path": "skills/job-hunting/career-ops",
+      "description": "AI job search command center -- evaluate offers, generate CVs, scan portals, track applications",
+      "metadata": {
+        "tags": "job-search",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "cover-letter-generator",
+      "path": "skills/job-hunting/cover-letter-generator",
+      "description": "Create personalized, compelling cover letters from resume and job description",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-creative-portfolio",
+      "path": "skills/job-hunting/resume-creative-portfolio",
+      "description": "Balance visual design with ATS compatibility for creative roles",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "interview-data-governance",
+      "path": "skills/job-hunting/interview-data-governance",
+      "description": "当用户明确要求生成数据治理领域的面试练习题，或提到'数据治理面试题'、'data governance interview'、'DAMA面试'、'数据治理练习'时触发。生成覆盖数据标准、数据质量、元数据、数据血缘、主数据管理（MDM）、数据安全六大核心域的结构化面试题，支持概念框架、场景设计、合规案例、技术工具四种题型。",
+      "metadata": {
+        "tags": "interview,data-engineering,data-governance",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-executive-resume-writer",
+      "path": "skills/job-hunting/resume-executive-resume-writer",
+      "description": "Create C-suite and VP level resumes emphasizing strategic leadership",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "interview-generation",
+      "path": "skills/job-hunting/interview-generation",
+      "description": "Generates Python coding interview practice prompts in this repository's 4-part format. Use only when the user explicitly asks to create or refine interview practice questions/prompts (not for general coding tasks).",
+      "metadata": {
+        "tags": "interview",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "jd-scraper",
+      "path": "skills/job-hunting/jd-scraper",
+      "description": "当用户需要抓取招聘网站的职位描述（JD）时触发。支持 Indeed、Glassdoor、LinkedIn、BOSS直聘、猎聘、拉勾等平台，提供浏览器自动化、API聚合、反爬策略和数据标准化方案。适用于批量收集JD用于简历定制、求职分析或建立个人职位库。",
+      "metadata": {
+        "tags": "interview,job-search,scraping,automation",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-jd-optimizer",
+      "path": "skills/job-hunting/resume-jd-optimizer",
+      "description": "当用户拿到目标岗位JD、需要分析匹配度并据此优化简历时触发。执行JD分析→匹配评分→定向改写→关键词植入的端到端流程。",
+      "metadata": {
+        "tags": "career,job-search,resume,interview",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "linkedin-profile-optimizer",
+      "path": "skills/job-hunting/linkedin-profile-optimizer",
+      "description": "Optimize LinkedIn profile for searchability, recruiter visibility, and engagement",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "portfolio-case-study-writer",
+      "path": "skills/job-hunting/portfolio-case-study-writer",
+      "description": "Transform resume bullets into detailed portfolio case studies",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "reference-list-builder",
+      "path": "skills/job-hunting/reference-list-builder",
+      "description": "Format professional references properly and prepare reference materials",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "interview-requirements-prioritization-drill",
+      "path": "skills/job-hunting/interview-requirements-prioritization-drill",
+      "description": "Runs a rapid system design drill focused on clarification questions and requirement prioritization before architecture work. Use when the user wants to practice follow-up questions, requirement scoping, or turning an ambiguous prompt into a small set of prioritized functional and non-functional requirements.",
+      "metadata": {
+        "tags": "interview",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-bullet-writer",
+      "path": "skills/job-hunting/resume-bullet-writer",
+      "description": "Transform weak resume bullets into achievement-focused statements with metrics and impact",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-section-builder",
+      "path": "skills/job-hunting/resume-section-builder",
+      "description": "Create targeted resume sections optimized for different experience levels and roles",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-version-manager",
+      "path": "skills/job-hunting/resume-version-manager",
+      "description": "Track different resume versions, maintain master resume, manage tailored versions",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "interview-system-design",
+      "path": "skills/job-hunting/interview-system-design",
+      "description": "Generates systems design interview practice (prompt + solution files), acts as an interactive interviewer, and reviews whiteboard designs via Excalidraw. Use when the user asks to create, practice, or get feedback on a system design interview.",
+      "metadata": {
+        "tags": "interview",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-tech-resume-optimizer",
+      "path": "skills/job-hunting/resume-tech-resume-optimizer",
+      "description": "Optimize resumes for software engineering, PM, and technical roles",
+      "metadata": {
+        "tags": "career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "interview-prep",
+      "path": "skills/job-hunting/interview-prep",
+      "description": "当用户需要准备面试、分析JD、复盘面试记录、或者询问面试策略时触发。支持面试前准备（STAR故事库+问题预测+按轮次策略）和面试后复盘（逐题拆解+模式识别）双模式。",
+      "metadata": {
+        "tags": "interview",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "offer-negotiation",
+      "path": "skills/job-hunting/offer-negotiation",
+      "description": "当用户拿到多个offer需要比较、或需要就单个offer进行薪资谈判时触发。提供总薪酬对比分析、加权决策矩阵、谈判策略与Counter脚本。",
+      "metadata": {
+        "tags": "interview,compensation,negotiation,career",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-ats-formatter",
+      "path": "skills/job-hunting/resume-ats-formatter",
+      "description": "当用户提到'ATS优化'、'简历格式'、'简历排版'、'机器筛选'或需要确保简历通过ATS系统时触发。提供格式兼容性检查、关键词匹配度分析与ATS友好排版建议。",
+      "metadata": {
+        "tags": "career,ats,resume",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-linkedin-optimizer",
+      "path": "skills/job-hunting/resume-linkedin-optimizer",
+      "description": "当用户提到'优化简历'、'LinkedIn'、'领英'、'求职'或需要根据目标岗位同时优化简历和LinkedIn个人资料时触发。提供简历与领英联动的统一优化方案。",
+      "metadata": {
+        "tags": "interview,career,hr",
+        "platforms": "kimi,claude,cursor,codex,gemini"
+      }
+    },
+    {
+      "name": "resume-staff-principal-architect",
+      "path": "skills/job-hunting/resume-staff-principal-architect",
+      "description": "当用户申请 Staff Engineer、Principal Engineer、Senior Architect、Distinguished Engineer 或类似高级技术专家岗位时触发。融合 ATS 格式安全、技术深度量化与组织影响力叙事，输出既通过机器筛选又打动技术决策者的简历。",
+      "metadata": {
+        "tags": "career,job-search,resume,staff-engineer,principal-engineer,architect,ats",
         "platforms": "kimi,claude,cursor,codex,gemini"
       }
     }

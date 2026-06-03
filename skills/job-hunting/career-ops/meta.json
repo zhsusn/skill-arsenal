@@ -1,0 +1,15 @@
+{
+  "name": "career-ops",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": [
+    "job-search"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

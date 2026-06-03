@@ -1,0 +1,15 @@
+{
+  "name": "resume-creative-portfolio",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": [
+    "career"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

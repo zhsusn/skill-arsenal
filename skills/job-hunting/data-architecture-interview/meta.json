@@ -1,0 +1,7 @@
+{
+  "name": "data-architecture-interview",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": ["interview", "data-architecture", "big-data", "lakehouse"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

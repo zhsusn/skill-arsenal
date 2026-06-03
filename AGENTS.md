@@ -84,7 +84,8 @@ skill-arsenal/
 - **`Reverse-Engineering/`**：存放元技能与项目规则治理类 skill（如将项目规则重构为 skill-based architecture），不参与具体软件交付过程。
 - **`engineering-foundations/`**：工程基础能力分类，存放代码文档、单元测试、调试、正则表达式、提交规范、代码审查、工作流自动化等通用工程技能。
 - **`learning/`**：学习知识分类，存放结构化笔记、考试准备、学习路线、概念解释、论文写作、记忆卡片、学习规划等与知识获取相关的 skill。
-- **`office/`**：办公沟通分类，存放专业邮件、会议纪要、简历优化、演示文稿准备等职场沟通相关的 skill。
+- **`office/`**：办公沟通分类，存放专业邮件、会议纪要、演示文稿准备等职场沟通相关的 skill。
+- **`job-hunting/`**：求职面试分类，存放简历优化、面试准备、求职策略、offer 谈判、薪资沟通等求职全周期相关的 skill。
 - **`research/`**：研究决策分类，存放深度研究合成、来源验证、知识结构化、竞争情报分析等研究与分析相关的 skill。
 - **`content-creation/`**：内容表达分类，存放视频脚本、开场钩子、流程图构建等内容创作相关的 skill。
 - **其他预留分类**：未来可按领域横向扩展（如 `devops/`、`security/` 等），但同一 skill 不得跨分类重复存放。
@@ -197,7 +198,7 @@ description: 当用户提交代码审查请求、提到'review'、'代码走读'
 ## 开发规范
 
 ### 命名与分类
-- Skill 按领域分目录存放。当前校验脚本认可的有效分类为：`sdlc`、`data-engineering`、`Reverse-Engineering`、`engineering-foundations`、`learning`、`office`、`research`、`content-creation`。
+- Skill 按领域分目录存放。当前校验脚本认可的有效分类为：`sdlc`、`data-engineering`、`Reverse-Engineering`、`engineering-foundations`、`learning`、`office`、`research`、`content-creation`、`job-hunting`。
 - 每个 skill 目录名使用小写英文字母，单词间用连字符 `-` 分隔（kebab-case），**禁止连续连字符 `--`**。
 - 每个 skill 必须包含 `SKILL.md`，且文件名全大写。
 
@@ -228,6 +229,7 @@ description: 当用户提交代码审查请求、提到'review'、'代码走读'
 7. **危险操作 Hook**：删除、覆盖等破坏性操作需设计确认机制。
 8. **配置外置**：API Key、Token 等通过环境变量或配置文件提供，禁止硬编码。
 9. **有状态 Skill 说明存储方式**：跨对话状态需明确持久化路径。
+10. **执行生命周期（强制）**：所有 `generator`、`reviewer`、`pipeline` 模式的 Skill，应遵循 `docs/skill-execution-framework.md` 中的**五阶段三检查点**框架（输入分析 → 条目整理 → 原子执行 → 覆盖验证 → 总结归档），确保输入可追溯、输出可验证。`generator` 和 `pipeline` 模式必须在 `SKILL.md` 中显式实现阶段 4 的"条目回溯"与"幻觉检测"。
 
 ---
 

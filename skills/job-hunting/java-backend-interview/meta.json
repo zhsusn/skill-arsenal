@@ -1,0 +1,7 @@
+{
+  "name": "java-backend-interview",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": ["interview", "java", "backend", "high-concurrency"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

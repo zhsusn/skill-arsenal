@@ -1,0 +1,15 @@
+{
+  "name": "resume-career-changer-translator",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": [
+    "job-search"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

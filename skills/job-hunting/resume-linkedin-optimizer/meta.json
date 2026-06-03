@@ -1,0 +1,17 @@
+{
+  "name": "resume-linkedin-optimizer",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "interview",
+    "career",
+    "hr"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

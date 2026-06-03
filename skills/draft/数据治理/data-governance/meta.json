@@ -1,0 +1,15 @@
+{
+  "name": "data-governance",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": [
+    "data-engineering"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "data-governance-interview",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": ["interview", "data-engineering", "data-governance"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}

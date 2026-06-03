@@ -31,6 +31,7 @@ VALID_CATEGORIES = {
     "office",
     "research",
     "content-creation",
+    "job-hunting",
 }
 
 # kebab-case 校验（同时禁止连续连字符）

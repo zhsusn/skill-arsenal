@@ -1,0 +1,15 @@
+{
+  "name": "linkedin-profile-optimizer",
+  "version": "1.0.0",
+  "pattern": "reviewer",
+  "tags": [
+    "career"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

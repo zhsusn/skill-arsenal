@@ -206,17 +206,27 @@ description: 当用户提到'自查'、'self-check'、'检查产出物'、'阶�
 - VAGUE 数量 3-4 → 🟡 WARNING
 - 其他单项缺失 → 🟡 WARNING
 
-### Step 3: 结果聚合与门控判断
+### Step 3: 结果聚合与门控判断（三层检查点映射）
+
+`self-check` 作为 Skill 执行规范框架中的 **Gate Out** 标准收口，其判定逻辑映射如下：
+
+| 本框架检查点 | `self-check` 对应位置 | 判定标准 |
+|-------------|---------------------|---------|
+| **Gate In** | 各 skill 自行实现（输入合法性） | 输入 schema 校验、上下文完整性、权限检查 |
+| **Gate Mid** | 各 skill 自行实现（规划可执行性） | 任务 DAG 无环、资源预算可接受、范围明确 |
+| **Gate Out** | `self-check` Step 3（本步骤） | **内容一致性 + 内容完整性 + 无内部矛盾** 均通过 |
+
+> **分工说明**：`self-check` 专注于 Gate Out（输出完整性检查）。Gate In 和 Gate Mid 由上游生成 skill（如 `brainstorming`、`prd-generation`、`writing-plans`）在各自执行流程中自行实现。
 
 严重级别分类：
-- 🔴 **BLOCKER**：必须修复，否则禁止进入下一阶段
-- 🟡 **WARNING**：建议修复，可进入下一阶段但需记录风险
+- 🔴 **BLOCKER**：必须修复，否则禁止进入下一阶段（对应 Gate Out 失败）
+- 🟡 **WARNING**：建议修复，可进入下一阶段但需记录风险（对应 Gate Out 有条件通过）
 - 🟢 **INFO**：优化建议，不影响流程
 
-门控规则：
-- 存在 BLOCKER → 阶段状态锁定，要求修复后重新执行 self-check
-- 无 BLOCKER，存在 WARNING → 允许进入下一阶段，但记录风险
-- 全部通过 → 阶段状态更新为"已自查通过"
+门控规则（Gate Out）：
+- 存在 BLOCKER → **Gate Out 失败**，阶段状态锁定，要求修复后重新执行 self-check
+- 无 BLOCKER，存在 WARNING → **Gate Out 有条件通过**，允许进入下一阶段，但记录风险
+- 全部通过 → **Gate Out 通过**，阶段状态更新为"已自查通过"
 
 ### Step 4: 输出自查报告
 

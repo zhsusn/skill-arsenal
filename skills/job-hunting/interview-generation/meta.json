@@ -1,0 +1,15 @@
+{
+  "name": "interview-generation",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "interview"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "portfolio-case-study-writer",
+  "version": "1.0.0",
+  "pattern": "generator",
+  "tags": [
+    "career"
+  ],
+  "platforms": [
+    "kimi",
+    "claude",
+    "cursor",
+    "codex",
+    "gemini"
+  ]
+}

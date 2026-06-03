@@ -1,0 +1,7 @@
+{
+  "name": "jd-scraper",
+  "version": "1.0.0",
+  "pattern": "tool-wrapper",
+  "tags": ["interview", "job-search", "scraping", "automation"],
+  "platforms": ["kimi", "claude", "cursor", "codex", "gemini"]
+}
